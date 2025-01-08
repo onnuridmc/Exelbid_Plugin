@@ -152,12 +152,7 @@ import AppTrackingTransparency
 |Key|Type|Default|Desc|
 |---|---|---|---|
 |adUnitId|String||광고 아이디를 셋팅 합니다.|
-|yob|String?|null|태어난 연도 4자리(2016)|
-|gender|bool?|null|성별 (true : 남자, false : 여자)|
-|keywords|Map<String, String>?|null|Custom 메타 데이터 (Key, Value)|
-|isTest|bool?|false|광고의 테스트를 위해 설정하는 값입니다. 통계에 적용 되지 않으며 항상 광고가 노출되게 됩니다.|
 |coppa|bool?|false|선택사항으로 미국 아동 온라인 사생활 보호법에 따라 13세 미만의 사용자를 설정하면 개인 정보를 제한하여 광고 입찰 처리됩니다. (IP, Device ID, Geo 정보등)|
-|rewarded|bool?|false|지면의 리워드 여부를 설정한다.|
 |listener|EBPAdListener?|null|콜백 이벤트 리스너.|
 
 
@@ -178,10 +173,6 @@ EBBannerAdView({super.key,
                 required this.adUnitId,
                 this.isFullWebView,
                 this.coppa,
-                this.yob,
-                this.gender,
-                this.keywords,
-                this.isTest,
                 this.listener});
 ```
 
@@ -189,8 +180,6 @@ EBBannerAdView({super.key,
 ```dart
 EBBannerAdView(
     adUnitId: "<<Ad Unit Id>>",
-    yob: "2014",
-    gender: true,
     listener: EBPBannerAdViewListener(
         onLoadAd: () {
             print("Banner onLoadAd");
@@ -269,16 +258,12 @@ ExelbidPlugin.shared.setInterstitialListener(EBPInterstitialAdViewListener(
 Future<void> loadInterstitial({
     required String adUnitId,
     bool? coppa,
-    String? yob,
-    bool? gender,
-    Map<String, dynamic>? keywords,
-    bool? isTest,
   })
 ```
 
 #### 예시)
 ```dart
-ExelbidPlugin.shared.loadInterstitial(adUnitId: "<<Ad Unit Id>>", yob: "2014", gender: true);
+ExelbidPlugin.shared.loadInterstitial(adUnitId: "<<Ad Unit Id>>");
 ```
 
 <br/>
