@@ -60,7 +60,7 @@ class MainScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => InterstitialAdWidget()),
+                      builder: (context) => const InterstitialAdWidget()),
                 );
               },
               child: const Text('Go to Interstitial Ad'),

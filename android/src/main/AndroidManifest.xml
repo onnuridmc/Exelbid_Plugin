@@ -6,6 +6,9 @@
 
     <application>
         <!-- Exelbid SDK Activity -->
+        <activity android:name="com.onnuridmc.exelbid.common.ExelbidBrowser"
+            android:configChanges="keyboardHidden|orientation|screenSize">
+        </activity>
         <activity android:name="com.onnuridmc.exelbid.common.ExelBidActivity"
             android:configChanges="keyboardHidden|orientation|screenSize">
         </activity>

@@ -28,7 +28,7 @@ class _InterstitialAdState extends State<InterstitialAdWidget> {
     }, onFailAd: (String? errorMessage) {
       print('Interstitial onFailAd : $errorMessage');
     }, onClickAd: () {
-      print('onInterstitialClick');
+      print('Interstitial onClickAd');
     }, onInterstitialShow: () {
       print('onInterstitialShow');
     }, onInterstitialDismiss: () {
