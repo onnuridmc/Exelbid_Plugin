@@ -70,59 +70,10 @@ flutter pub get
 
 ## Android 설정
 
-### Google Library 추가하기
-
-1. Flutter 프로젝트에서 android/app/src/main/AndroidManifest.xml 파일을 엽니다.  
-2. 아래 내용을 추가하세요.  
-
-```xml
-<meta-data
-    android:name="com.google.android.gms.version"
-    android:value="@integer/google_play_services_version" />
-```
-
-<br/>
-
-### 프로가드 설정
-```
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient{public *;}
--keep class com.google.android.gms.ads.identifier.AdvertisingIdClient$Info{public *;}
--keep class com.google.android.gms.common.api.GoogleApiClient { public *; }
--keep class com.google.android.gms.common.api.GoogleApiClient$* {public *;}
--keep class com.google.android.gms.location.LocationServices {public *;}
--keep class com.google.android.gms.location.FusedLocationProviderApi {public *;}
-
--keepattributes SourceFile,LineNumberTable,InnerClasses
--keep class com.onnuridmc.exelbid.** { *; }
-```
-
-<br/>
-
 ### AndroidManifest 설정
 
-#### Activity 설정
-```xml
-<!-- 필수 -->
-<activity android:name="com.onnuridmc.exelbid.common.ExelbidBrowser"
-    android:configChanges="keyboardHidden|orientation|screenSize">
-</activity>
-<!-- 필수(전면 광고시) -->
-<activity android:name="com.onnuridmc.exelbid.common.ExelBidActivity"
-    android:configChanges="keyboardHidden|orientation|screenSize">
-</activity>
-```
+#### 권장 권한 설정
 
-#### 권한 설정
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-// 구글 정책(2022.03.15 발표)에 따라 대상 API 수준을 32(Android 13)로 업데이트하는 앱은 다음과 같이 매니페스트 파일에서 Google Play 서비스 일반 권한을 선언해야 합니다.(정책 적용 2022년 말 예정)
-<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
-```
-
-#### 권장 권한
 ```xml
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -130,36 +81,9 @@ flutter pub get
 <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 ```
 
-#### HTTP 트래픽 허용 설정
-
-Exelbid에서는 광고 요청등의 Api에 https를 사용하지만 Exelbid에 연결된 많은 광고주 플랫폼사들의 광고 소재 리소스(image, js등)의 원할한 활용을 위해 http사용 허가 설정이 필요합니다.
-
-1. Flutter 프로젝트에서 android/app/src/main/res/xml/network_security_config.xml 파일을 생성 또는 열기.
-2. 아래 내용을 추가하세요.  
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-    <network-security-config>
-        <base-config cleartextTrafficPermitted="true" />
-    </network-security-config>
-```
-
-1. Flutter 프로젝트에서 android/app/src/main/AndroidManifest.xml 파일을 엽니다.  
-2. 아래 내용을 추가하세요.  
-
-```xml
-<application
-    .
-    .
-    android:networkSecurityConfig="@xml/network_security_config"
-    android:usesCleartextTraffic="true">
-```
-
-<br/>
-
 ## iOS 설정
 
-### Info 설정
+### Info.plist 설정
 광고 식별자 및 HTTP 트래픽 허용을 위한 권한을 설정합니다.  
 
 Exelbid에서는 광고 요청등의 Api에 https를 사용하지만 Exelbid에 연결된 많은 광고주 플랫폼사들의 광고 소재 리소스(image, js등)의 원할한 활용을 위해 http사용 허가 설정이 필요합니다.  
@@ -193,11 +117,19 @@ import AppTrackingTransparency
 
 ...
 
-func applicationDidBecomeActive(_ application: UIApplication) {
-    if #available(iOS 14.0, *) {
-        ATTrackingManager.requestTrackingAuthorization { _ in }
+@main
+@objc class AppDelegate: FlutterAppDelegate {
+
+    ...
+
+    override func applicationDidBecomeActive(_ application: UIApplication) {
+        super.applicationDidBecomeActive(application)
+
+        if #available(iOS 14.0, *) {
+            ATTrackingManager.requestTrackingAuthorization { _ in }
+        }
     }
-} 
+}
 ```
 
 <br/><br/>
