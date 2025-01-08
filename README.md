@@ -91,7 +91,7 @@ Exelbid에서는 광고 요청등의 Api에 https를 사용하지만 Exelbid에 
 
 1. Flutter 프로젝트에서 ios/Runner/Info.plist 파일을 엽니다.  
 2. 아래 내용을 추가하세요.  
-```plist
+```xml
 <key>NSUserTrackingUsageDescription</key>
 <string>이 앱은 사용자 맞춤 광고를 제공하기 위해 광고 식별자를 사용합니다.</string>
 
