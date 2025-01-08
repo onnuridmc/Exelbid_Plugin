@@ -17,9 +17,10 @@ Flutter Plugin 가이드입니다.
     - [전면 광고](#전면-광고)
 
 # Version History
-### Version 1.0.0
+### Version 1.0.2
 
-- 1.0.0 Initial
+- Fix android permission
+- Modify example
 
 <br/><br/>
 
@@ -32,7 +33,7 @@ Flutter Plugin 가이드입니다.
 
 # Plugin 정보
 
-Flutter 1.0.0 버전
+Flutter 3.102.0 버전
 
 <br/><br/>
 
