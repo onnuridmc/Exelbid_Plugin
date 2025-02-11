@@ -38,10 +38,15 @@ android {
     }
 }
 
+def exoplayer_version = '2.13.3'
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
     implementation 'com.onnuridmc.exelbid:exelbid:1.9.9.1'
     implementation 'com.google.android.gms:play-services-base:17.6.0'
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
+    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
 }
 
 repositories {

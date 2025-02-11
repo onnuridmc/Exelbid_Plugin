@@ -25,14 +25,12 @@ class _BannerAdState extends State<BannerAdWidget> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          // 버튼 2개
           SizedBox(
             width: double.infinity,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // Show Ad 기능 추가
                   setState(() {
                     _isShow = true;
                   });
@@ -41,7 +39,6 @@ class _BannerAdState extends State<BannerAdWidget> {
               ),
             ),
           ),
-          // 하단 빈 영역
           Expanded(
             child: Stack(
               children: [
@@ -57,13 +54,18 @@ class _BannerAdState extends State<BannerAdWidget> {
                       child: _isShow
                           ? EBBannerAdView(
                               adUnitId: _adUnitId,
-                              listener: EBPBannerAdViewListener(onLoadAd: () {
-                                print("Banner onLoadAd");
-                              }, onFailAd: (String? errorMessage) {
-                                print("Banner onFailAd");
-                              }, onClickAd: () {
-                                print("Banner onClickAd");
-                              }))
+                              listener: EBPBannerAdViewListener(
+                                onLoadAd: () {
+                                  print("Banner onLoadAd");
+                                },
+                                onFailAd: (String? errorMessage) {
+                                  print("Banner onFailAd");
+                                },
+                                onClickAd: () {
+                                  print("Banner onClickAd");
+                                },
+                              ),
+                            )
                           : null,
                     ),
                   ),

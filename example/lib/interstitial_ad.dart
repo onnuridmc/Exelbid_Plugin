@@ -48,7 +48,6 @@ class _InterstitialAdState extends State<InterstitialAdWidget> {
       ),
       body: Column(
         children: [
-          // 버튼 2개
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -58,7 +57,6 @@ class _InterstitialAdState extends State<InterstitialAdWidget> {
                   child: ElevatedButton(
                     onPressed: _isLoadButton
                         ? () {
-                            // Interstitial Ad Load
                             ExelbidPlugin.shared
                                 .loadInterstitial(adUnitId: _adUnitId);
                             setState(() {
@@ -74,7 +72,6 @@ class _InterstitialAdState extends State<InterstitialAdWidget> {
                   child: ElevatedButton(
                     onPressed: _isShowButton
                         ? () {
-                            // Interstitial Ad Show
                             ExelbidPlugin.shared.showInterstitial();
                           }
                         : null,
@@ -84,7 +81,6 @@ class _InterstitialAdState extends State<InterstitialAdWidget> {
               ],
             ),
           ),
-          // 하단 빈 영역
           const Expanded(
             child: SizedBox(),
           ),

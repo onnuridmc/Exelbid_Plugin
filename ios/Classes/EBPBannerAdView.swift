@@ -4,7 +4,7 @@ import ExelBidSDK
 class EBPBannerAdView: NSObject, FlutterPlatformView, EBAdViewDelegate {
 
     var channel: FlutterMethodChannel
-    var uiView: UIView
+    var bannerAdView: UIView
     var adView: EBAdView?
 
     init(frame: CGRect,
@@ -12,17 +12,14 @@ class EBPBannerAdView: NSObject, FlutterPlatformView, EBAdViewDelegate {
         arguments args: Any?,
         binaryMessenger messenger: FlutterBinaryMessenger
     ) {
+        bannerAdView = UIView(frame: frame)
         channel = FlutterMethodChannel(name: "\(METHOD_CHANNEL_VIEW_ID)_\(viewIdentifier)", binaryMessenger: messenger)
-        uiView = UIView(frame: frame)
 
         super.init()
 
         if let arguments = args as? [String: Any], let adUnitId = arguments["ad_unit_id"] as? String {
             let isFullWebView = arguments["is_full_web_view"] as? Bool ?? true
             let coppa = arguments["coppa"] as? Bool ?? false
-            let yob = arguments["yob"] as? String
-            let gender = getGender(arguments["gender"] as? Bool)
-            let keywords = arguments["keywords"] as? [String: String]
             let isTest = arguments["is_test"] as? Bool ?? false
 
             adView = EBAdView(adUnitId: adUnitId, size: frame.size)
@@ -31,22 +28,16 @@ class EBPBannerAdView: NSObject, FlutterPlatformView, EBAdViewDelegate {
                 adView.delegate = self
                 adView.fullWebView = isFullWebView
                 adView.coppa = "\(coppa ? 1 : 0)"
-                adView.yob = yob
-                adView.gender = gender
                 adView.testing = isTest
 
-                adView.keywords = keywords?.map { key, value in
-                    return "\(key):\(value)"
-                }.joined(separator: ",")
-
-                uiView.addSubview(adView)
+                bannerAdView.addSubview(adView)
 
                 adView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    adView.topAnchor.constraint(equalTo: uiView.topAnchor),
-                    adView.bottomAnchor.constraint(equalTo: uiView.bottomAnchor),
-                    adView.leadingAnchor.constraint(equalTo: uiView.leadingAnchor),
-                    adView.trailingAnchor.constraint(equalTo: uiView.trailingAnchor)
+                    adView.topAnchor.constraint(equalTo: bannerAdView.topAnchor),
+                    adView.bottomAnchor.constraint(equalTo: bannerAdView.bottomAnchor),
+                    adView.leadingAnchor.constraint(equalTo: bannerAdView.leadingAnchor),
+                    adView.trailingAnchor.constraint(equalTo: bannerAdView.trailingAnchor)
                 ])
 
                 adView.loadAd()
@@ -55,7 +46,7 @@ class EBPBannerAdView: NSObject, FlutterPlatformView, EBAdViewDelegate {
     }
 
     func view() -> UIView {
-        return uiView
+        return bannerAdView
     }
 
     func adViewDidLoadAd(_ view: EBAdView?) {
@@ -68,13 +59,5 @@ class EBPBannerAdView: NSObject, FlutterPlatformView, EBAdViewDelegate {
 
     func willLeaveApplicationFromAd(_ view: EBAdView?) {
         channel.invokeMethod("onClickAd", arguments: nil)
-    }
-
-    func getGender(_ gender: Bool?) -> String? {
-        if let gender = gender {
-            return gender ? "M" : "W"
-        } else {
-            return nil
-        }
     }
 }

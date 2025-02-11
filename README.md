@@ -15,6 +15,7 @@ Flutter Plugin 가이드입니다.
     - [인스턴스 공통 메소드](#인스턴스-공통-메소드)
     - [배너 광고](#배너-광고)
     - [전면 광고](#전면-광고)
+- [미디에이션](#미디에이션))
 
 # Version History
 ### Version 1.0.2
@@ -272,4 +273,81 @@ ExelbidPlugin.shared.loadInterstitial(adUnitId: "<<Ad Unit Id>>");
 전면 광고 초기화가 이루어진 후 광고 보기를 요청해야 합니다.  
 ```dart
 ExelbidPlugin.shared.showInterstitial();
+```
+
+<br/><br/>
+
+# 미디에이션
+
+Exelbid Plugin을 이용한 Mediation 연동의 경우,  
+각 앱에서 연동하고 있는 광고 SDK들의 최적화 된 호출 순서를 응답한다.
+
+## 미디에이션 네트워크
+
+| 네트워크         | 미디에이션 타입                     |
+|----------------|---------------------------------|
+| Exelbid        | EBMediationTypes.exelbid        |
+| AdMob          | EBMediationTypes.admob          |
+| FaceBook       | EBMediationTypes.facebook       |
+| AdFit          | EBMediationTypes.adfit          |
+| DigitalTurbine | EBMediationTypes.digitalturbine |
+| Pangel         | EBMediationTypes.pangle         |
+| TNK            | EBMediationTypes.tnk            |
+| AppLovin       | EBMediationTypes.applovin       |
+| MPartners      | EBMediationTypes.mpartners      |
+
+## 미디에이션 설정 및 요청
+
+### 미디에이션 인스턴스 선언
+```dart
+EBMediationManager _mediationManager
+```
+
+### 미디에이션 인스턴스 초기화
+```dart
+_mediationManager = EBMediationManager(
+        mediationUnitId: "<<Mediation Unit ID>>",
+        mediationTypes: [
+          EBMediationTypes.exelbid,
+          // 사용할 미디에이션 네트워크 추가
+        ],
+        listener: EBPMediationListener(
+          onLoad: () {
+            // 미디에이션 목록 조회 성공
+          },
+          onError: (EBError error) {
+            // 미디에이션 에러, 예외 처리
+          },
+          onEmpty: () {
+            // 미디에이션 순회 완료 처리
+          },
+          onNext: (EBMediation mediation) {
+            // 사용할 미디에이션 네트워크 체크 후 광고 요청
+            if (mediation.networkId == EBMediationTypes.exelbid) {
+              // 전달받은 unitId로 networkId에 맞게 광고 요청
+            } else {
+              // 매칭되는 네트워크가 없으면 다음 미디에이션 요청
+              _mediationManager.nextMediation();
+            }
+          },
+        ));
+  }
+```
+
+### 미디에이션 콜백 리스너
+```dart
+// 미디에이션 콜백 리스너
+class EBPMediationListener {
+  // 미디에이션 요청 성공
+  final Function() onLoad;
+
+  // 다음 순서 미디에이션 조회
+  final Function(EBMediation mediation) onNext;
+
+  // 미디에이션 목록이 비었을 경우 (순회 완료, 목록 없음)
+  final Function() onEmpty;
+
+  // 미디에이션 목록 조회 에러
+  final Function(EBError error) onError;
+}
 ```

@@ -3,14 +3,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+const String EB_BANNER_VIEW_TYPE = "exelbid_plugin/banner_ad";
+
 class EBBannerAdView extends StatefulWidget {
   final String adUnitId;
 
   final bool? isFullWebView;
   final bool? coppa;
-  final String? yob;
-  final bool? gender;
-  final Map<String, dynamic>? keywords;
   final bool? isTest;
 
   final EBPBannerAdViewListener? listener;
@@ -20,9 +19,6 @@ class EBBannerAdView extends StatefulWidget {
       required this.adUnitId,
       this.isFullWebView,
       this.coppa,
-      this.yob,
-      this.gender,
-      this.keywords,
       this.isTest,
       this.listener});
 
@@ -32,7 +28,6 @@ class EBBannerAdView extends StatefulWidget {
 }
 
 class EBBannerAdViewState extends State<EBBannerAdView> {
-  final String viewType = "exelbid_plugin/banner_ad";
   MethodChannel? methodChannel;
 
   @override
@@ -44,14 +39,14 @@ class EBBannerAdViewState extends State<EBBannerAdView> {
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
-        viewType: viewType,
+        viewType: EB_BANNER_VIEW_TYPE,
         creationParams: createParams(),
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: onPlatformViewCreated,
       );
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
-        viewType: viewType,
+        viewType: EB_BANNER_VIEW_TYPE,
         creationParams: createParams(),
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: onPlatformViewCreated,
@@ -66,15 +61,12 @@ class EBBannerAdViewState extends State<EBBannerAdView> {
       "ad_unit_id": widget.adUnitId,
       "is_full_web_view": widget.isFullWebView,
       "coppa": widget.coppa,
-      "yob": widget.yob,
-      "gender": widget.gender,
-      "keywords": widget.keywords,
       "is_test": widget.isTest
     };
   }
 
   void onPlatformViewCreated(int id) {
-    methodChannel = MethodChannel('${viewType}_$id');
+    methodChannel = MethodChannel('${EB_BANNER_VIEW_TYPE}_$id');
     methodChannel?.setMethodCallHandler(handleMethodChannel);
   }
 
