@@ -18,7 +18,6 @@ import com.onnuridmc.exelbid.common.OnInterstitialAdListener
 import com.onnuridmc.exelbid.common.OnMediationOrderResultListener
 import com.onnuridmc.exelbid.lib.ads.mediation.MediationOrderResult
 import com.onnuridmc.exelbid.lib.ads.mediation.MediationType
-import java.io.IOException
 
 const val METHOD_CHANNEL_ID = "exelbid_plugin"
 const val METHOD_CHANNEL_VIEW_ID = "exelbid_plugin/banner_ad"

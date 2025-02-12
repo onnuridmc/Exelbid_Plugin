@@ -51,7 +51,7 @@ class EBPNativeView : UIView, EBNativeAdRendering {
 
     func setMainVideoView(_ call: FlutterMethodCall) {
         if self.mainVideoView == nil {
-            self.mainVideoView = UIImageView();
+            self.mainVideoView = UIView();
 
             self.addSubview(self.mainVideoView) 
         }

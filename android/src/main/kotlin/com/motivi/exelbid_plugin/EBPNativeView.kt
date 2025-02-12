@@ -1,18 +1,15 @@
 package com.motivi.exelbid_plugin
 
 import android.content.Context
-import android.graphics.BitmapFactory
-import android.graphics.Color
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.TextView
 import com.onnuridmc.exelbid.lib.vast.NativeVideoView
 import io.flutter.plugin.common.MethodCall
-import java.net.HttpURLConnection
-import java.net.URL
 
 class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
 
@@ -21,7 +18,7 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
     var mainImageView: ImageView? = null
     var mainVideoView: NativeVideoView? = null
     var iconImageView: ImageView? = null
-    var callToActionView: FrameLayout? = null
+    var callToActionView: TextView? = null
     var privacyInformationIconImageView: ImageView? = null
 
     fun setTitleView(call: MethodCall) {
@@ -54,14 +51,12 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
         if (mainImageView == null) {
             mainImageView = ImageView(context).apply {
                 id = View.generateViewId()
-                setBackgroundColor(Color.GREEN)
             }
             addView(mainImageView)
         }
 
         mainImageView?.let { view ->
             updateNativeView(view, getRect(call))
-            loadImageWithThread(view, "https://onnuridmc-banner.s3.ap-northeast-2.amazonaws.com/exelbid/production/creative/20241030/94288cc6a7cd6aef2e1b95420fa1f80a969b7b77434107b1ddfa167883cc8c16.jpg")
         }
     }
 
@@ -69,6 +64,7 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
         if (mainVideoView == null) {
             mainVideoView = NativeVideoView(context).apply {
                 id = View.generateViewId()
+                gravity = Gravity.CENTER_HORIZONTAL
             }
             addView(mainVideoView)
         }
@@ -93,8 +89,9 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
 
     fun setCallToActionView(call: MethodCall) {
         if (callToActionView == null) {
-            callToActionView = FrameLayout(context).apply {
+            callToActionView = TextView(context).apply {
                 id = View.generateViewId()
+                alpha = 0f
             }
             addView(callToActionView)
         }
@@ -131,26 +128,7 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
             leftMargin = rect.left
             topMargin = rect.top
         }
-        Log.d("TEST", ">>> updateNativeView : ${rect.left}, ${rect.top}, ${rect.width()}, ${rect.height()} ")
 
         this.updateViewLayout(view, params)
-    }
-
-    fun loadImageWithThread(imageView: ImageView, url: String) {
-        Thread {
-            try {
-                val connection = URL(url).openConnection() as HttpURLConnection
-                connection.doInput = true
-                connection.connect()
-                val inputStream = connection.inputStream
-                val bitmap = BitmapFactory.decodeStream(inputStream)
-
-                imageView.post {
-                    imageView.setImageBitmap(bitmap)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }.start()
     }
 }

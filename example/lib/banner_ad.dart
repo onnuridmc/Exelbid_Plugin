@@ -12,7 +12,7 @@ class BannerAdWidget extends StatefulWidget {
 
 class _BannerAdState extends State<BannerAdWidget> {
   final String _adUnitId = defaultTargetPlatform == TargetPlatform.android
-      ? "fb59bdd7ffd4e9868e0d6dde98445a8854882a28"
+      ? "27060aff4c8bcc8e7f897bc6385d870adbfe0738"
       : "08377f76c8b3e46c4ed36c82e434da2b394a4dfa";
   bool _isShow = false;
 

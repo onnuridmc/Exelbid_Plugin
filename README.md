@@ -15,13 +15,16 @@ Flutter Plugin 가이드입니다.
     - [인스턴스 공통 메소드](#인스턴스-공통-메소드)
     - [배너 광고](#배너-광고)
     - [전면 광고](#전면-광고)
-- [미디에이션](#미디에이션))
+- [미디에이션](#미디에이션)
 
 # Version History
-### Version 1.0.2
+### Version 1.0.3
+- 네이티브 광고, 미디에이션 추가
+- README.md 업데이트
 
-- Fix android permission
-- Modify example
+<br/>
+
+[**Old Version History**](./VersionHistory.md)
 
 <br/><br/>
 
@@ -201,7 +204,7 @@ EBPBannerAdViewListener {
     /// 광고 요청 성공
     final Function() onLoadAd;
 
-    /// 광고 요청 실패
+    /// 광고 요청 실패 (광고 없음)
     final Function(String? errorMessage) onFailAd;
 
     /// 광고 클릭
@@ -213,13 +216,13 @@ EBPBannerAdViewListener {
 
 ## 전면 광고
 
-### 배너 광고 이벤트 리스너
+### 전면 광고 이벤트 리스너
 ```dart
 EBPInterstitialAdViewListener {
     /// 광고 요청 성공
     final Function() onLoadAd;
 
-    /// 광고 요청 실패
+    /// 광고 요청 실패 (광고 없음)
     final Function(String? errorMessage) onFailAd;
 
     /// 광고 클릭
@@ -236,6 +239,8 @@ EBPInterstitialAdViewListener {
 <br/>
 
 ### 전면 광고 콜백 리스너 설정
+
+#### 예시)
 ```dart
 ExelbidPlugin.shared.setInterstitialListener(EBPInterstitialAdViewListener(
     onLoadAd: () {
@@ -254,11 +259,12 @@ ExelbidPlugin.shared.setInterstitialListener(EBPInterstitialAdViewListener(
 
 <br/>
 
-### 전면 광고 초기화
+### 전면 광고 요청
 ```dart
 Future<void> loadInterstitial({
     required String adUnitId,
     bool? coppa,
+    bool? isTest
   })
 ```
 
@@ -277,10 +283,203 @@ ExelbidPlugin.shared.showInterstitial();
 
 <br/><br/>
 
+## 네이티브 광고
+
+### 네이티브 광고 인스턴스
+
+|Key|Type|Default|Desc|
+|---|---|---|---|
+|nativeAssets|EBNativeAssets?|null|네이티브 광고 요청 시 필요한 항목들을 요청합니다.|
+
+```dart
+EBNativeAdView({super.key,
+                required this.child,
+                required this.adUnitId,
+                this.nativeAssets,
+                this.coppa,
+                this.isTest,
+                this.listener});
+```
+
+#### 네이티브 광고 속성
+```dart
+class EBNativeAssets {
+    // 제목
+    static const String title = "title";
+
+    // 아이콘 이미지
+    static const String icon = "icon";
+    
+    // 메인 이미지
+    static const String main = "main";
+
+    // 설명
+    static const String desc = "desc";
+    
+    // 클릭 버튼명 (유도문)
+    static const String ctatext = "ctatext";
+}
+```
+
+#### 예시)
+```dart
+EBNativeAdView(
+    adUnitId: "<<Ad Unit Id>>",
+    nativeAssets: const [
+        EBNativeAssets.title,
+        EBNativeAssets.main,
+        EBNativeAssets.icon,
+        EBNativeAssets.ctatext,
+    ],
+    listener: EBPNativeAdViewListener(
+        onLoadAd: () {
+            print("Native onLoadAd");
+        }, onFailAd: (String? errorMessage) {
+            print("Native onFailAd");
+        }, onClickAd: () {
+            print("Native onClickAd");
+        }
+    )
+    child: "<<Native Ad View UI>>"
+)
+```
+
+### 네이티브 광고 UI
+네이티브 광고 뷰 설정 시 아래 내용을 참고하여  
+asset이 설정될 객체를 포함하여 구형하여야 합니다.
+
+#### 네이티브 제목
+```dart
+EBNativeAdTtitle(
+      {super.key,
+      this.width = double.infinity,
+      this.height = double.infinity,
+      this.style,
+      this.textAlign,
+      this.softWrap,
+      this.overflow,
+      this.maxLines})
+```
+
+#### 네이티브 설명
+```dart
+EBNativeAdDescription
+```
+
+#### 네이티브 메인 이미지
+```dart
+EBNativeAdMainImage
+```
+
+#### 네이티브 아이콘 이미지
+```dart
+EBNativeAdIconImage
+```
+
+#### 네이티브 액션 버튼
+```dart
+EBNativeAdCallToAction
+```
+
+#### 온라인 맞춤형 광고 개인정보보호 가이드라인 아이콘
+```dart
+EBNativeAdPrivacyInformationIconImage
+```
+
+> 2017/07 방송통신위원회에서 시행되는 '온라인 맞춤형 광고 개인정보보호 가이드라인' 에 따라서 필수 적용 되어야 합니다.  
+> 광고주측에서 제공하는 해당 광고의 타입(맞춤형 광고 여부)에 따라 정보 표시 아이콘(Opt-out)의 노출이 결정됩니다.  
+> ※ 광고 정보 표시 아이콘이 노출될 ImageView의 사이즈는 NxN(권장 20x20)으로 설정 되어야 합니다.  
+
+
+#### 예시)
+```dart
+Column(
+    children: [
+        // 상단 이미지 및 텍스트 영역
+        const Row(children: [
+            SizedBox(
+                width: 48,
+                height: 48,
+                child: Center(
+                    child: EBNativeAdIconImage(),
+                ),
+            ),
+            SizedBox(width: 10),
+                Expanded(
+                child: EBNativeAdTtitle(
+                    height: 48,
+                ),
+            ),
+        ]),
+        const SizedBox(height: 10),
+        // 메인 이미지 뷰
+        const Expanded(
+        child: SizedBox(
+            width: double.infinity,
+            child: Center(
+                child: Stack(children: [
+                    EBNativeAdMainImage(),
+                    Positioned(
+                        right: 10,
+                        top: 10,
+                        child:
+                            EBNativeAdPrivacyInformationIconImage(
+                        width: 20,
+                        height: 20,
+                        ),
+                    ),
+                ]),
+            ),
+        ),
+        ),
+        const SizedBox(height: 10),
+        // 버튼 영역
+        Align(
+            alignment: Alignment.bottomRight,
+            child: Container(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10, horizontal: 20),
+                child: const EBNativeAdCallToAction(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll<Color>(
+                            Colors.white
+                        ),
+                        textStyle: WidgetStatePropertyAll<TextStyle>(
+                            TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold
+                            )
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ])
+```
+
+<br/>
+
+### 네이티브 광고 이벤트 리스너
+```dart
+EBPNativeAdViewListener {
+    /// 광고 요청 성공
+    final Function() onLoadAd;
+
+    /// 광고 요청 실패 (광고 없음)
+    final Function(String? errorMessage) onFailAd;
+
+    /// 광고 클릭
+    final Function()? onClickAd;
+}
+```
+
+<br/><br/>
+
 # 미디에이션
 
 Exelbid Plugin을 이용한 Mediation 연동의 경우,  
 각 앱에서 연동하고 있는 광고 SDK들의 최적화 된 호출 순서를 응답한다.
+
 
 ## 미디에이션 네트워크
 
@@ -316,10 +515,10 @@ _mediationManager = EBMediationManager(
             // 미디에이션 목록 조회 성공
           },
           onError: (EBError error) {
-            // 미디에이션 에러, 예외 처리
+            // 미디에이션 에러, 예외 처리 (광고 없음 처리)
           },
           onEmpty: () {
-            // 미디에이션 순회 완료 처리
+            // 미디에이션 목록이 없거 순회를 완료했을 경우 (광고 없음 처리)
           },
           onNext: (EBMediation mediation) {
             // 사용할 미디에이션 네트워크 체크 후 광고 요청
@@ -338,16 +537,44 @@ _mediationManager = EBMediationManager(
 ```dart
 // 미디에이션 콜백 리스너
 class EBPMediationListener {
-  // 미디에이션 요청 성공
+  // 미디에이션 목록 조회 성공
   final Function() onLoad;
 
   // 다음 순서 미디에이션 조회
   final Function(EBMediation mediation) onNext;
 
-  // 미디에이션 목록이 비었을 경우 (순회 완료, 목록 없음)
+  // 미디에이션 목록이 없거 순회를 완료했을 경우 (광고 없음 처리)
   final Function() onEmpty;
 
-  // 미디에이션 목록 조회 에러
+  // 미디에이션 에러, 예외 처리 (광고 없음 처리)
   final Function(EBError error) onError;
 }
 ```
+
+### 미디에이션 데이터
+```dart
+class EBMediation {
+  final String networkId;
+  final String unitId;
+}
+```
+
+### 미디에이션 요청 및 목록 순회
+```dart
+// 미디에이션 목록 조회 (EBPMediationListener -> onLoad)
+_mediationManager.loadMediation();
+```
+
+```dart
+// 미디에이션 정보 조회 (EBPMediationListener -> onNext or onEmpty)
+_mediationManager.nextMediation();
+```
+
+> **타사 광고 요청 후 광고가 없거나 오류가 발생하면 미디에이션 다음 순서를 호출해주세요.**
+> ```
+> _mediationManager.loadMediation();
+> ```
+
+> **미디에이션 목록이 비어있다면 광고없음 처리를 해주세요.** 
+
+

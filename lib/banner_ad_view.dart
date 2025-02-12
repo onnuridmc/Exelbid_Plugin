@@ -86,7 +86,7 @@ class EBBannerAdViewState extends State<EBBannerAdView> {
         throw MissingPluginException('No MethodChannel : $method');
       }
     } catch (e) {
-      debugPrint('Error MethodChannel ${call.method} (${call.arguments}) : $e');
+      debugPrint('Error MethodChannel ${call.method} : $e');
     }
   }
 }

@@ -1,7 +1,9 @@
 import 'package:exelbid_plugin_example/banner_ad.dart';
 import 'package:exelbid_plugin_example/interstitial_ad.dart';
-import 'package:exelbid_plugin_example/mediation_banner_ad.dart';
 import 'package:exelbid_plugin_example/native_ad.dart';
+import 'package:exelbid_plugin_example/mediation_banner_ad.dart';
+import 'package:exelbid_plugin_example/mediation_interstitial_ad.dart';
+import 'package:exelbid_plugin_example/mediation_native_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:exelbid_plugin/exelbid_plugin.dart';
 
@@ -92,7 +94,30 @@ class MainScreen extends StatelessWidget {
                       builder: (context) => const MediationBannerAdWidget()),
                 );
               },
-              child: const Text('Go to Mediation Banner  Ad'),
+              child: const Text('Go to Mediation Banner Ad'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const MediationInterstitialAdWidget()),
+                );
+              },
+              child: const Text('Go to Mediation Interstitial Ad'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const MediationNativeAdWidget()),
+                );
+              },
+              child: const Text('Go to Mediation Native Ad'),
             )
           ],
         ),

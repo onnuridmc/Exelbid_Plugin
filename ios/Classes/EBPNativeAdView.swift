@@ -32,7 +32,7 @@ class EBPNativeAdView: NSObject, FlutterPlatformView, EBNativeAdDelegate {
                 self.nativeAdView.setMainImageView(call)
                 result(nil)
             } else if call.method == "setMainVideoView", let args = call.arguments as? [String: Any] {
-                self.nativeAdView.setMainImageView(call)
+                self.nativeAdView.setMainVideoView(call)
                 result(nil)
             } else if call.method == "setIconImageView", let args = call.arguments as? [String: Any] {
                 self.nativeAdView.setIconImageView(call)
@@ -51,7 +51,7 @@ class EBPNativeAdView: NSObject, FlutterPlatformView, EBNativeAdDelegate {
     }
 
     func view() -> UIView {
-        return self.nativeAdView
+        return self.uiView
     }
 
     func loadAd(args: [String: Any]) {

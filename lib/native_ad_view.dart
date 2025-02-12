@@ -11,6 +11,7 @@ const String EB_NATIVE_VIEW_TYPE = "exelbid_plugin/native_ad";
 const String METHOD_SET_TITLE_VIEW = "setTitleView";
 const String METHOD_SET_DESCRIPTION_VIEW = "setDescriptionView";
 const String METHOD_SET_MAIN_IMAGE_VIEW = "setMainImageView";
+const String METHOD_SET_MAIN_VIDEO_VIEW = "setMainVideoView";
 const String METHOD_SET_ICON_IMAGE_VIEW = "setIconImageView";
 const String METHOD_SET_CALL_TO_ACTION_VIEW = "setCallToActionView";
 const String METHOD_SET_PRIVACY_INFORMATION_ICON_IMAGE_VIEW =
@@ -65,6 +66,7 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
   GlobalKey? _titleKey;
   GlobalKey? _descriptionKey;
   GlobalKey? _mainImageKey;
+  GlobalKey? _mainVideoKey;
   GlobalKey? _iconImageKey;
   GlobalKey? _callToActionKey;
   GlobalKey? _privacyInformationIconImageKey;
@@ -131,7 +133,6 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
       if ("onLoadAd" == method) {
         final result = arguments?['native_data'] as Map<dynamic, dynamic>?;
         if (result != null) {
-          print(">>> handleMethodChannel onLoadAd : $result");
           setState(() {
             nativeData = EBNativeData.fromJson(result);
           });
@@ -148,7 +149,7 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
         throw MissingPluginException('No MethodChannel : $method');
       }
     } catch (e) {
-      debugPrint('Error MethodChannel ${call.method} (${call.arguments}) : $e');
+      debugPrint('Error MethodChannel ${call.method} : $e');
     }
   }
 
@@ -156,6 +157,7 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
     updateView(_titleKey, METHOD_SET_TITLE_VIEW);
     updateView(_descriptionKey, METHOD_SET_DESCRIPTION_VIEW);
     updateView(_mainImageKey, METHOD_SET_MAIN_IMAGE_VIEW);
+    updateView(_mainVideoKey, METHOD_SET_MAIN_VIDEO_VIEW);
     updateView(_iconImageKey, METHOD_SET_ICON_IMAGE_VIEW);
     updateView(_callToActionKey, METHOD_SET_CALL_TO_ACTION_VIEW);
     updateView(_privacyInformationIconImageKey,
@@ -318,6 +320,40 @@ class EBNativeAdMainImage extends StatelessWidget {
       child: SizeChangedLayoutNotifier(
         child: Container(
             key: EBNativeState.of(context)._mainImageKey,
+            width: width,
+            height: height),
+      ),
+    );
+  }
+}
+
+class EBNativeAdMainVideo extends StatelessWidget {
+  final double? width;
+  final double? height;
+
+  const EBNativeAdMainVideo({
+    super.key,
+    this.width = double.infinity,
+    this.height = double.infinity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    EBNativeState.of(context)._mainVideoKey =
+        EBNativeState.of(context)._mainVideoKey ?? GlobalKey();
+
+    return NotificationListener<SizeChangedLayoutNotification>(
+      onNotification: (SizeChangedLayoutNotification notification) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          EBNativeState.of(context).updateView(
+              EBNativeState.of(context)._mainVideoKey,
+              METHOD_SET_MAIN_VIDEO_VIEW);
+        });
+        return false;
+      },
+      child: SizeChangedLayoutNotifier(
+        child: Container(
+            key: EBNativeState.of(context)._mainVideoKey,
             width: width,
             height: height),
       ),

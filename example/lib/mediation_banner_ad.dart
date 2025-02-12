@@ -50,7 +50,7 @@ class _MediationBannerAdState extends State<MediationBannerAdWidget> {
           },
           onEmpty: () {
             print(">>> onEmpty");
-            // 미디에이션 순회 완료 처리
+            // 미디에이션 목록이 비었을 경우 (순회 완료, 목록 없음)
             setState(() {
               _isShowButton = false;
             });
@@ -143,6 +143,8 @@ class _MediationBannerAdState extends State<MediationBannerAdWidget> {
           },
           onFailAd: (String? errorMessage) {
             print("Banner onFailAd");
+            // 에러 또는 광고 없을 시 다음 미디에이션 요청
+            _mediationManager.nextMediation();
           },
           onClickAd: () {
             print("Banner onClickAd");
