@@ -155,9 +155,7 @@ class _MediationNativeAdState extends State<MediationNativeAdWidget> {
             ),
             SizedBox(width: 10),
             Expanded(
-              child: EBNativeAdTtitle(
-                height: 48,
-              ),
+              child: EBNativeAdTtitle(),
             ),
           ]),
           const SizedBox(height: 10),

@@ -18,9 +18,8 @@ Flutter Plugin 가이드입니다.
 - [미디에이션](#미디에이션)
 
 # Version History
-### Version 1.0.3
-- 네이티브 광고, 미디에이션 추가
-- README.md 업데이트
+## 1.0.4
+- 기타 버그 수정
 
 <br/>
 
@@ -173,11 +172,12 @@ import AppTrackingTransparency
 <br/>
 
 ```dart
-EBBannerAdView({super.key,
-                required this.adUnitId,
-                this.isFullWebView,
-                this.coppa,
-                this.listener});
+EBBannerAdView {
+    final String adUnitId;
+    final bool? isFullWebView;
+    final bool? coppa;
+    final bool? isTest;
+}
 ```
 
 #### 예시)
@@ -265,7 +265,7 @@ Future<void> loadInterstitial({
     required String adUnitId,
     bool? coppa,
     bool? isTest
-  })
+})
 ```
 
 #### 예시)
@@ -292,13 +292,14 @@ ExelbidPlugin.shared.showInterstitial();
 |nativeAssets|EBNativeAssets?|null|네이티브 광고 요청 시 필요한 항목들을 요청합니다.|
 
 ```dart
-EBNativeAdView({super.key,
-                required this.child,
-                required this.adUnitId,
-                this.nativeAssets,
-                this.coppa,
-                this.isTest,
-                this.listener});
+EBNativeAdView {
+    final Widget child;
+    final String adUnitId;
+    final List<String>? nativeAssets;
+    final bool? coppa;
+    final bool? isTest;
+    final EBPNativeAdViewListener? listener;
+};
 ```
 
 #### 네이티브 광고 속성
@@ -344,46 +345,63 @@ EBNativeAdView(
 )
 ```
 
+<br/>
+
 ### 네이티브 광고 UI
 네이티브 광고 뷰 설정 시 아래 내용을 참고하여  
 asset이 설정될 객체를 포함하여 구형하여야 합니다.
 
 #### 네이티브 제목
 ```dart
-EBNativeAdTtitle(
-      {super.key,
-      this.width = double.infinity,
-      this.height = double.infinity,
-      this.style,
-      this.textAlign,
-      this.softWrap,
-      this.overflow,
-      this.maxLines})
+EBNativeAdTtitle {
+    final TextStyle? style;
+    final TextAlign? textAlign;
+    final bool? softWrap;
+    final TextOverflow? overflow;
+    final int? maxLines;
+}
 ```
 
 #### 네이티브 설명
 ```dart
-EBNativeAdDescription
+EBNativeAdDescription {
+    final TextStyle? style;
+    final TextAlign? textAlign;
+    final bool? softWrap;
+    final TextOverflow? overflow;
+    final int? maxLines;
+}
 ```
 
 #### 네이티브 메인 이미지
 ```dart
-EBNativeAdMainImage
+EBNativeAdMainImage {
+    final double? width;
+    final double? height;
+}
 ```
 
 #### 네이티브 아이콘 이미지
 ```dart
-EBNativeAdIconImage
+EBNativeAdIconImage{
+    final double? width;
+    final double? height;
+}
 ```
 
 #### 네이티브 액션 버튼
 ```dart
-EBNativeAdCallToAction
+EBNativeAdCallToAction {
+    final ButtonStyle? style;
+}
 ```
 
 #### 온라인 맞춤형 광고 개인정보보호 가이드라인 아이콘
 ```dart
-EBNativeAdPrivacyInformationIconImage
+EBNativeAdPrivacyInformationIconImage {
+    final double? width;
+    final double? height;
+}
 ```
 
 > 2017/07 방송통신위원회에서 시행되는 '온라인 맞춤형 광고 개인정보보호 가이드라인' 에 따라서 필수 적용 되어야 합니다.  
@@ -393,68 +411,64 @@ EBNativeAdPrivacyInformationIconImage
 
 #### 예시)
 ```dart
-Column(
-    children: [
-        // 상단 이미지 및 텍스트 영역
-        const Row(children: [
-            SizedBox(
-                width: 48,
-                height: 48,
-                child: Center(
-                    child: EBNativeAdIconImage(),
-                ),
-            ),
-            SizedBox(width: 10),
-                Expanded(
-                child: EBNativeAdTtitle(
-                    height: 48,
-                ),
-            ),
-        ]),
-        const SizedBox(height: 10),
-        // 메인 이미지 뷰
-        const Expanded(
+Column(children: [
+    // 상단 이미지 및 텍스트 영역
+    const Row(children: [
+        SizedBox(
+        width: 48,
+        height: 48,
+        child: Center(
+            child: EBNativeAdIconImage(),
+        ),
+        ),
+        SizedBox(width: 10),
+        Expanded(
+        child: EBNativeAdTtitle(),
+        ),
+    ]),
+    const SizedBox(height: 10),
+    // 메인 이미지 뷰
+    const Expanded(
         child: SizedBox(
-            width: double.infinity,
-            child: Center(
-                child: Stack(children: [
-                    EBNativeAdMainImage(),
-                    Positioned(
-                        right: 10,
-                        top: 10,
-                        child:
-                            EBNativeAdPrivacyInformationIconImage(
-                        width: 20,
-                        height: 20,
-                        ),
-                    ),
-                ]),
-            ),
-        ),
-        ),
-        const SizedBox(height: 10),
-        // 버튼 영역
-        Align(
-            alignment: Alignment.bottomRight,
-            child: Container(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10, horizontal: 20),
-                child: const EBNativeAdCallToAction(
-                    style: ButtonStyle(
-                        backgroundColor: WidgetStatePropertyAll<Color>(
-                            Colors.white
-                        ),
-                        textStyle: WidgetStatePropertyAll<TextStyle>(
-                            TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold
-                            )
-                        ),
-                    ),
+        width: double.infinity,
+        child: Center(
+            child: Stack(children: [
+            EBNativeAdMainImage(),
+            Positioned(
+                right: 10,
+                top: 10,
+                child:
+                    EBNativeAdPrivacyInformationIconImage(
+                width: 20,
+                height: 20,
                 ),
             ),
+            ]),
         ),
-    ])
+        ),
+    ),
+    const SizedBox(height: 10),
+    // 버튼 영역
+    Align(
+        alignment: Alignment.bottomRight,
+        child: Container(
+        padding: const EdgeInsets.symmetric(
+            vertical: 10, horizontal: 20),
+        child: const EBNativeAdCallToAction(
+            style: ButtonStyle(
+            backgroundColor:
+                WidgetStatePropertyAll<Color>(
+                    Colors.white),
+            textStyle:
+                WidgetStatePropertyAll<TextStyle>(
+                    TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold)),
+            ),
+        ),
+        ),
+    ),
+])
 ```
 
 <br/>
@@ -497,40 +511,44 @@ Exelbid Plugin을 이용한 Mediation 연동의 경우,
 
 ## 미디에이션 설정 및 요청
 
-### 미디에이션 인스턴스 선언
+### 미디에이션 인스턴스
 ```dart
-EBMediationManager _mediationManager
+EBMediationManager {
+    final String mediationUnitId;
+    final List<String> mediationTypes;
+    final EBPMediationListener listener;
+}
 ```
 
 ### 미디에이션 인스턴스 초기화
 ```dart
 _mediationManager = EBMediationManager(
-        mediationUnitId: "<<Mediation Unit ID>>",
-        mediationTypes: [
-          EBMediationTypes.exelbid,
-          // 사용할 미디에이션 네트워크 추가
-        ],
-        listener: EBPMediationListener(
-          onLoad: () {
+    mediationUnitId: "<<Mediation Unit ID>>",
+    mediationTypes: [
+        EBMediationTypes.exelbid,
+        // 사용할 미디에이션 네트워크 추가
+    ],
+    listener: EBPMediationListener(
+        onLoad: () {
             // 미디에이션 목록 조회 성공
-          },
-          onError: (EBError error) {
+        },
+        onError: (EBError error) {
             // 미디에이션 에러, 예외 처리 (광고 없음 처리)
-          },
-          onEmpty: () {
+        },
+        onEmpty: () {
             // 미디에이션 목록이 없거 순회를 완료했을 경우 (광고 없음 처리)
-          },
-          onNext: (EBMediation mediation) {
+        },
+        onNext: (EBMediation mediation) {
             // 사용할 미디에이션 네트워크 체크 후 광고 요청
             if (mediation.networkId == EBMediationTypes.exelbid) {
-              // 전달받은 unitId로 networkId에 맞게 광고 요청
+                // 전달받은 unitId로 networkId에 맞게 광고 요청
             } else {
-              // 매칭되는 네트워크가 없으면 다음 미디에이션 요청
-              _mediationManager.nextMediation();
+                // 매칭되는 네트워크가 없으면 다음 미디에이션 요청
+                _mediationManager.nextMediation();
             }
-          },
-        ));
-  }
+        },
+    ),
+);
 ```
 
 ### 미디에이션 콜백 리스너

@@ -28,46 +28,47 @@ class _MediationBannerAdState extends State<MediationBannerAdWidget> {
   _MediationBannerAdState() {
     // 미디에이션 초기화
     _mediationManager = EBMediationManager(
-        mediationUnitId: _mediationUnitId,
-        mediationTypes: [
-          EBMediationTypes.exelbid,
-          // 사용할 미디에이션 네트워크 추가
-        ],
-        listener: EBPMediationListener(
-          onLoad: () {
-            // 미디에이션 목록 조회 성공
-            setState(() {
-              _isShowButton = true;
-            });
-            print(">>> onLoad");
-          },
-          onError: (EBError error) {
-            // 미디에이션 에러, 예외 처리
-            setState(() {
-              _isShowButton = false;
-            });
-            print(">>> onError : $error");
-          },
-          onEmpty: () {
-            print(">>> onEmpty");
-            // 미디에이션 목록이 비었을 경우 (순회 완료, 목록 없음)
-            setState(() {
-              _isShowButton = false;
-            });
-          },
-          onNext: (EBMediation mediation) {
-            // 사용할 미디에이션 네트워크 체크 후 광고 요청
-            if (mediation.networkId == EBMediationTypes.exelbid) {
-              // 전달받은 unitId로 해당 네트워크 광고 요청
-              loadExelbid(mediation.unitId);
-            } else {
-              // 매칭되는 네트워크가 없으면 다음 미디에이션 요청
-              _mediationManager.nextMediation();
-            }
+      mediationUnitId: _mediationUnitId,
+      mediationTypes: [
+        EBMediationTypes.exelbid,
+        // 사용할 미디에이션 네트워크 추가
+      ],
+      listener: EBPMediationListener(
+        onLoad: () {
+          // 미디에이션 목록 조회 성공
+          setState(() {
+            _isShowButton = true;
+          });
+          print(">>> onLoad");
+        },
+        onError: (EBError error) {
+          // 미디에이션 에러, 예외 처리
+          setState(() {
+            _isShowButton = false;
+          });
+          print(">>> onError : $error");
+        },
+        onEmpty: () {
+          print(">>> onEmpty");
+          // 미디에이션 목록이 비었을 경우 (순회 완료, 목록 없음)
+          setState(() {
+            _isShowButton = false;
+          });
+        },
+        onNext: (EBMediation mediation) {
+          // 사용할 미디에이션 네트워크 체크 후 광고 요청
+          if (mediation.networkId == EBMediationTypes.exelbid) {
+            // 전달받은 unitId로 해당 네트워크 광고 요청
+            loadExelbid(mediation.unitId);
+          } else {
+            // 매칭되는 네트워크가 없으면 다음 미디에이션 요청
+            _mediationManager.nextMediation();
+          }
 
-            print(">>> onNext");
-          },
-        ));
+          print(">>> onNext");
+        },
+      ),
+    );
   }
 
   @override

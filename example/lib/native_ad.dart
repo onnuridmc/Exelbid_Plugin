@@ -52,7 +52,6 @@ class _NativeAdState extends State<NativeAdWidget> {
                   child: _isShow
                       ? EBNativeAdView(
                           adUnitId: _adUnitId,
-                          isTest: true,
                           nativeAssets: const [
                             EBNativeAssets.title,
                             EBNativeAssets.main,
@@ -78,9 +77,7 @@ class _NativeAdState extends State<NativeAdWidget> {
                               ),
                               SizedBox(width: 10),
                               Expanded(
-                                child: EBNativeAdTtitle(
-                                  height: 48,
-                                ),
+                                child: EBNativeAdTtitle(),
                               ),
                             ]),
                             const SizedBox(height: 10),

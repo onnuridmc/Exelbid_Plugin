@@ -7,7 +7,6 @@ const String EB_BANNER_VIEW_TYPE = "exelbid_plugin/banner_ad";
 
 class EBBannerAdView extends StatefulWidget {
   final String adUnitId;
-
   final bool? isFullWebView;
   final bool? coppa;
   final bool? isTest;

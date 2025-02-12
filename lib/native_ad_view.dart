@@ -204,8 +204,6 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
 }
 
 class EBNativeAdTtitle extends StatelessWidget {
-  final double? width;
-  final double? height;
   final TextStyle? style;
   final TextAlign? textAlign;
   final bool? softWrap;
@@ -214,8 +212,6 @@ class EBNativeAdTtitle extends StatelessWidget {
 
   const EBNativeAdTtitle(
       {super.key,
-      this.width = double.infinity,
-      this.height = double.infinity,
       this.style,
       this.textAlign,
       this.softWrap,
@@ -251,8 +247,6 @@ class EBNativeAdTtitle extends StatelessWidget {
 }
 
 class EBNativeAdDescription extends StatelessWidget {
-  final double? width;
-  final double? height;
   final TextStyle? style;
   final TextAlign? textAlign;
   final bool? softWrap;
@@ -261,8 +255,6 @@ class EBNativeAdDescription extends StatelessWidget {
 
   const EBNativeAdDescription(
       {super.key,
-      this.width = double.infinity,
-      this.height = double.infinity,
       this.style,
       this.textAlign,
       this.softWrap,
@@ -287,6 +279,11 @@ class EBNativeAdDescription extends StatelessWidget {
         child: Text(
           EBNativeState.of(context).nativeData?.description ?? '',
           key: EBNativeState.of(context)._descriptionKey,
+          style: style,
+          textAlign: textAlign,
+          softWrap: softWrap,
+          overflow: overflow,
+          maxLines: maxLines,
         ),
       ),
     );

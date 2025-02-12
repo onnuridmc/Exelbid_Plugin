@@ -17,7 +17,7 @@ class _MediationInterstitialAdState
     extends State<MediationInterstitialAdWidget> {
   final String _mediationUnitId =
       defaultTargetPlatform == TargetPlatform.android
-          ? "94ed378f4b99783cf9ff15e1f428bd2250191cc4"
+          ? "615217b82a648b795040baee8bc81986a71d0eb7"
           : "615217b82a648b795040baee8bc81986a71d0eb7";
   bool _isLoadButton = true;
   bool _isShowButton = false;
