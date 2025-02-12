@@ -24,7 +24,7 @@ Flutter Plugin 가이드입니다.
 
 <br/>
 
-[**Old Version History**](./VersionHistory.md)
+[**Old Version History**](./CHANGELOG.md)
 
 <br/><br/>
 
