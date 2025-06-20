@@ -1,3 +1,4 @@
+import 'package:exelbid_plugin/ad_classes.dart';
 import 'package:exelbid_plugin/ad_listener.dart';
 import 'package:exelbid_plugin/banner_ad_view.dart';
 import 'package:flutter/foundation.dart';
@@ -48,9 +49,10 @@ class _BannerAdState extends State<BannerAdWidget> {
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).padding.bottom,
                     ),
-                    child: SizedBox(
+                    child: Container(
                       width: 320,
                       height: 50,
+                      color: Colors.grey,
                       child: _isShow
                           ? EBBannerAdView(
                               adUnitId: _adUnitId,
@@ -60,10 +62,23 @@ class _BannerAdState extends State<BannerAdWidget> {
                                 },
                                 onFailAd: (String? errorMessage) {
                                   print("Banner onFailAd");
+                                  _isShow = false;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content:
+                                          Text(errorMessage ?? "에러가 발생했습니다."),
+                                      duration: const Duration(seconds: 3),
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
                                 },
                                 onClickAd: () {
                                   print("Banner onClickAd");
                                 },
+                              ),
+                              styles: EBViewStyle(
+                                backgroundColor: Colors.blueGrey[100],
+                                borderRadius: 20,
                               ),
                             )
                           : null,

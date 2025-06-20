@@ -145,7 +145,7 @@ class _MediationNativeAdState extends State<MediationNativeAdWidget> {
         }),
         child: Column(children: [
           // 상단 이미지 및 텍스트 영역
-          const Row(children: [
+          Row(children: [
             SizedBox(
               width: 48,
               height: 48,
@@ -153,14 +153,14 @@ class _MediationNativeAdState extends State<MediationNativeAdWidget> {
                 child: EBNativeAdIconImage(),
               ),
             ),
-            SizedBox(width: 10),
+            const SizedBox(width: 10),
             Expanded(
-              child: EBNativeAdTtitle(),
+              child: EBNativeAdTitle(),
             ),
           ]),
           const SizedBox(height: 10),
           // 메인 이미지 뷰
-          const Expanded(
+          Expanded(
             child: SizedBox(
               width: double.infinity,
               child: Center(
@@ -184,13 +184,7 @@ class _MediationNativeAdState extends State<MediationNativeAdWidget> {
             alignment: Alignment.bottomRight,
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              child: const EBNativeAdCallToAction(
-                style: ButtonStyle(
-                  backgroundColor: WidgetStatePropertyAll<Color>(Colors.white),
-                  textStyle: WidgetStatePropertyAll<TextStyle>(
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                ),
-              ),
+              child: EBNativeAdCallToAction(),
             ),
           ),
         ]),

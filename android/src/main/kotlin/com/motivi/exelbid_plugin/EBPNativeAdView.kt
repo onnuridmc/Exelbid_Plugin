@@ -1,9 +1,10 @@
 package com.motivi.exelbid_plugin
 
 import android.content.Context
-import android.util.Log
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.View
-import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.BinaryMessenger
@@ -20,40 +21,28 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
     private lateinit var nativeAd: ExelBidNative
 
     init {
-        channel.setMethodCallHandler { call, result ->
-            when (call.method) {
-                "setTitleView" -> {
-                    nativeAdView.setTitleView(call)
-                    result.success(null)
+        channel.setMethodCallHandler(this::onMethodCall)
+
+        (creationParams?.get("styles") as? Map<String, Any>)?.let { styles ->
+            val backgroundColor = styles["background_color"] as String?
+            val borderRadius = styles["border_radius"] as Double?
+
+            val drawable = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                backgroundColor?.let {
+                    setColor(Color.parseColor(it))
                 }
-                "setDescriptionView" -> {
-                    nativeAdView.setDescriptionView(call)
-                    result.success(null)
+                borderRadius.let {
+                    cornerRadius = it?.toFloat() ?: 0f
                 }
-                "setMainImageView" -> {
-                    nativeAdView.setMainImageView(call)
-                    result.success(null)
-                }
-                "setMainVideoView" -> {
-                    nativeAdView.setMainVideoView(call)
-                    result.success(null)
-                }
-                "setIconImageView" -> {
-                    nativeAdView.setIconImageView(call)
-                    result.success(null)
-                }
-                "setCallToActionView" -> {
-                    nativeAdView.setCallToActionView(call)
-                    result.success(null)
-                }
-                "setPrivacyInformationIconImage" -> {
-                    nativeAdView.setPrivacyInformationIconImage(call)
-                    result.success(null)
-                }
-                "loadAd" -> {
-                    loadAd(call)
-                }
-                else -> result.notImplemented()
+            }
+
+            nativeAdView.apply {
+                clipChildren = true
+                clipToPadding = true
+                outlineProvider = ViewOutlineProvider.BACKGROUND
+                clipToOutline = true
+                background = drawable
             }
         }
     }
@@ -127,6 +116,43 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
 
     private fun convertListToNativeAssetArray(strings: List<String>): Array<NativeAsset> {
         return strings.mapNotNull { str -> NativeAsset.values().firstOrNull { it.name == str } }.toTypedArray()
+    }
+
+    private fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        when (call.method) {
+            "setTitleView" -> {
+                nativeAdView.setTitleView(call)
+                result.success(null)
+            }
+            "setDescriptionView" -> {
+                nativeAdView.setDescriptionView(call)
+                result.success(null)
+            }
+            "setMainImageView" -> {
+                nativeAdView.setMainImageView(call)
+                result.success(null)
+            }
+            "setMainVideoView" -> {
+                nativeAdView.setMainVideoView(call)
+                result.success(null)
+            }
+            "setIconImageView" -> {
+                nativeAdView.setIconImageView(call)
+                result.success(null)
+            }
+            "setCallToActionView" -> {
+                nativeAdView.setCallToActionView(call)
+                result.success(null)
+            }
+            "setPrivacyInformationIconImage" -> {
+                nativeAdView.setPrivacyInformationIconImage(call)
+                result.success(null)
+            }
+            "loadAd" -> {
+                loadAd(call)
+            }
+            else -> result.notImplemented()
+        }
     }
 
 }

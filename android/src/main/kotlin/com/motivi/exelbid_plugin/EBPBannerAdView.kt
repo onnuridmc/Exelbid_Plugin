@@ -1,9 +1,11 @@
 package com.motivi.exelbid_plugin
 
 import android.content.Context
-import android.text.TextUtils
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.util.Log
 import android.view.View
+import android.view.ViewOutlineProvider
 import android.widget.LinearLayout
 import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.common.MethodChannel
@@ -23,8 +25,29 @@ class EBPBannerAdView(context: Context, id: Int, creationParams: Map<String?, An
         val isFullWebView = creationParams?.get("is_full_web_view") as? Boolean ?: true
         val coppa = creationParams?.get("coppa") as? Boolean ?: true
         val isTest = creationParams?.get("is_test") as? Boolean ?: false
+        val styles = creationParams?.get("styles") as? Map<String, Any>
+        val backgroundColor = styles?.get("background_color") as String?
+        val borderRadius = styles?.get("border_radius") as Double?
 
         channel = MethodChannel(messenger, "${METHOD_CHANNEL_VIEW_ID}_${id}")
+
+        val drawable = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            backgroundColor?.let {
+                setColor(Color.parseColor(it))
+            }
+            borderRadius.let {
+                cornerRadius = it?.toFloat() ?: 0f
+            }
+        }
+
+        bannerView.apply {
+            clipChildren = true
+            clipToPadding = true
+            outlineProvider = ViewOutlineProvider.BACKGROUND
+            clipToOutline = true
+            background = drawable
+        }
 
         adView = ExelBidAdView(context)
         adView.setAdUnitId(adUnitId)

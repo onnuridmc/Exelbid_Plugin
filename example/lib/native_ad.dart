@@ -18,6 +18,11 @@ class _NativeAdState extends State<NativeAdWidget> {
   bool _isShow = false;
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -58,6 +63,9 @@ class _NativeAdState extends State<NativeAdWidget> {
                             EBNativeAssets.icon,
                             EBNativeAssets.ctatext,
                           ],
+                          styles: const EBViewStyle(
+                            borderRadius: 20,
+                          ),
                           listener: EBPNativeAdViewListener(onLoadAd: () {
                             print("Native onLoadAd");
                           }, onFailAd: (String? errorMessage) {
@@ -66,39 +74,59 @@ class _NativeAdState extends State<NativeAdWidget> {
                             print("Native onClickAd");
                           }),
                           child: Column(children: [
-                            // 상단 이미지 및 텍스트 영역
-                            const Row(children: [
-                              SizedBox(
-                                width: 48,
-                                height: 48,
-                                child: Center(
-                                  child: EBNativeAdIconImage(),
-                                ),
-                              ),
-                              SizedBox(width: 10),
-                              Expanded(
-                                child: EBNativeAdTtitle(),
-                              ),
-                            ]),
-                            const SizedBox(height: 10),
-                            // 메인 이미지 뷰
-                            const Expanded(
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: Center(
-                                  child: Stack(children: [
-                                    EBNativeAdMainImage(),
-                                    Positioned(
-                                      right: 10,
-                                      top: 10,
-                                      child:
-                                          EBNativeAdPrivacyInformationIconImage(
-                                        width: 20,
-                                        height: 20,
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              child: // 상단 이미지 및 텍스트 영역
+                                  Row(children: [
+                                SizedBox(
+                                  width: 48,
+                                  height: 48,
+                                  child: Center(
+                                    child: EBNativeAdIconImage(
+                                      styles: EBImageStyle(
+                                        backgroundColor: Colors.grey[300],
+                                        borderRadius: 20,
                                       ),
                                     ),
-                                  ]),
+                                  ),
                                 ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: SizedBox(
+                                    child: EBNativeAdTitle(
+                                      styles: const EBTextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                            ),
+                            const SizedBox(height: 10),
+                            // 메인 이미지 뷰
+                            Expanded(
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: double.infinity,
+                                child: Stack(children: [
+                                  Center(
+                                    child: EBNativeAdMainImage(
+                                      styles: EBImageStyle(
+                                        backgroundColor: Colors.grey[300],
+                                        borderRadius: 10,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 10,
+                                    top: 10,
+                                    child:
+                                        EBNativeAdPrivacyInformationIconImage(
+                                      width: 20,
+                                      height: 20,
+                                    ),
+                                  ),
+                                ]),
                               ),
                             ),
                             const SizedBox(height: 10),
@@ -106,18 +134,15 @@ class _NativeAdState extends State<NativeAdWidget> {
                             Align(
                               alignment: Alignment.bottomRight,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 10, horizontal: 20),
-                                child: const EBNativeAdCallToAction(
-                                  style: ButtonStyle(
-                                    backgroundColor:
-                                        WidgetStatePropertyAll<Color>(
-                                            Colors.white),
-                                    textStyle:
-                                        WidgetStatePropertyAll<TextStyle>(
-                                            TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold)),
+                                padding: const EdgeInsets.only(
+                                    top: 10, bottom: 10, right: 10),
+                                child: EBNativeAdCallToAction(
+                                  styles: const EBButtonStyle(
+                                    color: Colors.white,
+                                    backgroundColor: Colors.lightBlue,
+                                    borderRadius: 10,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),

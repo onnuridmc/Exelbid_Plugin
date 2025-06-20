@@ -18,8 +18,8 @@ Flutter Plugin 가이드입니다.
 - [미디에이션](#미디에이션)
 
 # Version History
-## 1.0.4
-- 기타 버그 수정
+## 1.1.0
+- Banner, Native 내 스타일 추가
 
 <br/>
 

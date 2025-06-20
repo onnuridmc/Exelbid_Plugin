@@ -1,3 +1,4 @@
+import 'package:exelbid_plugin/ad_classes.dart';
 import 'package:exelbid_plugin/ad_listener.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ class EBBannerAdView extends StatefulWidget {
   final bool? isFullWebView;
   final bool? coppa;
   final bool? isTest;
+  final EBViewStyle? styles;
 
   final EBPBannerAdViewListener? listener;
 
@@ -19,6 +21,7 @@ class EBBannerAdView extends StatefulWidget {
       this.isFullWebView,
       this.coppa,
       this.isTest,
+      this.styles,
       this.listener});
 
   /// @nodoc
@@ -60,7 +63,8 @@ class EBBannerAdViewState extends State<EBBannerAdView> {
       "ad_unit_id": widget.adUnitId,
       "is_full_web_view": widget.isFullWebView,
       "coppa": widget.coppa,
-      "is_test": widget.isTest
+      "is_test": widget.isTest,
+      "styles": widget.styles?.toMap()
     };
   }
 

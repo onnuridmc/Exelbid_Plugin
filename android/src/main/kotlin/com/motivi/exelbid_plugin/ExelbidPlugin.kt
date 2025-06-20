@@ -24,7 +24,7 @@ const val METHOD_CHANNEL_VIEW_ID = "exelbid_plugin/banner_ad"
 const val METHOD_CHANNEL_NATIVE_VIEW_ID = "exelbid_plugin/native_ad"
 const val METHOD_CHANNEL_MEDIATION_ID = "exelbid_plugin/mediation"
 
-public class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
+class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     companion object {
         lateinit var channel : MethodChannel
@@ -42,6 +42,8 @@ public class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         channel.setMethodCallHandler(this)
 
         context = flutterPluginBinding.applicationContext
+
+        // Exelbid View Factory
         flutterPluginBinding.platformViewRegistry.registerViewFactory(METHOD_CHANNEL_VIEW_ID, EBPBannerAdViewFactory(flutterPluginBinding.binaryMessenger))
         flutterPluginBinding.platformViewRegistry.registerViewFactory(METHOD_CHANNEL_NATIVE_VIEW_ID, EBPNativeAdViewFactory(flutterPluginBinding.binaryMessenger))
     }
@@ -192,6 +194,7 @@ class EBPMediation(
         currentMediationPair?.let { pair ->
             val networkId: MediationType = pair.first
             val unitId: String = pair.second
+
             result.success(mapOf("network_id" to networkId.toString(), "unit_id" to unitId))
         } ?: result.success(null)
     }

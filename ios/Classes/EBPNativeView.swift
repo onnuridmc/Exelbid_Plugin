@@ -3,13 +3,13 @@ import Flutter
 import ExelBidSDK
 
 class EBPNativeView : UIView, EBNativeAdRendering {
-    var titleView: UILabel!
-    var descriptionView: UILabel!
-    var mainImageView: UIImageView!
-    var mainVideoView: UIView!
-    var iconImageView: UIImageView!
-    var callToActionView: UILabel!
-    var privacyInformationIconImageView: UIImageView!
+    var titleView: UILabel?
+    var descriptionView: UILabel?
+    var mainImageView: UIImageView?
+    var mainVideoView: UIView?
+    var iconImageView: UIImageView?
+    var callToActionView: UILabel?
+    var privacyInformationIconImageView: UIImageView?
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -22,71 +22,217 @@ class EBPNativeView : UIView, EBNativeAdRendering {
     func setTitleView(_ call: FlutterMethodCall) {
         if self.titleView == nil {
             self.titleView = UILabel();
-
-            self.addSubview(self.titleView) 
+            self.addSubview(self.titleView!)
         }
 
-        self.titleView?.frame = getCGRact(call)
+        if let view = self.titleView {
+            view.frame = getCGRact(call)
+            view.backgroundColor = .clear
+
+            if let arg = call.arguments as? [String: Any], let styles = arg["styles"] as? [String: Any] {
+                
+                if let color = styles["color"] as? String {
+                    view.textColor = UIColor(hex: color)
+                }
+                
+                if let background_color = styles["background_color"] as? String {
+                    view.backgroundColor = UIColor(hex: background_color)
+                }
+                
+                if let font_size = styles["font_size"] as? CGFloat {
+                    view.font = UIFont.systemFont(ofSize: font_size)
+                }
+                
+                if let font_weight = styles["font_weight"] as? String {
+                    view.font = UIFont.systemFont(ofSize: view.font.pointSize, weight: font_weight.toUIFontWeight())
+                }
+            }
+        }
     }
 
     func setDescriptionView(_ call: FlutterMethodCall) {
         if self.descriptionView == nil {
             self.descriptionView = UILabel();
-
-            self.addSubview(self.descriptionView) 
+            self.addSubview(self.descriptionView!)
         }
 
-        self.descriptionView?.frame = getCGRact(call)
+        if let view = self.descriptionView {
+            view.frame = getCGRact(call)
+            view.backgroundColor = .clear
+
+            if let arg = call.arguments as? [String: Any], let styles = arg["styles"] as? [String: Any] {
+                
+                if let color = styles["color"] as? String {
+                    view.textColor = UIColor(hex: color)
+                }
+                
+                if let background_color = styles["background_color"] as? String {
+                    view.backgroundColor = UIColor(hex: background_color)
+                }
+                
+                if let font_size = styles["font_size"] as? CGFloat {
+                    view.font = UIFont.systemFont(ofSize: font_size)
+                }
+                
+                if let font_weight = styles["font_weight"] as? String {
+                    view.font = UIFont.systemFont(ofSize: view.font.pointSize, weight: font_weight.toUIFontWeight()) // 원하는 weight로 변경
+                }
+            }
+        }
     }
 
     func setMainImageView(_ call: FlutterMethodCall) {
         if self.mainImageView == nil {
             self.mainImageView = UIImageView();
-
-            self.addSubview(self.mainImageView) 
+            self.addSubview(self.mainImageView!)
         }
-
-        self.mainImageView?.frame = getCGRact(call)
+        
+        if let view = self.mainImageView {
+            view.frame = getCGRact(call)
+            view.clipsToBounds = true
+            view.backgroundColor = .clear
+            
+            if let arg = call.arguments as? [String: Any], let styles = arg["styles"] as? [String: Any] {
+                
+                let object_fit = styles["object_fit"] as? String
+                view.contentMode = object_fit == "fill" ? .scaleAspectFill : .scaleAspectFit
+                
+                if let background_color = styles["background_color"] as? String {
+                    view.backgroundColor = UIColor(hex: background_color)
+                }
+                
+                if let border_radius = styles["border_radius"] as? NSNumber {
+                    view.layer.cornerRadius = CGFloat(border_radius.doubleValue)
+                } else {
+                    view.layer.cornerRadius = 0
+                }
+            }
+        }
     }
 
     func setMainVideoView(_ call: FlutterMethodCall) {
         if self.mainVideoView == nil {
             self.mainVideoView = UIView();
-
-            self.addSubview(self.mainVideoView) 
+            self.addSubview(self.mainVideoView!)
         }
 
-        self.mainVideoView?.frame = getCGRact(call)
+        if let view = self.mainVideoView {
+            view.frame = getCGRact(call)
+            view.clipsToBounds = true
+            view.backgroundColor = .clear
+            
+            if let arg = call.arguments as? [String: Any], let styles = arg["styles"] as? [String: Any] {
+
+                if let background_color = styles["background_color"] as? String {
+                    view.backgroundColor = UIColor(hex: background_color)
+                }
+                
+                if let border_radius = styles["border_radius"] as? NSNumber {
+                    view.layer.cornerRadius = CGFloat(border_radius.doubleValue)
+                } else {
+                    view.layer.cornerRadius = 0
+                }
+            }
+        }
     }
 
     func setIconImageView(_ call: FlutterMethodCall) {
         if self.iconImageView == nil {
             self.iconImageView = UIImageView();
-
-            self.addSubview(self.iconImageView) 
+            self.addSubview(self.iconImageView!)
         }
 
-        self.iconImageView?.frame = getCGRact(call)
+        if let view = self.iconImageView {
+            view.frame = getCGRact(call)
+            view.clipsToBounds = true
+            view.backgroundColor = .clear
+            
+            if let arg = call.arguments as? [String: Any], let styles = arg["styles"] as? [String: Any] {
+                
+                if let object_fit = styles["object_fit"] as? String {
+                    view.contentMode = object_fit == "fill" ? .scaleAspectFill : .scaleAspectFit
+                }
+                
+                if let background_color = styles["background_color"] as? String {
+                    view.backgroundColor = UIColor(hex: background_color)
+                }
+                
+                if let border_radius = styles["border_radius"] as? NSNumber {
+                    view.layer.cornerRadius = CGFloat(border_radius.doubleValue)
+                } else {
+                    view.layer.cornerRadius = 0
+                }
+            }
+        }
     }
 
     func setCallToActionView(_ call: FlutterMethodCall) {
         if self.callToActionView == nil {
             self.callToActionView = UILabel();
-
-            self.addSubview(self.callToActionView) 
+            self.addSubview(self.callToActionView!)
         }
 
-        self.callToActionView?.frame = getCGRact(call)
+        if let view = self.callToActionView {
+            view.frame = getCGRact(call)
+            view.clipsToBounds = true
+            view.textAlignment = .center
+            view.backgroundColor = .clear
+            
+            if let arg = call.arguments as? [String: Any], let styles = arg["styles"] as? [String: Any] {
+                if let color = styles["color"] as? String {
+                    view.textColor = UIColor(hex: color)
+                }
+                
+                if let background_color = styles["background_color"] as? String {
+                    view.backgroundColor = UIColor(hex: background_color)
+                }
+                
+                if let border_radius = styles["border_radius"] as? NSNumber {
+                    view.layer.cornerRadius = CGFloat(border_radius.doubleValue)
+                } else {
+                    view.layer.cornerRadius = 0
+                }
+                
+                if let font_size = styles["font_size"] as? CGFloat {
+                    view.font = UIFont.systemFont(ofSize: font_size)
+                }
+                
+                if let font_weight = styles["font_weight"] as? String {
+                    view.font = UIFont.systemFont(ofSize: view.font.pointSize, weight: font_weight.toUIFontWeight()) // 원하는 weight로 변경
+                }
+            }
+        }
     }
 
     func setPrivacyInformationIconImage(_ call: FlutterMethodCall) {    
         if self.privacyInformationIconImageView == nil {
             self.privacyInformationIconImageView = UIImageView();
-
-            self.addSubview(self.privacyInformationIconImageView) 
+            self.addSubview(self.privacyInformationIconImageView!)
         }
 
-        self.privacyInformationIconImageView?.frame = getCGRact(call)
+        if let view = self.privacyInformationIconImageView {
+            view.frame = getCGRact(call)
+            view.clipsToBounds = true
+            view.backgroundColor = .clear
+            
+            if let arg = call.arguments as? [String: Any], let styles = arg["styles"] as? [String: Any] {
+                if let object_fit = styles["object_fit"] as? String {
+                    view.contentMode = object_fit == "fill" ? .scaleAspectFill : .scaleAspectFit
+                }
+                
+                if let background_color = styles["background_color"] as? String {
+                    view.backgroundColor = UIColor(hex: background_color)
+                } else {
+                    view.backgroundColor = .clear
+                }
+                
+                if let border_radius = styles["border_radius"] as? NSNumber {
+                    view.layer.cornerRadius = CGFloat(border_radius.doubleValue)
+                } else {
+                    view.layer.cornerRadius = 0
+                }
+            }
+        }
     }
     
     func getCGRact(_ call: FlutterMethodCall) -> CGRect {
@@ -102,13 +248,25 @@ class EBPNativeView : UIView, EBNativeAdRendering {
         return CGRect.zero
     }
 
-    // MARK: - EBNativeAdRendering Delegate    
+    // MARK: - EBNativeAdRendering Delegate
+    func nativeMainTextLabel() -> UILabel? {
+        return self.descriptionView
+    }
+
+    func nativeTitleTextLabel() -> UILabel? {
+        return self.titleView
+    }
+
     func nativeIconImageView() -> UIImageView? {
         return iconImageView
     }
     
     func nativeMainImageView() -> UIImageView? {
         return mainImageView
+    }
+    
+    func nativeCallToActionTextLabel() -> UILabel? {
+        return callToActionView
     }
     
     func nativePrivacyInformationIconImageView() -> UIImageView? {

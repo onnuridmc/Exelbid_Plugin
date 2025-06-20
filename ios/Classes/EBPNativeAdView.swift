@@ -22,25 +22,25 @@ class EBPNativeAdView: NSObject, FlutterPlatformView, EBNativeAdDelegate {
 
         self.channel.setMethodCallHandler { [weak self] (call, result) in
             guard let self = self else { return }
-            if call.method == "setTitleView", let args = call.arguments as? [String: Any] {
+            if call.method == "setTitleView" {
                 self.nativeAdView.setTitleView(call)
                 result(nil)
-            } else if call.method == "setDescriptionView", let args = call.arguments as? [String: Any] {
+            } else if call.method == "setDescriptionView" {
                 self.nativeAdView.setDescriptionView(call)
                 result(nil)
-            } else if call.method == "setMainImageView", let args = call.arguments as? [String: Any] {
+            } else if call.method == "setMainImageView" {
                 self.nativeAdView.setMainImageView(call)
                 result(nil)
-            } else if call.method == "setMainVideoView", let args = call.arguments as? [String: Any] {
+            } else if call.method == "setMainVideoView" {
                 self.nativeAdView.setMainVideoView(call)
                 result(nil)
-            } else if call.method == "setIconImageView", let args = call.arguments as? [String: Any] {
+            } else if call.method == "setIconImageView" {
                 self.nativeAdView.setIconImageView(call)
                 result(nil)
-            } else if call.method == "setCallToActionView", let args = call.arguments as? [String: Any] {
+            } else if call.method == "setCallToActionView" {
                 self.nativeAdView.setCallToActionView(call)
                 result(nil)
-            } else if call.method == "setPrivacyInformationIconImage", let args = call.arguments as? [String: Any] {
+            } else if call.method == "setPrivacyInformationIconImage" {
                 self.nativeAdView.setPrivacyInformationIconImage(call)
                 result(nil)
             } else if call.method == "loadAd", let args = call.arguments as? [String: Any] {
@@ -59,6 +59,23 @@ class EBPNativeAdView: NSObject, FlutterPlatformView, EBNativeAdDelegate {
             let coppa = args["coppa"] as? Bool ?? false
             let isTest = args["is_test"] as? Bool ?? false
             let assets = args["native_assets"] as? [String] ?? []
+
+            if let styles = args["styles"] as? [String: Any] {
+                if let background_color = styles["background_color"] as? String {
+                    self.uiView.backgroundColor = UIColor(hex: background_color)
+                }
+
+                if let border_radius = styles["border_radius"]{
+                    var radius: CGFloat = border_radius as? CGFloat ?? 0.0
+                    
+                    if let border_radius = border_radius as? Int {
+                        radius = CGFloat(border_radius)
+                    }
+                    
+                    self.uiView.layer.cornerRadius = radius
+                    self.uiView.clipsToBounds = true
+                }
+            }
 
             let nativeManager = ExelBidNativeManager(adUnitId, nil)
             nativeManager.coppa("\(coppa ? 1 : 0)")

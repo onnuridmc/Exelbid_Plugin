@@ -42,6 +42,7 @@ class EBNativeAdView extends StatefulWidget {
   final List<String>? nativeAssets;
   final bool? coppa;
   final bool? isTest;
+  final EBViewStyle? styles;
 
   final EBPNativeAdViewListener? listener;
 
@@ -53,6 +54,7 @@ class EBNativeAdView extends StatefulWidget {
     this.coppa,
     this.isTest,
     this.listener,
+    this.styles,
   });
 
   @override
@@ -76,6 +78,11 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -114,7 +121,8 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
       "ad_unit_id": widget.adUnitId,
       "native_assets": widget.nativeAssets,
       "coppa": widget.coppa,
-      "is_test": widget.isTest
+      "is_test": widget.isTest,
+      "styles": widget.styles?.toMap()
     };
   }
 
@@ -166,7 +174,10 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
 
   void updateView(GlobalKey? key, String method) {
     if (key == null) return;
-    Rect rect = getViewFrame(key);
+
+    final state = key.currentState as EBNativeAdBaseState?;
+
+    Rect rect = _getViewFrame(state?.rectKey ?? key);
 
     Map<String, dynamic> params;
 
@@ -189,11 +200,20 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
       return;
     }
 
+    if (state != null) {
+      EBBaseStyle? baseStyle = state.widget.baseStyle;
+
+      if (baseStyle != null) {
+        params["styles"] = baseStyle.toMap();
+      }
+    }
+
     _methodChannel?.invokeMethod(method, params);
   }
 
-  Rect getViewFrame(GlobalKey key) {
-    RenderBox? renderBox = key.currentContext?.findRenderObject() as RenderBox?;
+  Rect _getViewFrame(GlobalKey target) {
+    RenderBox? renderBox =
+        target.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return Rect.zero;
     Offset globalOffset = renderBox.localToGlobal(Offset.zero);
     RenderBox nativeRenderBox =
@@ -203,25 +223,47 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
   }
 }
 
-class EBNativeAdTtitle extends StatelessWidget {
-  final TextStyle? style;
-  final TextAlign? textAlign;
-  final bool? softWrap;
-  final TextOverflow? overflow;
-  final int? maxLines;
+abstract class EBNativeAdBaseWidget extends StatefulWidget {
+  final EBBaseStyle? baseStyle;
 
-  const EBNativeAdTtitle(
-      {super.key,
-      this.style,
-      this.textAlign,
-      this.softWrap,
-      this.overflow,
-      this.maxLines});
+  const EBNativeAdBaseWidget({super.key, this.baseStyle});
+}
+
+abstract class EBNativeAdBaseState<T extends EBNativeAdBaseWidget>
+    extends State<T> {
+  GlobalKey rectKey = GlobalKey();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context);
+}
+
+class EBNativeAdTitle extends EBNativeAdBaseWidget {
+  EBNativeAdTitle({
+    Key? key,
+    EBTextStyle? styles,
+  }) : super(
+          key: key ?? GlobalKey(),
+          baseStyle: styles,
+        );
+
+  @override
+  EBNativeAdBaseState<EBNativeAdTitle> createState() => EBNativeAdTitleState();
+}
+
+class EBNativeAdTitleState extends EBNativeAdBaseState<EBNativeAdTitle> {
+  @override
   Widget build(BuildContext context) {
-    EBNativeState.of(context)._titleKey =
-        EBNativeState.of(context)._titleKey ?? GlobalKey();
+    EBNativeState.of(context)._titleKey = widget.key as GlobalKey;
 
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (SizeChangedLayoutNotification notification) {
@@ -232,39 +274,38 @@ class EBNativeAdTtitle extends StatelessWidget {
         return false;
       },
       child: SizeChangedLayoutNotifier(
-        child: Text(
-          EBNativeState.of(context).nativeData?.title ?? '',
-          key: EBNativeState.of(context)._titleKey,
-          style: style,
-          textAlign: textAlign,
-          softWrap: softWrap,
-          overflow: overflow,
-          maxLines: maxLines,
+          child: Text(
+        EBNativeState.of(context).nativeData?.title ?? '',
+        key: rectKey,
+        style: TextStyle(
+          color: Colors.transparent,
+          fontSize: widget.baseStyle?.fontSize,
+          fontWeight: widget.baseStyle?.fontWeight,
         ),
-      ),
+      )),
     );
   }
 }
 
-class EBNativeAdDescription extends StatelessWidget {
-  final TextStyle? style;
-  final TextAlign? textAlign;
-  final bool? softWrap;
-  final TextOverflow? overflow;
-  final int? maxLines;
-
-  const EBNativeAdDescription(
-      {super.key,
-      this.style,
-      this.textAlign,
-      this.softWrap,
-      this.overflow,
-      this.maxLines});
+class EBNativeAdDescription extends EBNativeAdBaseWidget {
+  EBNativeAdDescription({
+    Key? key,
+    EBTextStyle? styles,
+  }) : super(
+          key: key ?? GlobalKey(),
+          baseStyle: styles,
+        );
 
   @override
+  EBNativeAdBaseState<EBNativeAdDescription> createState() =>
+      EBNativeAdDescriptionState();
+}
+
+class EBNativeAdDescriptionState
+    extends EBNativeAdBaseState<EBNativeAdDescription> {
+  @override
   Widget build(BuildContext context) {
-    EBNativeState.of(context)._descriptionKey =
-        EBNativeState.of(context)._descriptionKey ?? GlobalKey();
+    EBNativeState.of(context)._descriptionKey = widget.key as GlobalKey;
 
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (SizeChangedLayoutNotification notification) {
@@ -278,32 +319,42 @@ class EBNativeAdDescription extends StatelessWidget {
       child: SizeChangedLayoutNotifier(
         child: Text(
           EBNativeState.of(context).nativeData?.description ?? '',
-          key: EBNativeState.of(context)._descriptionKey,
-          style: style,
-          textAlign: textAlign,
-          softWrap: softWrap,
-          overflow: overflow,
-          maxLines: maxLines,
+          key: rectKey,
+          style: TextStyle(
+            color: Colors.transparent,
+            fontSize: widget.baseStyle?.fontSize,
+            fontWeight: widget.baseStyle?.fontWeight,
+          ),
         ),
       ),
     );
   }
 }
 
-class EBNativeAdMainImage extends StatelessWidget {
+class EBNativeAdMainImage extends EBNativeAdBaseWidget {
   final double? width;
   final double? height;
 
-  const EBNativeAdMainImage({
-    super.key,
+  EBNativeAdMainImage({
+    Key? key,
     this.width = double.infinity,
     this.height = double.infinity,
-  });
+    EBImageStyle? styles,
+  }) : super(
+          key: key ?? GlobalKey(),
+          baseStyle: styles,
+        );
 
   @override
+  EBNativeAdBaseState<EBNativeAdMainImage> createState() =>
+      EBNativeAdMainImageState();
+}
+
+class EBNativeAdMainImageState
+    extends EBNativeAdBaseState<EBNativeAdMainImage> {
+  @override
   Widget build(BuildContext context) {
-    EBNativeState.of(context)._mainImageKey =
-        EBNativeState.of(context)._mainImageKey ?? GlobalKey();
+    EBNativeState.of(context)._mainImageKey = widget.key as GlobalKey;
 
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (SizeChangedLayoutNotification notification) {
@@ -315,29 +366,40 @@ class EBNativeAdMainImage extends StatelessWidget {
         return false;
       },
       child: SizeChangedLayoutNotifier(
-        child: Container(
-            key: EBNativeState.of(context)._mainImageKey,
-            width: width,
-            height: height),
+        child: SizedBox(
+          key: rectKey,
+          width: widget.width,
+          height: widget.height,
+        ),
       ),
     );
   }
 }
 
-class EBNativeAdMainVideo extends StatelessWidget {
+class EBNativeAdMainVideo extends EBNativeAdBaseWidget {
   final double? width;
   final double? height;
 
-  const EBNativeAdMainVideo({
-    super.key,
+  EBNativeAdMainVideo({
+    Key? key,
     this.width = double.infinity,
     this.height = double.infinity,
-  });
+    EBImageStyle? styles,
+  }) : super(
+          key: key ?? GlobalKey(),
+          baseStyle: styles,
+        );
 
   @override
+  EBNativeAdBaseState<EBNativeAdMainVideo> createState() =>
+      EBNativeAdMainVideoState();
+}
+
+class EBNativeAdMainVideoState
+    extends EBNativeAdBaseState<EBNativeAdMainVideo> {
+  @override
   Widget build(BuildContext context) {
-    EBNativeState.of(context)._mainVideoKey =
-        EBNativeState.of(context)._mainVideoKey ?? GlobalKey();
+    EBNativeState.of(context)._mainVideoKey = widget.key as GlobalKey;
 
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (SizeChangedLayoutNotification notification) {
@@ -349,29 +411,40 @@ class EBNativeAdMainVideo extends StatelessWidget {
         return false;
       },
       child: SizeChangedLayoutNotifier(
-        child: Container(
-            key: EBNativeState.of(context)._mainVideoKey,
-            width: width,
-            height: height),
+        child: SizedBox(
+          key: rectKey,
+          width: widget.width,
+          height: widget.height,
+        ),
       ),
     );
   }
 }
 
-class EBNativeAdIconImage extends StatelessWidget {
+class EBNativeAdIconImage extends EBNativeAdBaseWidget {
   final double? width;
   final double? height;
 
-  const EBNativeAdIconImage({
-    super.key,
+  EBNativeAdIconImage({
+    Key? key,
     this.width = double.infinity,
     this.height = double.infinity,
-  });
+    EBImageStyle? styles,
+  }) : super(
+          key: key ?? GlobalKey(),
+          baseStyle: styles,
+        );
 
   @override
+  EBNativeAdBaseState<EBNativeAdIconImage> createState() =>
+      EBNativeAdIconImageState();
+}
+
+class EBNativeAdIconImageState
+    extends EBNativeAdBaseState<EBNativeAdIconImage> {
+  @override
   Widget build(BuildContext context) {
-    EBNativeState.of(context)._iconImageKey =
-        EBNativeState.of(context)._iconImageKey ?? GlobalKey();
+    EBNativeState.of(context)._iconImageKey = widget.key as GlobalKey;
 
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (SizeChangedLayoutNotification notification) {
@@ -384,26 +457,34 @@ class EBNativeAdIconImage extends StatelessWidget {
       },
       child: SizeChangedLayoutNotifier(
         child: SizedBox(
-            key: EBNativeState.of(context)._iconImageKey,
-            width: width,
-            height: height),
+          key: rectKey,
+          width: widget.width,
+          height: widget.height,
+        ),
       ),
     );
   }
 }
 
-class EBNativeAdCallToAction extends StatelessWidget {
-  final ButtonStyle? style;
-
-  const EBNativeAdCallToAction({
-    super.key,
-    this.style,
-  });
+class EBNativeAdCallToAction extends EBNativeAdBaseWidget {
+  EBNativeAdCallToAction({
+    Key? key,
+    EBButtonStyle? styles,
+  }) : super(
+          key: key ?? GlobalKey(),
+          baseStyle: styles,
+        );
 
   @override
+  EBNativeAdBaseState<EBNativeAdCallToAction> createState() =>
+      EBNativeAdCallToActionState();
+}
+
+class EBNativeAdCallToActionState
+    extends EBNativeAdBaseState<EBNativeAdCallToAction> {
+  @override
   Widget build(BuildContext context) {
-    EBNativeState.of(context)._callToActionKey =
-        EBNativeState.of(context)._callToActionKey ?? GlobalKey();
+    EBNativeState.of(context)._callToActionKey = widget.key as GlobalKey;
 
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (SizeChangedLayoutNotification notification) {
@@ -416,11 +497,15 @@ class EBNativeAdCallToAction extends StatelessWidget {
       },
       child: SizeChangedLayoutNotifier(
         child: ElevatedButton(
-          key: EBNativeState.of(context)._callToActionKey,
-          style: style,
+          key: rectKey,
           onPressed: () {},
           child: Text(
             EBNativeState.of(context).nativeData?.callToAction ?? "",
+            style: TextStyle(
+              color: Colors.transparent,
+              fontSize: widget.baseStyle?.fontSize,
+              fontWeight: widget.baseStyle?.fontWeight,
+            ),
           ),
         ),
       ),
@@ -428,21 +513,31 @@ class EBNativeAdCallToAction extends StatelessWidget {
   }
 }
 
-class EBNativeAdPrivacyInformationIconImage extends StatelessWidget {
+class EBNativeAdPrivacyInformationIconImage extends EBNativeAdBaseWidget {
   final double? width;
   final double? height;
 
-  const EBNativeAdPrivacyInformationIconImage({
-    super.key,
+  EBNativeAdPrivacyInformationIconImage({
+    Key? key,
     this.width = double.infinity,
     this.height = double.infinity,
-  });
+    EBImageStyle? styles,
+  }) : super(
+          key: key ?? GlobalKey(),
+          baseStyle: styles,
+        );
 
+  @override
+  EBNativeAdBaseState<EBNativeAdPrivacyInformationIconImage> createState() =>
+      EBNativeAdPrivacyInformationIconImageState();
+}
+
+class EBNativeAdPrivacyInformationIconImageState
+    extends EBNativeAdBaseState<EBNativeAdPrivacyInformationIconImage> {
   @override
   Widget build(BuildContext context) {
     EBNativeState.of(context)._privacyInformationIconImageKey =
-        EBNativeState.of(context)._privacyInformationIconImageKey ??
-            GlobalKey();
+        widget.key as GlobalKey;
 
     return NotificationListener<SizeChangedLayoutNotification>(
       onNotification: (SizeChangedLayoutNotification notification) {
@@ -454,10 +549,11 @@ class EBNativeAdPrivacyInformationIconImage extends StatelessWidget {
         return false;
       },
       child: SizeChangedLayoutNotifier(
-        child: Container(
-            key: EBNativeState.of(context)._privacyInformationIconImageKey,
-            width: width,
-            height: height),
+        child: SizedBox(
+          key: rectKey,
+          width: widget.width,
+          height: widget.height,
+        ),
       ),
     );
   }
