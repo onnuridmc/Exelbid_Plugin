@@ -87,7 +87,7 @@ extension IntExtension on int {
 
 enum ObjectFit {
   fit,
-  fill,
+  crop,
 }
 
 class EBBaseStyle {

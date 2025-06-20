@@ -95,7 +95,7 @@ class EBPNativeView : UIView, EBNativeAdRendering {
             if let arg = call.arguments as? [String: Any], let styles = arg["styles"] as? [String: Any] {
                 
                 let object_fit = styles["object_fit"] as? String
-                view.contentMode = object_fit == "fill" ? .scaleAspectFill : .scaleAspectFit
+                view.contentMode = object_fit == "crop" ? .scaleAspectFill : .scaleAspectFit
                 
                 if let background_color = styles["background_color"] as? String {
                     view.backgroundColor = UIColor(hex: background_color)

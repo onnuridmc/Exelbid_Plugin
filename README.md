@@ -159,6 +159,51 @@ import AppTrackingTransparency
 |listener|EBPAdListener?|null|콜백 이벤트 리스너.|
 
 
+#### 인스턴스 공통 스타일 클래스
+
+#### EBViewStyle
+```dart
+EBViewStyle extends EBBaseStyle {
+    final Color? backgroundColor;   // 배경색
+    final double? borderRadius;     // 라운드
+}
+```
+
+#### EBImageStyle
+```dart
+EBImageStyle extends EBBaseStyle {
+  const EBImageStyle({
+    super.backgroundColor,      // 배경색
+    super.borderRadius,         // 라운드
+    super.objectFit,            // 스케일 설정 (fit, crop)
+  });
+}
+```
+
+#### EBTextStyle
+```dart
+EBTextStyle extends EBBaseStyle {
+  const EBTextStyle({
+    super.color,            // 폰트 색상
+    super.fontSize,         // 폰트 크기
+    super.fontWeight,       // 폰트 두께
+  });
+}
+```
+
+#### EBTextStyle
+```dart
+EBButtonStyle extends EBBaseStyle {
+  const EBButtonStyle({
+    super.backgroundColor,      // 배경색
+    super.borderRadius,         // 라운드
+    super.color,                // 폰트 색상
+    super.fontSize,             // 폰트 크기
+    super.fontWeight,           // 폰트 두께
+  });
+}
+```
+
 <br/>
 
 ## 배너 광고
@@ -168,6 +213,7 @@ import AppTrackingTransparency
 |Key|Type|Default|Desc|
 |---|---|---|---|
 |isFullWebView|bool?|true|광고 안에 너비 100%로 웹뷰가 바인딩되게 설정.|
+|styles|EBViewStyle?|null|배너 광고의 스타일 설정.|
 
 <br/>
 
@@ -177,6 +223,7 @@ EBBannerAdView {
     final bool? isFullWebView;
     final bool? coppa;
     final bool? isTest;
+    final EBViewStyle? styles;
 }
 ```
 
@@ -290,6 +337,7 @@ ExelbidPlugin.shared.showInterstitial();
 |Key|Type|Default|Desc|
 |---|---|---|---|
 |nativeAssets|EBNativeAssets?|null|네이티브 광고 요청 시 필요한 항목들을 요청합니다.|
+|styles|EBViewStyle?|null|네이티브 광고의 스타일 설정.|
 
 ```dart
 EBNativeAdView {
@@ -354,53 +402,48 @@ asset이 설정될 객체를 포함하여 구형하여야 합니다.
 #### 네이티브 제목
 ```dart
 EBNativeAdTtitle {
-    final TextStyle? style;
-    final TextAlign? textAlign;
-    final bool? softWrap;
-    final TextOverflow? overflow;
-    final int? maxLines;
+    EBTextStyle? styles;
 }
 ```
 
 #### 네이티브 설명
 ```dart
 EBNativeAdDescription {
-    final TextStyle? style;
-    final TextAlign? textAlign;
-    final bool? softWrap;
-    final TextOverflow? overflow;
-    final int? maxLines;
+    EBTextStyle? styles;
 }
 ```
 
 #### 네이티브 메인 이미지
 ```dart
 EBNativeAdMainImage {
-    final double? width;
-    final double? height;
+    double? width;
+    double? height;
+    EBImageStyle? styles;
 }
 ```
 
 #### 네이티브 아이콘 이미지
 ```dart
 EBNativeAdIconImage{
-    final double? width;
-    final double? height;
+    double? width;
+    double? height;
+    EBImageStyle? styles;
 }
 ```
 
 #### 네이티브 액션 버튼
 ```dart
 EBNativeAdCallToAction {
-    final ButtonStyle? style;
+    EBButtonStyle? styles;
 }
 ```
 
 #### 온라인 맞춤형 광고 개인정보보호 가이드라인 아이콘
 ```dart
 EBNativeAdPrivacyInformationIconImage {
-    final double? width;
-    final double? height;
+    double? width;
+    double? height;
+    EBImageStyle? styles;
 }
 ```
 
@@ -411,64 +454,102 @@ EBNativeAdPrivacyInformationIconImage {
 
 #### 예시)
 ```dart
-Column(children: [
-    // 상단 이미지 및 텍스트 영역
-    const Row(children: [
-        SizedBox(
-        width: 48,
-        height: 48,
-        child: Center(
-            child: EBNativeAdIconImage(),
-        ),
-        ),
-        SizedBox(width: 10),
-        Expanded(
-        child: EBNativeAdTtitle(),
-        ),
-    ]),
-    const SizedBox(height: 10),
-    // 메인 이미지 뷰
-    const Expanded(
+EBNativeAdView(
+  adUnitId: "<<adUnitId>>",
+  nativeAssets: const [
+    EBNativeAssets.title,
+    EBNativeAssets.main,
+    EBNativeAssets.icon,
+    EBNativeAssets.ctatext,
+  ],
+  styles: const EBViewStyle(
+    borderRadius: 20,
+  ),
+  listener: EBPNativeAdViewListener(onLoadAd: () {
+    print("Native onLoadAd");
+  }, onFailAd: (String? errorMessage) {
+    print("Native onFailAd");
+  }, onClickAd: () {
+    print("Native onClickAd");
+  }),
+  child: Column(
+    children: [
+      Container(
+        padding: const EdgeInsets.all(10),
+        child: // 상단 이미지 및 텍스트 영역
+            Row(children: [
+          SizedBox(
+            width: 48,
+            height: 48,
+            child: Center(
+              child: EBNativeAdIconImage(
+                styles: EBImageStyle(
+                  backgroundColor: Colors.grey[300],
+                  borderRadius: 20,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: SizedBox(
+              child: EBNativeAdTitle(
+                styles: const EBTextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ]),
+      ),
+      const SizedBox(height: 10),
+      // 메인 이미지 뷰
+      Expanded(
         child: SizedBox(
-        width: double.infinity,
-        child: Center(
-            child: Stack(children: [
-            EBNativeAdMainImage(),
+          width: double.infinity,
+          height: double.infinity,
+          child: Stack(children: [
+            Center(
+              child: EBNativeAdMainImage(
+                styles: EBImageStyle(
+                  backgroundColor: Colors.grey[300],
+                  borderRadius: 10,
+                ),
+              ),
+            ),
             Positioned(
-                right: 10,
-                top: 10,
-                child:
-                    EBNativeAdPrivacyInformationIconImage(
+              right: 10,
+              top: 10,
+              child:
+                  EBNativeAdPrivacyInformationIconImage(
                 width: 20,
                 height: 20,
-                ),
+              ),
             ),
-            ]),
+          ]),
         ),
-        ),
-    ),
-    const SizedBox(height: 10),
-    // 버튼 영역
-    Align(
+      ),
+      const SizedBox(height: 10),
+      // 버튼 영역
+      Align(
         alignment: Alignment.bottomRight,
         child: Container(
-        padding: const EdgeInsets.symmetric(
-            vertical: 10, horizontal: 20),
-        child: const EBNativeAdCallToAction(
-            style: ButtonStyle(
-            backgroundColor:
-                WidgetStatePropertyAll<Color>(
-                    Colors.white),
-            textStyle:
-                WidgetStatePropertyAll<TextStyle>(
-                    TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
+          padding: const EdgeInsets.only(
+              top: 10, bottom: 10, right: 10),
+          child: EBNativeAdCallToAction(
+            styles: const EBButtonStyle(
+              color: Colors.white,
+              backgroundColor: Colors.lightBlue,
+              borderRadius: 10,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
+          ),
         ),
-        ),
-    ),
-])
+      ),
+    ],
+  ),
+)
 ```
 
 <br/>

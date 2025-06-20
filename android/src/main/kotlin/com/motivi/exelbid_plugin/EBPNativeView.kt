@@ -154,7 +154,7 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
             val borderRadius = styles["border_radius"] as Double?
             val objectFit = styles["object_fit"] as String?
 
-            view.scaleType = if (objectFit.equals("fill", true)) ImageView.ScaleType.CENTER_CROP else ImageView.ScaleType.FIT_CENTER
+            view.scaleType = if (objectFit.equals("crop", true)) ImageView.ScaleType.CENTER_CROP else ImageView.ScaleType.FIT_CENTER
 
             val drawable = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
