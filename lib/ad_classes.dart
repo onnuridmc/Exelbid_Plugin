@@ -160,9 +160,27 @@ class EBBaseStyle {
 
   String? colorToHex(Color? color) {
     if (color != null) {
-      int r = (color.r * 255).round();
-      int g = (color.g * 255).round();
-      int b = (color.b * 255).round();
+      int r = 0;
+      int g = 0;
+      int b = 0;
+
+      try {
+        r = ((color.r) * 255).round();
+      } catch (_) {
+        r = (color.red * 255).round();
+      }
+
+      try {
+        g = ((color.g) * 255).round();
+      } catch (_) {
+        g = (color.green * 255).round();
+      }
+
+      try {
+        b = ((color.b) * 255).round();
+      } catch (_) {
+        b = (color.blue * 255).round();
+      }
 
       return '#${r.toRadixString(16).padLeft(2, '0')}'
           '${g.toRadixString(16).padLeft(2, '0')}'

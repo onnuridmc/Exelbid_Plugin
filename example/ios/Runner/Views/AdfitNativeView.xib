@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="K92-cV-QEx" customClass="AdfitNativeView" customModule="Runner" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="331" height="302"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DDc-ND-uAz" userLabel="Icon Image View">
+                    <rect key="frame" x="8" y="8" width="50" height="50"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="50" id="E4r-Jr-oam"/>
+                        <constraint firstAttribute="width" constant="50" id="mmr-BF-UXf"/>
+                    </constraints>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="T5G-Zd-aaV" userLabel="Title Label">
+                    <rect key="frame" x="66" y="13" width="215" height="19.5"/>
+                    <constraints>
+                        <constraint firstAttribute="height" priority="250" id="cvb-9q-wkj"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Profile" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bXN-g3-bkc" userLabel="Profile Label">
+                    <rect key="frame" x="66" y="35.5" width="215" height="17"/>
+                    <constraints>
+                        <constraint firstAttribute="height" priority="250" id="dGF-lA-rJF"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="0.4756349325" green="0.47564673419999998" blue="0.47564041610000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1UG-cj-h0w" userLabel="Media View" customClass="AdFitMediaView" customModule="AdFitSDK">
+                    <rect key="frame" x="0.0" y="66" width="331" height="172"/>
+                </view>
+                <button opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64Q-Nw-6mb" userLabel="Action Button">
+                    <rect key="frame" x="221" y="247" width="102" height="46"/>
+                    <color key="backgroundColor" red="0.96993559600000001" green="0.49784306179999999" blue="0.28622590380000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="46" id="73x-xH-fPE"/>
+                        <constraint firstAttribute="width" constant="102" id="Fc3-HG-MS8"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <state key="normal" title="Action">
+                        <color key="titleColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </state>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="4"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </button>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="wmD-mk-0tR"/>
+            <constraints>
+                <constraint firstItem="bXN-g3-bkc" firstAttribute="trailing" secondItem="T5G-Zd-aaV" secondAttribute="trailing" id="BL1-0x-7hd"/>
+                <constraint firstItem="64Q-Nw-6mb" firstAttribute="bottom" secondItem="K92-cV-QEx" secondAttribute="bottom" constant="-9" id="FWU-25-fbg"/>
+                <constraint firstItem="T5G-Zd-aaV" firstAttribute="top" secondItem="DDc-ND-uAz" secondAttribute="top" constant="5" id="Gjg-DN-a1Z"/>
+                <constraint firstItem="bXN-g3-bkc" firstAttribute="leading" secondItem="T5G-Zd-aaV" secondAttribute="leading" id="QKb-TQ-YcZ"/>
+                <constraint firstItem="T5G-Zd-aaV" firstAttribute="leading" secondItem="DDc-ND-uAz" secondAttribute="trailing" constant="8" id="QdN-Kb-fqh"/>
+                <constraint firstItem="T5G-Zd-aaV" firstAttribute="trailing" secondItem="K92-cV-QEx" secondAttribute="trailing" constant="-50" id="S8d-KP-VeG"/>
+                <constraint firstItem="DDc-ND-uAz" firstAttribute="top" secondItem="K92-cV-QEx" secondAttribute="top" constant="8" id="WMT-qi-rjF"/>
+                <constraint firstItem="1UG-cj-h0w" firstAttribute="leading" secondItem="K92-cV-QEx" secondAttribute="leading" id="e7O-yt-4FK"/>
+                <constraint firstItem="DDc-ND-uAz" firstAttribute="leading" secondItem="K92-cV-QEx" secondAttribute="leading" constant="8" id="gZI-TD-2uZ"/>
+                <constraint firstItem="1UG-cj-h0w" firstAttribute="trailing" secondItem="K92-cV-QEx" secondAttribute="trailing" id="hf5-7y-UUD"/>
+                <constraint firstItem="1UG-cj-h0w" firstAttribute="bottom" secondItem="K92-cV-QEx" secondAttribute="bottom" constant="-64" id="mFN-GW-RGu"/>
+                <constraint firstItem="bXN-g3-bkc" firstAttribute="top" secondItem="T5G-Zd-aaV" secondAttribute="bottom" constant="3" id="t94-gH-jZH"/>
+                <constraint firstItem="1UG-cj-h0w" firstAttribute="top" secondItem="K92-cV-QEx" secondAttribute="top" constant="66" id="y0n-WL-Z09"/>
+                <constraint firstItem="64Q-Nw-6mb" firstAttribute="trailing" secondItem="K92-cV-QEx" secondAttribute="trailing" constant="-8" id="zYN-Mi-7uH"/>
+            </constraints>
+            <nil key="simulatedTopBarMetrics"/>
+            <nil key="simulatedBottomBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="actionButton" destination="64Q-Nw-6mb" id="Oee-0R-Nct"/>
+                <outlet property="iconImageView" destination="DDc-ND-uAz" id="DMh-Nl-I6s"/>
+                <outlet property="mediaView" destination="1UG-cj-h0w" id="zzu-oq-8P5"/>
+                <outlet property="profileLabel" destination="bXN-g3-bkc" id="O5W-A7-J67"/>
+                <outlet property="titleLabel" destination="T5G-Zd-aaV" id="nfM-4X-WQ5"/>
+            </connections>
+            <point key="canvasLocation" x="-220" y="-123"/>
+        </view>
+    </objects>
+</document>

@@ -18,6 +18,11 @@ class _BannerAdState extends State<BannerAdWidget> {
   bool _isShow = false;
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -49,10 +54,9 @@ class _BannerAdState extends State<BannerAdWidget> {
                     padding: EdgeInsets.only(
                       bottom: MediaQuery.of(context).padding.bottom,
                     ),
-                    child: Container(
+                    child: SizedBox(
                       width: 320,
                       height: 50,
-                      color: Colors.grey,
                       child: _isShow
                           ? EBBannerAdView(
                               adUnitId: _adUnitId,
@@ -62,15 +66,6 @@ class _BannerAdState extends State<BannerAdWidget> {
                                 },
                                 onFailAd: (String? errorMessage) {
                                   print("Banner onFailAd");
-                                  _isShow = false;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content:
-                                          Text(errorMessage ?? "에러가 발생했습니다."),
-                                      duration: const Duration(seconds: 3),
-                                      behavior: SnackBarBehavior.floating,
-                                    ),
-                                  );
                                 },
                                 onClickAd: () {
                                   print("Banner onClickAd");

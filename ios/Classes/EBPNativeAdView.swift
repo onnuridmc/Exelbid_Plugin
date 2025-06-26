@@ -84,7 +84,7 @@ class EBPNativeAdView: NSObject, FlutterPlatformView, EBNativeAdDelegate {
 
             nativeManager.startWithCompletionHandler { (request, response, error) in
                 if let error = error {
-                    self.channel.invokeMethod("onFailAd", arguments: nil)
+                    self.channel.invokeMethod("onFailAd", arguments: ["error_message": error.localizedDescription])
                     print(">>> Native Error : \(error.localizedDescription)")
                 } else {
                     self.nativeAd = response

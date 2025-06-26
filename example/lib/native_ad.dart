@@ -51,9 +51,10 @@ class _NativeAdState extends State<NativeAdWidget> {
                 padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).padding.bottom,
                 ),
-                child: SizedBox(
+                child: Container(
                   width: double.infinity,
                   height: 300,
+                  color: Color.fromARGB(255, 240, 240, 240),
                   child: _isShow
                       ? EBNativeAdView(
                           adUnitId: _adUnitId,

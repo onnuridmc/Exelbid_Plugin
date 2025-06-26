@@ -1,3 +1,5 @@
+import 'package:exelbid_plugin_example/adfit_banner_ad.dart';
+import 'package:exelbid_plugin_example/adfit_native_ad.dart';
 import 'package:exelbid_plugin_example/banner_ad.dart';
 import 'package:exelbid_plugin_example/interstitial_ad.dart';
 import 'package:exelbid_plugin_example/native_ad.dart';
@@ -123,7 +125,30 @@ class MainScreen extends StatelessWidget {
                 );
               },
               child: const Text('Go to Mediation Native Ad'),
-            )
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AdfitBannerAdWidget()),
+                );
+              },
+              child: const Text('Go to Adfit Banner Ad'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AdfitNativeAdWidget()),
+                );
+              },
+              child: const Text('Go to Adfit Native Ad'),
+            ),
+            const SizedBox(height: 20),
           ],
         ),
       ),
