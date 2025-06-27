@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name = 'exelbid_plugin'
-    s.version = '1.0.0'
+    s.version = '1.1.3'
     s.summary = 'A Flutter plugin for using SDK.'
     s.homepage = 'https://exelbid.com'
     s.license = { :type => 'MIT', :file => 'LICENSE' }
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
     s.source = { :path => '.' }
     s.source_files     = 'Classes/**/*'
     s.dependency 'Flutter'
-    s.dependency 'ExelBid_iOS_Swift', '>= 2.2.4'
+    s.dependency 'ExelBid_iOS_Swift'
     s.ios.deployment_target = '12.0'
 
     s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

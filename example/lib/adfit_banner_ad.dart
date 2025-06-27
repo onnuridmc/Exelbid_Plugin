@@ -12,8 +12,8 @@ class AdfitBannerAdWidget extends StatefulWidget {
 class AdfitBannerAdState extends State<AdfitBannerAdWidget> {
   final String BANNER_VIEW_TYPE = "adfit/banner_ad";
   final String _adfitClientId = defaultTargetPlatform == TargetPlatform.android
-      ? "DAN-UjXXfGZx5g7oUcFN"
-      : "DAN-2STczol2v1EEctGu";
+      ? "<<Ad Client ID>>"
+      : "<<Ad Client ID>>";
   bool _isShow = false;
   MethodChannel? methodChannel;
 

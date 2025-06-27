@@ -18,10 +18,8 @@ Flutter Plugin 가이드입니다.
 - [미디에이션](#미디에이션)
 
 # Version History
-## 1.1.2
-- Adfit 샘플 추가
-- 의존성 패키지 수정
-- 기타 버그 수정
+## 1.1.3
+- Package.swift 수정
 
 <br/>
 
@@ -38,7 +36,7 @@ Flutter Plugin 가이드입니다.
 
 # Plugin 정보
 
-Flutter 3.102.0 버전
+Flutter 3.32.5
 
 <br/><br/>
 
