@@ -160,27 +160,9 @@ class EBBaseStyle {
 
   String? colorToHex(Color? color) {
     if (color != null) {
-      int r = 0;
-      int g = 0;
-      int b = 0;
-
-      try {
-        r = ((color.r) * 255).round();
-      } catch (_) {
-        r = (color.red * 255).round();
-      }
-
-      try {
-        g = ((color.g) * 255).round();
-      } catch (_) {
-        g = (color.green * 255).round();
-      }
-
-      try {
-        b = ((color.b) * 255).round();
-      } catch (_) {
-        b = (color.blue * 255).round();
-      }
+      int r = ((color.r) * 255).round();
+      int g = ((color.g) * 255).round();
+      int b = ((color.b) * 255).round();
 
       return '#${r.toRadixString(16).padLeft(2, '0')}'
           '${g.toRadixString(16).padLeft(2, '0')}'
@@ -250,4 +232,12 @@ class EBButtonStyle extends EBBaseStyle {
     super.fontSize,
     super.fontWeight,
   });
+}
+
+// Color 클래스 확장
+extension ColorLegacy on Color {
+  double get r => red / 255.0;
+  double get g => green / 255.0;
+  double get b => blue / 255.0;
+  double get a => alpha / 255.0;
 }

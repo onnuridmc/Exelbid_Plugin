@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
-		1D02593F2E0B77C5005EB823 /* AdFitSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 1D02593E2E0B77C5005EB823 /* AdFitSDK */; };
+		1D00CBDD2E1B62E300AF6343 /* AdFitSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 1D00CBDC2E1B62E300AF6343 /* AdFitSDK */; };
 		1D2978C42E0935080091FA13 /* AdfitNativeView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1D2978C32E0935080091FA13 /* AdfitNativeView.xib */; };
 		1D2978C62E09357D0091FA13 /* AdfitNativeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D2978C52E0935780091FA13 /* AdfitNativeView.swift */; };
 		1D51C8902E0B798400419D53 /* AdfitBannerPlatformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D51C88C2E0B798400419D53 /* AdfitBannerPlatformView.swift */; };
@@ -87,7 +87,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
-				1D02593F2E0B77C5005EB823 /* AdFitSDK in Frameworks */,
+				1D00CBDD2E1B62E300AF6343 /* AdFitSDK in Frameworks */,
 				89A8308A82FA7AACFC70B21D /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -245,7 +245,7 @@
 			name = Runner;
 			packageProductDependencies = (
 				78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */,
-				1D02593E2E0B77C5005EB823 /* AdFitSDK */,
+				1D00CBDC2E1B62E300AF6343 /* AdFitSDK */,
 			);
 			productName = Runner;
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
@@ -281,8 +281,8 @@
 			);
 			mainGroup = 97C146E51CF9000F007C117D;
 			packageReferences = (
-				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */,
-				1DF1E6492E0AA07E00B4A52E /* XCRemoteSwiftPackageReference "adfit-spm" */,
+				781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */,
+				1D00CBDB2E1B62E300AF6343 /* XCRemoteSwiftPackageReference "adfit-spm" */,
 			);
 			productRefGroup = 97C146EF1CF9000F007C117D /* Products */;
 			projectDirPath = "";
@@ -800,14 +800,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "FlutterGeneratedPluginSwiftPackage" */ = {
+		781AD8BC2B33823900A9FFBB /* XCLocalSwiftPackageReference "Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		1DF1E6492E0AA07E00B4A52E /* XCRemoteSwiftPackageReference "adfit-spm" */ = {
+		1D00CBDB2E1B62E300AF6343 /* XCRemoteSwiftPackageReference "adfit-spm" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/adfit/adfit-spm.git";
 			requirement = {
@@ -818,9 +818,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		1D02593E2E0B77C5005EB823 /* AdFitSDK */ = {
+		1D00CBDC2E1B62E300AF6343 /* AdFitSDK */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 1DF1E6492E0AA07E00B4A52E /* XCRemoteSwiftPackageReference "adfit-spm" */;
+			package = 1D00CBDB2E1B62E300AF6343 /* XCRemoteSwiftPackageReference "adfit-spm" */;
 			productName = AdFitSDK;
 		};
 		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
