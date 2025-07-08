@@ -1,3 +1,6 @@
+## 1.1.6
+- Android proguard 제거
+
 ## 1.1.5
 - Android proguard 수정
 
