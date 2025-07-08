@@ -1,3 +1,6 @@
+## 1.1.5
+- Android proguard 수정
+
 ## 1.1.4
 - Color 내 rgb값 수정
 

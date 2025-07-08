@@ -6,4 +6,4 @@
 -keep class com.google.android.gms.location.FusedLocationProviderApi {public *;}
 
 -keepattributes SourceFile,LineNumberTable,InnerClasses
--keep class com.onnuridmc.exelbid.** { *; }
+-keep class com.motivi.exelbid_plugin.** { *; }
