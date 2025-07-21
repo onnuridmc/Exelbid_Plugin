@@ -1,3 +1,6 @@
+## 1.1.7
+- lateinit 이슈 수정
+
 ## 1.1.6
 - Android proguard 제거
 

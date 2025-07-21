@@ -32,7 +32,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     private lateinit var context: Context
     private lateinit var messenger: BinaryMessenger
-    private lateinit var interstitial: ExelBidInterstitial
+    private lateinit var interstitial: ExelBidInterstitial = null
     private var mediations: MutableMap<String, EBPMediation> = mutableMapOf()
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -98,6 +98,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         channel?.let {
             it.setMethodCallHandler(null)
         }
+
         interstitial?.let {
             it.destroy()
         }
