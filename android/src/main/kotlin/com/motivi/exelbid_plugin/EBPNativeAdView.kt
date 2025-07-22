@@ -52,7 +52,9 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
     }
 
     override fun dispose() {
-        nativeAd.onDestroy()
+        if (this::nativeAd.isInitialized) {
+            nativeAd.onDestroy()
+        }
     }
 
     private fun loadAd(call: MethodCall) {

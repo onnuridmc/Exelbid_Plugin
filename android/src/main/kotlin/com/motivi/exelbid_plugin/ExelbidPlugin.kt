@@ -1,6 +1,7 @@
 package com.motivi.exelbid_plugin
 
 import android.content.Context
+import android.util.Log
 import androidx.core.util.Pair
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -32,7 +33,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     private lateinit var context: Context
     private lateinit var messenger: BinaryMessenger
-    private lateinit var interstitial: ExelBidInterstitial = null
+    private lateinit var interstitial: ExelBidInterstitial
     private var mediations: MutableMap<String, EBPMediation> = mutableMapOf()
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -73,7 +74,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
             result.success(null)
         } else if (call.method == "showInterstitial") {
-            if (interstitial.isReady()) {
+            if (this::interstitial.isInitialized && interstitial.isReady()) {
                 showInterstitial()   
             }
 
@@ -95,12 +96,10 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-        channel?.let {
-            it.setMethodCallHandler(null)
-        }
+        channel.setMethodCallHandler(null)
 
-        interstitial?.let {
-            it.destroy()
+        if (this::interstitial.isInitialized) {
+            interstitial.destroy()
         }
     }
 
@@ -144,7 +143,9 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     }
 
     fun showInterstitial() {
-        interstitial.show()
+        if (this::interstitial.isInitialized) {
+            interstitial.show()
+        }
     }
 }
 
