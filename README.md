@@ -76,6 +76,15 @@ flutter pub get
 
 ### AndroidManifest 설정
 
+#### 필수 권한 설정
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+// 구글 정책(2022.03.15 발표)에 따라 대상 API 수준을 32(Android 13)로 업데이트하는 앱은 다음과 같이 매니페스트 파일에서 Google Play 서비스 일반 권한을 선언해야 합니다.(정책 적용 2022년 말 예정)
+<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+```
+
 #### 권장 권한 설정
 
 ```xml
