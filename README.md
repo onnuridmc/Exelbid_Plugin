@@ -94,6 +94,35 @@ flutter pub get
 <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
 ```
 
+### Google Library 추가
+ExelBid Android SDK가 제대로 작동하려면 Google Play Service 4.0 이상의 라이브러리가 필요합니다.  
+광고 식별자 수집에 대한 Google Play 콘텐츠 가이드라인을 준수하기 위한 것입니다.  
+
+#### 1. AndroidManifest.xml파일에 태그 안에 아래 코드를 추가합니다.
+```xml
+<meta-data
+    android:name="com.google.android.gms.version"
+    android:value="@integer/google_play_services_version"
+/>
+```
+
+#### 2. Google Play Service jar를 dependencies에 추가합니다.
+**poject structure** -> **dependencies** -> **add** -> **library dependency** 에서  
+`com.google.android.gms:play-services` or `com.google.android.gms:play-services-ads`를 추가합니다.  
+
+> \* eclipse를 사용하는 경우에는 Google Play Service 라이브러리 프로젝트를 추가합니다.
+
+<br>
+
+**build.gradle**
+```
+dependencies {
+    implementation("com.google.android.gms:play-services-ads-identifier:16.0.0")
+}
+```
+
+<br>
+
 ## iOS 설정
 
 ### Info.plist 설정
