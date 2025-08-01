@@ -82,6 +82,17 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
 
   @override
   void dispose() {
+    _titleKey = null;
+    _descriptionKey = null;
+    _mainImageKey = null;
+    _mainVideoKey = null;
+    _iconImageKey = null;
+    _callToActionKey = null;
+    _privacyInformationIconImageKey = null;
+
+    _methodChannel?.setMethodCallHandler(null);
+    _methodChannel = null;
+
     super.dispose();
   }
 

@@ -38,6 +38,13 @@ class EBBannerAdViewState extends State<EBBannerAdView> {
   }
 
   @override
+  void dispose() {
+    methodChannel?.setMethodCallHandler(null);
+    methodChannel = null;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(

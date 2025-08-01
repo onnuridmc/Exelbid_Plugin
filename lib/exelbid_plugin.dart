@@ -72,7 +72,8 @@ class ExelbidPlugin {
   }
 
   Future<ATTStatus> requestTrackingAuthorization() async {
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
+    if (defaultTargetPlatform == TargetPlatform.iOS ||
+        defaultTargetPlatform == TargetPlatform.android) {
       int status = await _channel.invokeMethod("requestTrackingAuthorization");
       return status.toATTStatus();
     }

@@ -55,6 +55,8 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
         if (this::nativeAd.isInitialized) {
             nativeAd.onDestroy()
         }
+        nativeAdView.removeAllViews()
+        channel.setMethodCallHandler(null)
     }
 
     private fun loadAd(call: MethodCall) {

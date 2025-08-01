@@ -1,3 +1,7 @@
+## 1.1.9
+- Android MeditionType 체크 수정
+- dispose 수정
+
 ## 1.1.8
 - lateinit 변수 초기화 수정
 

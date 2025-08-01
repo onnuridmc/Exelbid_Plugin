@@ -80,5 +80,7 @@ class EBPBannerAdView(context: Context, id: Int, creationParams: Map<String?, An
 
     override fun dispose() {
         adView.destroy()
+        bannerView.removeAllViews()
+        channel.setMethodCallHandler(null)
     }
 }

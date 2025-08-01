@@ -51,17 +51,19 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     override fun onMethodCall(call: MethodCall, result: Result) {
         if (call.method == "requestTrackingAuthorization") {
-            // 광고식별자 상태 처리  (3: Authorized, 2: Denied)
-            try {
-                val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
-                if (!adInfo.isLimitAdTrackingEnabled) {
-                    result.success(3)
-                } else {
+            Thread {
+                // 광고식별자 상태 처리  (3: Authorized, 2: Denied)
+                try {
+                    val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
+                    if (!adInfo.isLimitAdTrackingEnabled) {
+                        result.success(3)
+                    } else {
+                        result.success(2)
+                    }
+                } catch (e: Exception) {
                     result.success(2)
                 }
-            } catch (e: Exception) {
-                result.success(2)
-            }
+            }.start()
         } else if (call.method == "loadInterstitial") {
             val arguments = call.arguments as? Map<String?, Any?>
             if (arguments != null) {
@@ -75,7 +77,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             result.success(null)
         } else if (call.method == "showInterstitial") {
             if (this::interstitial.isInitialized && interstitial.isReady()) {
-                showInterstitial()   
+                showInterstitial()
             }
 
             result.success(null)
@@ -97,6 +99,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        mediations.clear()
 
         if (this::interstitial.isInitialized) {
             interstitial.destroy()
@@ -108,10 +111,14 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     override fun onDetachedFromActivity() {
     }
-    override fun onDetachedFromActivityForConfigChanges() {}
-    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
 
-    fun loadInterstitial(adUnitId: String, coppa: Boolean = false, isTest: Boolean = false) {
+    override fun onDetachedFromActivityForConfigChanges() {
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    }
+
+    private fun loadInterstitial(adUnitId: String, coppa: Boolean = false, isTest: Boolean = false) {
         interstitial = ExelBidInterstitial(context, adUnitId)
 
         interstitial.setCoppa(coppa)
@@ -119,30 +126,30 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
         interstitial.setInterstitialAdListener(object : OnInterstitialAdListener {
             override fun onInterstitialLoaded() {
-                channel?.invokeMethod("onInterstitialLoadAd", null)
+                channel.invokeMethod("onInterstitialLoadAd", null)
             }
 
             override fun onInterstitialFailed(errorCode: ExelBidError?, statusCode: Int) {
-                channel?.invokeMethod("onInterstitialFailAd", null)
+                channel.invokeMethod("onInterstitialFailAd", null)
             }
 
             override fun onInterstitialShow() {
-                channel?.invokeMethod("onInterstitialShow", null)
+                channel.invokeMethod("onInterstitialShow", null)
             }
 
             override fun onInterstitialDismiss() {
-                channel?.invokeMethod("onInterstitialDismiss", null)
+                channel.invokeMethod("onInterstitialDismiss", null)
             }
 
             override fun onInterstitialClicked() {
-                channel?.invokeMethod("onInterstitialClickAd", null)
+                channel.invokeMethod("onInterstitialClickAd", null)
             }                    
         })
 
         interstitial.load()
     }
 
-    fun showInterstitial() {
+    private fun showInterstitial() {
         if (this::interstitial.isInitialized) {
             interstitial.show()
         }
@@ -202,6 +209,6 @@ class EBPMediation(
     }
 
     private fun convertToEnumList(types: List<String>): ArrayList<MediationType> {
-        return types.mapNotNull { type -> MediationType.values().firstOrNull { it.name == type } }.toCollection(ArrayList())
+        return types.mapNotNull { type -> MediationType.values().firstOrNull { it.toString() == type } }.toCollection(ArrayList())
     }
 }
