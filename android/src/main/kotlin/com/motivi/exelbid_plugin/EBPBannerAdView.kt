@@ -23,7 +23,7 @@ class EBPBannerAdView(context: Context, id: Int, creationParams: Map<String?, An
     init {
         val adUnitId = creationParams?.get("ad_unit_id") as? String
         val isFullWebView = creationParams?.get("is_full_web_view") as? Boolean ?: true
-        val coppa = creationParams?.get("coppa") as? Boolean ?: true
+        val coppa = creationParams?.get("coppa") as? Boolean ?: false
         val isTest = creationParams?.get("is_test") as? Boolean ?: false
         val styles = creationParams?.get("styles") as? Map<String, Any>
         val backgroundColor = styles?.get("background_color") as String?
@@ -52,7 +52,9 @@ class EBPBannerAdView(context: Context, id: Int, creationParams: Map<String?, An
         adView = ExelBidAdView(context)
         adView.setAdUnitId(adUnitId)
         adView.setFullWebView(isFullWebView)
-        adView.setCoppa(coppa)
+        if (coppa) {
+            adView.setCoppa(true)
+        }
         adView.setTestMode(isTest)
 
         adView.setAdListener(object : OnBannerAdListener {
