@@ -18,9 +18,8 @@ Flutter Plugin 가이드입니다.
 - [미디에이션](#미디에이션)
 
 # Version History
-## 1.1.9
-- Android MeditionType 체크 수정
-- dispose 수정
+## 1.1.10
+- android adid 이슈 수정
 
 <br/>
 
