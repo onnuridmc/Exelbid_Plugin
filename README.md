@@ -649,7 +649,10 @@ _mediationManager = EBMediationManager(
     ],
     listener: EBPMediationListener(
         onLoad: () {
-            // 미디에이션 목록 조회 성공
+            // loadMediation() 콜백 함수
+
+            // 미디에이션 목록 조회 성공 및 미디에이션 요청
+            _mediationManager.nextMediation();
         },
         onError: (EBError error) {
             // 미디에이션 에러, 예외 처리 (광고 없음 처리)
@@ -658,6 +661,8 @@ _mediationManager = EBMediationManager(
             // 미디에이션 목록이 없거 순회를 완료했을 경우 (광고 없음 처리)
         },
         onNext: (EBMediation mediation) {
+            // nextMediation() 콜백 함수
+
             // 사용할 미디에이션 네트워크 체크 후 광고 요청
             if (mediation.networkId == EBMediationTypes.exelbid) {
                 // 전달받은 unitId로 networkId에 맞게 광고 요청
@@ -704,14 +709,10 @@ _mediationManager.loadMediation();
 
 ```dart
 // 미디에이션 정보 조회 (EBPMediationListener -> onNext or onEmpty)
+// onLoad 콜백 응답 후 요청해야 합니다.
 _mediationManager.nextMediation();
 ```
 
-> **타사 광고 요청 후 광고가 없거나 오류가 발생하면 미디에이션 다음 순서를 호출해주세요.**
-> ```
-> _mediationManager.loadMediation();
-> ```
-
-> **미디에이션 목록이 비어있다면 광고없음 처리를 해주세요.** 
-
-
+### 유의 사항
+- 타사 광고 요청 후 광고가 없거나 오류가 발생하면 미디에이션 다음 순서를 호출해주세요.
+- 미디에이션 목록이 비어있다면 광고없음 처리를 해주세요.
