@@ -18,7 +18,7 @@ Flutter Plugin 가이드입니다.
 - [미디에이션](#미디에이션)
 
 # Version History
-## 1.1.11
+## 1.1.12
 - mediation 초기화 수정
 
 <br/>
