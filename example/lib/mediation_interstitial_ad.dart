@@ -23,54 +23,11 @@ class _MediationInterstitialAdState
   bool _isShowButton = false;
 
   // 미디에이션 컨트롤
-  late final EBMediationManager _mediationManager;
+  EBMediationManager? _mediationManager;
 
   _MediationInterstitialAdState() {
     // Exelbid 전면광고 초기화
     initExelbid();
-
-    // 미디에이션 초기화
-    _mediationManager = EBMediationManager(
-        mediationUnitId: _mediationUnitId,
-        mediationTypes: [
-          EBMediationTypes.exelbid,
-          // 사용할 미디에이션 네트워크 추가
-        ],
-        listener: EBPMediationListener(
-          onLoad: () {
-            // 미디에이션 목록 조회 성공
-            setState(() {
-              _isShowButton = true;
-            });
-            print(">>> onLoad");
-          },
-          onError: (EBError error) {
-            // 미디에이션 에러, 예외 처리
-            setState(() {
-              _isShowButton = false;
-            });
-            print(">>> onError : $error");
-          },
-          onEmpty: () {
-            print(">>> onEmpty");
-            // 미디에이션 목록이 비었을 경우 (순회 완료, 목록 없음)
-            setState(() {
-              _isShowButton = false;
-            });
-          },
-          onNext: (EBMediation mediation) {
-            // 사용할 미디에이션 네트워크 체크 후 광고 요청
-            if (mediation.networkId == EBMediationTypes.exelbid) {
-              // 전달받은 unitId로 해당 네트워크 광고 요청
-              loadExelbid(mediation.unitId);
-            } else {
-              // 매칭되는 네트워크가 없으면 다음 미디에이션 요청
-              _mediationManager.nextMediation();
-            }
-
-            print(">>> onNext");
-          },
-        ));
   }
 
   @override
@@ -87,8 +44,49 @@ class _MediationInterstitialAdState
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  // 미디에이션 목록 조회
-                  _mediationManager.loadMediation();
+                  // 미디에이션 초기화
+                  _mediationManager = EBMediationManager(
+                    mediationUnitId: _mediationUnitId,
+                    mediationTypes: [
+                      EBMediationTypes.exelbid,
+                      // 사용할 미디에이션 네트워크 추가
+                    ],
+                    listener: EBPMediationListener(
+                      onLoad: () {
+                        // 미디에이션 목록 조회 성공
+                        setState(() {
+                          _isShowButton = true;
+                        });
+                        print(">>> onLoad");
+                      },
+                      onError: (EBError error) {
+                        // 미디에이션 에러, 예외 처리
+                        setState(() {
+                          _isShowButton = false;
+                        });
+                        print(">>> onError : $error");
+                      },
+                      onEmpty: () {
+                        print(">>> onEmpty");
+                        // 미디에이션 목록이 비었을 경우 (순회 완료, 목록 없음)
+                        setState(() {
+                          _isShowButton = false;
+                        });
+                      },
+                      onNext: (EBMediation mediation) {
+                        print(">>> onNext : $mediation");
+
+                        // 사용할 미디에이션 네트워크 체크 후 광고 요청
+                        if (mediation.networkId == EBMediationTypes.exelbid) {
+                          // 전달받은 unitId로 해당 네트워크 광고 요청
+                          loadExelbid(mediation.unitId);
+                        } else {
+                          // 매칭되는 네트워크가 없으면 다음 미디에이션 요청
+                          _mediationManager?.nextMediation();
+                        }
+                      },
+                    ),
+                  );
                 },
                 child: const Text('Load Mediation'),
               ),
@@ -99,7 +97,7 @@ class _MediationInterstitialAdState
                 onPressed: _isShowButton
                     ? () {
                         // 미디에이션 정보 조회
-                        _mediationManager.nextMediation();
+                        _mediationManager?.nextMediation();
                       }
                     : null,
                 child: const Text('Next Mediation'),
@@ -120,7 +118,7 @@ class _MediationInterstitialAdState
     }, onFailAd: (String? errorMessage) {
       print('Interstitial onFailAd : $errorMessage');
       // 오류 시 다음 미디에이션 요청
-      _mediationManager.nextMediation();
+      _mediationManager?.nextMediation();
     }, onClickAd: () {
       print('Interstitial onClickAd');
     }, onInterstitialShow: () {

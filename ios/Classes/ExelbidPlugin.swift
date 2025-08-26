@@ -130,6 +130,8 @@ class EBPMediation {
                 self.nextMediation(result)
             }
         }
+
+        channel.invokeMethod("onInitMediation", arguments: nil);
     }
 
     func loadMediation(_ result: @escaping FlutterResult) {

@@ -97,10 +97,12 @@ class _MediationBannerAdState extends State<MediationBannerAdWidget> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: () {
-                      // 미디에이션 정보 조회
-                      _mediationManager?.nextMediation();
-                    },
+                    onPressed: _isShowButton
+                        ? () {
+                            // 미디에이션 정보 조회
+                            _mediationManager?.nextMediation();
+                          }
+                        : null,
                     child: const Text('Next Mediation'),
                   ),
                 ),
