@@ -105,7 +105,7 @@ class AdfitNativeAdState extends State<AdfitNativeAdWidget> {
       } else if ("onFailAd" == method) {
         print(">>> onFailAd");
       } else {
-        throw MissingPluginException('No MethodChannel : $method');
+        debugPrint('No MethodChannel : $method');
       }
     } catch (e) {
       debugPrint('Error MethodChannel ${call.method} : $e');

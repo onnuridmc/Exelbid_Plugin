@@ -93,7 +93,7 @@ class EBBannerAdViewState extends State<EBBannerAdView> {
       } else if ("onClickAd" == method) {
         widget.listener?.onClickAd?.call();
       } else {
-        throw MissingPluginException('No MethodChannel : $method');
+        debugPrint('No MethodChannel : $method');
       }
     } catch (e) {
       debugPrint('Error MethodChannel ${call.method} : $e');

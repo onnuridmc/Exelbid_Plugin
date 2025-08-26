@@ -1,6 +1,6 @@
 name: exelbid_plugin
 description: "Exelbid SDK for Flutter"
-version: 1.1.10
+version: 1.1.11
 repository: https://github.com/onnuridmc/Exelbid_Plugin
 
 environment:

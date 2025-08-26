@@ -155,7 +155,6 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
             "loadAd" -> {
                 loadAd(call)
             }
-            else -> result.notImplemented()
         }
     }
 

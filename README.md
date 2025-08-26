@@ -18,8 +18,8 @@ Flutter Plugin 가이드입니다.
 - [미디에이션](#미디에이션)
 
 # Version History
-## 1.1.10
-- android adid 이슈 수정
+## 1.1.11
+- mediation 초기화 수정
 
 <br/>
 
@@ -611,7 +611,7 @@ EBPNativeAdViewListener {
 # 미디에이션
 
 Exelbid Plugin을 이용한 Mediation 연동의 경우,  
-각 앱에서 연동하고 있는 광고 SDK들의 최적화 된 호출 순서를 응답한다.
+각 앱에서 연동하고 있는 광고 SDK들의 최적화 된 호출 순서를 응답한다.  
 
 
 ## 미디에이션 네트워크
@@ -702,6 +702,7 @@ class EBMediation {
 ```
 
 ### 미디에이션 요청 및 목록 순회
+
 ```dart
 // 미디에이션 목록 조회 (EBPMediationListener -> onLoad)
 _mediationManager.loadMediation();
@@ -716,3 +717,5 @@ _mediationManager.nextMediation();
 ### 유의 사항
 - 타사 광고 요청 후 광고가 없거나 오류가 발생하면 미디에이션 다음 순서를 호출해주세요.
 - 미디에이션 목록이 비어있다면 광고없음 처리를 해주세요.
+- 광고가 노출될 때까지 전체 과정을 반복해서는 안됩니다.
+

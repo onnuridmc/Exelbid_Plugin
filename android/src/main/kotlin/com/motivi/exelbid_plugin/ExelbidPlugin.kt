@@ -92,8 +92,6 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             }
 
             result.success(null)
-        } else {
-            result.notImplemented()
         }
     }
 
@@ -175,9 +173,10 @@ class EBPMediation(
                 "nextMediation" -> {
                     nextMediation(result)
                 }
-                else -> result.notImplemented()
             }
         }
+
+        channel.invokeMethod("onInitMediation", null);
     }
 
     private fun loadMediation(result: Result) {

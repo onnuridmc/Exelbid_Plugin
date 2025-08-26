@@ -1,3 +1,6 @@
+## 1.1.11
+- mediation 초기화 수정
+
 ## 1.1.10
 - android adid 이슈 수정
 

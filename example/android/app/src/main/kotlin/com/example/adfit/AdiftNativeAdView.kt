@@ -73,7 +73,6 @@ class AdiftNativeAdView(private val context: Context, id: Int, creationParams: M
             "" -> {
                 result.success(null)
             }
-            else -> result.notImplemented()
         }
     }
 

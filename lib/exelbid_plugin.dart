@@ -35,7 +35,7 @@ class ExelbidPlugin {
       if (handler != null) {
         handler();
       } else {
-        throw MissingPluginException('No handler for method $method');
+        debugPrint('Unhandled method: $method');
       }
     } catch (e) {
       print(
@@ -67,8 +67,9 @@ class ExelbidPlugin {
     _interstitialListener = listener;
   }
 
-  void callInvokeMethod(String method, Map<dynamic, dynamic> arguments) async {
-    await _channel.invokeMethod(method, arguments);
+  Future<void> callInvokeMethod(
+      String method, Map<dynamic, dynamic> arguments) async {
+    return await _channel.invokeMethod(method, arguments);
   }
 
   Future<ATTStatus> requestTrackingAuthorization() async {

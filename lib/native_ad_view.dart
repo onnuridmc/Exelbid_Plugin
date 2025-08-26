@@ -82,6 +82,9 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
 
   @override
   void dispose() {
+    _methodChannel?.setMethodCallHandler(null);
+    _methodChannel = null;
+
     _titleKey = null;
     _descriptionKey = null;
     _mainImageKey = null;
@@ -89,9 +92,6 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
     _iconImageKey = null;
     _callToActionKey = null;
     _privacyInformationIconImageKey = null;
-
-    _methodChannel?.setMethodCallHandler(null);
-    _methodChannel = null;
 
     super.dispose();
   }
@@ -165,7 +165,7 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
       } else if ("onClickAd" == method) {
         widget.listener?.onClickAd?.call();
       } else {
-        throw MissingPluginException('No MethodChannel : $method');
+        debugPrint('No MethodChannel : $method');
       }
     } catch (e) {
       debugPrint('Error MethodChannel ${call.method} : $e');
@@ -184,11 +184,12 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
   }
 
   void updateView(GlobalKey? key, String method) {
-    if (key == null) return;
+    if (key == null || _methodChannel == null) return;
 
     final state = key.currentState as EBNativeAdBaseState?;
+    if (state == null) return;
 
-    Rect rect = _getViewFrame(state?.rectKey ?? key);
+    Rect rect = _getViewFrame(state.rectKey);
 
     Map<String, dynamic> params;
 
@@ -211,12 +212,10 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
       return;
     }
 
-    if (state != null) {
-      EBBaseStyle? baseStyle = state.widget.baseStyle;
+    EBBaseStyle? baseStyle = state.widget.baseStyle;
 
-      if (baseStyle != null) {
-        params["styles"] = baseStyle.toMap();
-      }
+    if (baseStyle != null) {
+      params["styles"] = baseStyle.toMap();
     }
 
     _methodChannel?.invokeMethod(method, params);

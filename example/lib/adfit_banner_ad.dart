@@ -102,11 +102,11 @@ class AdfitBannerAdState extends State<AdfitBannerAdWidget> {
       if ("onLoadAd" == method) {
         print(">>> onLoadAd");
       } else if ("onFailAd" == method) {
-        print(">>> onFailAd");
+        print(">>> onFailAd : ${arguments}");
       } else if ("onClickAd" == method) {
         print(">>> onClickAd");
       } else {
-        throw MissingPluginException('No MethodChannel : $method');
+        debugPrint('No MethodChannel : $method');
       }
     } catch (e) {
       debugPrint('Error MethodChannel ${call.method} : $e');

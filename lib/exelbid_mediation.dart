@@ -33,12 +33,14 @@ class EBMediationManager {
       final String method = call.method;
       final Map<dynamic, dynamic>? arguments = call.arguments;
 
-      if (method == "onFailMediation") {
+      if (method == "onInitMediation") {
+        loadMediation();
+      } else if (method == "onFailMediation") {
         final errorCode = arguments?['error_code'] as String? ?? "0";
         final errorMessage = arguments?['error_message'] as String?;
         listener.onError(EBError(code: errorCode, message: errorMessage));
       } else {
-        throw MissingPluginException('No MethodChannel : $method');
+        debugPrint('No MethodChannel : $method');
       }
     } catch (e) {
       debugPrint('Error MethodChannel ${call.method} : $e');

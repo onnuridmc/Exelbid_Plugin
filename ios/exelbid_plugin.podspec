@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name = 'exelbid_plugin'
-    s.version = '1.1.3'
+    s.version = '1.1.11'
     s.summary = 'A Flutter plugin for using SDK.'
     s.homepage = 'https://exelbid.com'
     s.license = { :type => 'MIT', :file => 'LICENSE' }
