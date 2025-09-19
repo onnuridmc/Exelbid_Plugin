@@ -19,7 +19,6 @@ class _MediationInterstitialAdState
       defaultTargetPlatform == TargetPlatform.android
           ? "615217b82a648b795040baee8bc81986a71d0eb7"
           : "615217b82a648b795040baee8bc81986a71d0eb7";
-  bool _isLoadButton = true;
   bool _isShowButton = false;
 
   // 미디에이션 컨트롤
@@ -121,10 +120,10 @@ class _MediationInterstitialAdState
       _mediationManager?.nextMediation();
     }, onClickAd: () {
       print('Interstitial onClickAd');
-    }, onInterstitialShow: () {
-      print('onInterstitialShow');
-    }, onInterstitialDismiss: () {
-      print('onInterstitialDismiss');
+    }, onShow: () {
+      print('Interstitial onShow');
+    }, onDismiss: () {
+      print('Interstitial onDismiss');
     }));
   }
 

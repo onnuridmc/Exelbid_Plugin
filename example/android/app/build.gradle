@@ -11,12 +11,12 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     defaultConfig {
@@ -24,7 +24,8 @@ android {
         applicationId = "com.example"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // minSdk = flutter.minSdkVersion
+        minSdk 24
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -41,6 +42,8 @@ android {
 
 dependencies {
     implementation 'com.kakao.adfit:ads-base:3.19.5'
+    implementation 'com.onnuridmc.exelbid:exelbid:2.0.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 }
 
 flutter {

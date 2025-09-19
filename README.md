@@ -15,6 +15,8 @@ Flutter Plugin 가이드입니다.
     - [인스턴스 공통 메소드](#인스턴스-공통-메소드)
     - [배너 광고](#배너-광고)
     - [전면 광고](#전면-광고)
+    - [전면 비디오 광고](#전면-비디오-광고)
+    - [네이티브 광고](#네이티브-광고)
 - [미디에이션](#미디에이션)
 
 # Version History
@@ -115,7 +117,7 @@ ExelBid Android SDK가 제대로 작동하려면 Google Play Service 4.0 이상�
 <br>
 
 **build.gradle**
-```
+```groovy
 dependencies {
     implementation("com.google.android.gms:play-services-ads-identifier:16.0.0")
 }
@@ -327,18 +329,20 @@ EBPInterstitialAdViewListener {
 
 #### 예시)
 ```dart
-ExelbidPlugin.shared.setInterstitialListener(EBPInterstitialAdViewListener(
-    onLoadAd: () {
-        print("Interstitial onLoadAd");
-    }, onFailAd: (String? errorMessage) {
-        print("Interstitial onFailAd");
-    }, onClickAd: () {
-        print("Interstitial onClickAd");
-    }, onInterstitialShow: () {
-        print("onInterstitialShow");
-    }, onInterstitialDismiss: () {
-        print("onInterstitialDismiss"); 
-    })
+ExelbidPlugin.shared.setInterstitialListener(
+    EBPInterstitialAdViewListener(
+        onLoadAd: () {
+            print("Interstitial onLoadAd");
+        }, onFailAd: (String? errorMessage) {
+            print("Interstitial onFailAd");
+        }, onClickAd: () {
+            print("Interstitial onClickAd");
+        }, onInterstitialShow: () {
+            print("onInterstitialShow");
+        }, onInterstitialDismiss: () {
+            print("onInterstitialDismiss"); 
+        }
+    )
 );
 ```
 
@@ -346,11 +350,13 @@ ExelbidPlugin.shared.setInterstitialListener(EBPInterstitialAdViewListener(
 
 ### 전면 광고 요청
 ```dart
-Future<void> loadInterstitial({
-    required String adUnitId,
-    bool? coppa,
-    bool? isTest
-})
+Future<void> loadInterstitial(
+    {
+        required String adUnitId,
+        bool? coppa,
+        bool? isTest
+    }
+)
 ```
 
 #### 예시)
@@ -364,6 +370,95 @@ ExelbidPlugin.shared.loadInterstitial(adUnitId: "<<Ad Unit Id>>");
 전면 광고 초기화가 이루어진 후 광고 보기를 요청해야 합니다.  
 ```dart
 ExelbidPlugin.shared.showInterstitial();
+```
+
+<br/><br/>
+
+## 전면 비디오 광고
+
+### 전면 비디오 광고 이벤트 리스너
+```dart
+EBPVideoAdViewListener {
+    /// 광고 요청 성공
+    final Function() onLoadAd;
+
+    /// 광고 요청 실패 (광고 없음)
+    final Function(String? errorMessage) onFailAd;
+
+    /// 광고 클릭
+    final Function()? onClickAd;
+
+    // 광고가 화면에 표시된 후 전송됩니다.
+    final Function()? onShow;
+
+    // 광고가 화면에서 해제된 후 전송됩니다.
+    final Function()? onDismiss;
+
+    // 광고가 재생 실패시 전송됩니다.
+    final Function(String? errorMessage)? onFailToPlay;
+}
+```
+
+<br/>
+
+### 전면 비디오 광고 콜백 리스너 설정
+
+#### 예시)
+```dart
+ExelbidPlugin.shared.setVideoListener(
+    EBPVideoAdViewListener(
+        onLoadAd: () {
+            print('Interstitial Video onLoadAd');
+        },
+        onFailAd: (String? errorMessage) {
+            print('Interstitial Video onFailAd : $errorMessage');
+        },
+        onFailToPlay: (errorMessage) {
+            print('Interstitial Video onFailToPlay : $errorMessage');
+        },
+        onClickAd: () {
+            print('Interstitial Video onClickAd');
+        },
+        onShow: () {
+            print('onInterstitial Video Show');
+        },
+        onDismiss: () {
+            print('onInterstitial Video Dismiss');
+        }
+    )
+);
+```
+
+<br/>
+
+### 전면 비디오 광고 요청
+```dart
+Future<void> loadInterstitialVideo(
+    {
+        required String adUnitId,
+        bool? coppa,
+        bool? isTest,
+        int? timer
+    }
+)
+```
+
+#### 예시)
+```dart
+ExelbidPlugin.shared.loadInterstitialVideo(
+                              adUnitId: "<< Ad Unit Id >>",
+                              isTest: "<< Is Test : true, false >>",
+                              coppa: "<< Is COPPA : true, false >>",
+                              timer: "<< Skip Timer : int >>",
+                            );
+```
+
+<br/>
+
+### 전면 광고 보기
+전면 비디오 광고 요청 후 광고 보기를 요청해야 합니다.  
+```dart
+ExelbidPlugin.shared.showInterstitialVideo();
 ```
 
 <br/><br/>
@@ -607,6 +702,7 @@ EBPNativeAdViewListener {
 ```
 
 <br/><br/>
+
 
 # 미디에이션
 

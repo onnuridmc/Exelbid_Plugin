@@ -2,10 +2,12 @@ import 'package:exelbid_plugin_example/adfit_banner_ad.dart';
 import 'package:exelbid_plugin_example/adfit_native_ad.dart';
 import 'package:exelbid_plugin_example/banner_ad.dart';
 import 'package:exelbid_plugin_example/interstitial_ad.dart';
+import 'package:exelbid_plugin_example/interstitial_video_ad.dart';
 import 'package:exelbid_plugin_example/native_ad.dart';
 import 'package:exelbid_plugin_example/mediation_banner_ad.dart';
 import 'package:exelbid_plugin_example/mediation_interstitial_ad.dart';
 import 'package:exelbid_plugin_example/mediation_native_ad.dart';
+import 'package:exelbid_plugin_example/native_video_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:exelbid_plugin/exelbid_plugin.dart';
 
@@ -91,6 +93,17 @@ class MainScreen extends StatelessWidget {
                 );
               },
               child: const Text('Go to Native Ad'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const InterstitialVideoAdWidget()),
+                );
+              },
+              child: const Text('Go to Video Ad'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(

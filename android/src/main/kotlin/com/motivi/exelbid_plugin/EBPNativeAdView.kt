@@ -3,6 +3,7 @@ package com.motivi.exelbid_plugin
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
+import android.util.Log
 import android.view.View
 import android.view.ViewOutlineProvider
 import io.flutter.plugin.platform.PlatformView
@@ -62,6 +63,7 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
     private fun loadAd(call: MethodCall) {
         val adUnitId = call.argument<String>("ad_unit_id") ?: ""
         val coppa = call.argument<Boolean>("coppa") ?: false
+        val timer = call.argument<Int>("timer") ?: 0
         val isTest = call.argument<Boolean>("is_test") ?: false
         val assets = call.argument<List<String>>("native_assets") ?: listOf()
 
@@ -71,6 +73,7 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
             }
 
             override fun onShow() {
+                channel.invokeMethod("onShowAd", null)
             }
 
             override fun onClick() {
@@ -98,6 +101,7 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
         })
 
         nativeAd.setCoppa(coppa)
+        nativeAd.setTimer(timer)
         nativeAd.setTestMode(isTest)
 
         val nativeBuilder = NativeViewBinder.Builder(nativeAdView)

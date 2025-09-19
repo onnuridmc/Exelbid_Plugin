@@ -40,6 +40,7 @@ class EBNativeAdView extends StatefulWidget {
   final Widget child;
   final String adUnitId;
   final List<String>? nativeAssets;
+  final int? timer;
   final bool? coppa;
   final bool? isTest;
   final EBViewStyle? styles;
@@ -51,6 +52,7 @@ class EBNativeAdView extends StatefulWidget {
     required this.child,
     required this.adUnitId,
     this.nativeAssets,
+    this.timer,
     this.coppa,
     this.isTest,
     this.listener,
@@ -131,6 +133,7 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
     return {
       "ad_unit_id": widget.adUnitId,
       "native_assets": widget.nativeAssets,
+      "timer": widget.timer,
       "coppa": widget.coppa,
       "is_test": widget.isTest,
       "styles": widget.styles?.toMap()

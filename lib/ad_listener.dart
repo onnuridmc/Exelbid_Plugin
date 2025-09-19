@@ -23,24 +23,48 @@ class EBPBannerAdViewListener extends EBPAdListener {
 
 // 전면 광고 콜백 리스너
 class EBPInterstitialAdViewListener extends EBPAdListener {
-  // 전면 광고가 화면에 표시된 후에 전송됩니다.
-  final Function()? onInterstitialShow;
+  // 광고가 화면에 표시된 후 전송됩니다.
+  final Function()? onShow;
 
-  // 전면 광고가 화면에서 해제 된 후 전송됩니다.
-  final Function()? onInterstitialDismiss;
+  // 광고가 화면에서 해제된 후 전송됩니다.
+  final Function()? onDismiss;
 
   const EBPInterstitialAdViewListener(
       {required super.onLoadAd,
       required super.onFailAd,
       super.onClickAd,
-      this.onInterstitialShow,
-      this.onInterstitialDismiss});
+      this.onShow,
+      this.onDismiss});
 }
 
 // 네이티브 광고 콜백 리스너
 class EBPNativeAdViewListener extends EBPAdListener {
-  const EBPNativeAdViewListener(
-      {required super.onLoadAd, required super.onFailAd, super.onClickAd});
+  const EBPNativeAdViewListener({
+    required super.onLoadAd,
+    required super.onFailAd,
+    super.onClickAd,
+  });
+}
+
+// 비디오 광고 콜백 리스너
+class EBPVideoAdViewListener extends EBPAdListener {
+  // 광고가 재생 실패시 전송됩니다.
+  final Function(String? errorMessage)? onFailToPlay;
+
+  // 광고가 화면에 표시된 후 전송됩니다.
+  final Function()? onShow;
+
+  // 광고가 화면에서 해제된 후 전송됩니다.
+  final Function()? onDismiss;
+
+  const EBPVideoAdViewListener({
+    required super.onLoadAd,
+    required super.onFailAd,
+    required this.onFailToPlay,
+    super.onClickAd,
+    this.onShow,
+    this.onDismiss,
+  });
 }
 
 // 미디에이션 콜백 리스너

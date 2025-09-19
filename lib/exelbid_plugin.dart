@@ -14,6 +14,7 @@ class ExelbidPlugin {
   }
 
   EBPInterstitialAdViewListener? _interstitialListener;
+  EBPVideoAdViewListener? _videoAdViewListener;
 
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     try {
@@ -24,11 +25,15 @@ class ExelbidPlugin {
         "onInterstitialLoadAd": () => _interstitialListener?.onLoadAd(),
         "onInterstitialFailAd": () => _interstitialListener
             ?.onFailAd(arguments?['error_message'] as String?),
-        "onInterstitialShow": () =>
-            _interstitialListener?.onInterstitialShow?.call(),
-        "onInterstitialDismiss": () =>
-            _interstitialListener?.onInterstitialDismiss?.call(),
+        "onInterstitialShow": () => _interstitialListener?.onShow?.call(),
+        "onInterstitialDismiss": () => _interstitialListener?.onDismiss?.call(),
         "onInterstitialClickAd": () => _interstitialListener?.onClickAd?.call(),
+        "onVideoLoadAd": () => _videoAdViewListener?.onLoadAd(),
+        "onVideoFailAd": () => _videoAdViewListener
+            ?.onFailAd(arguments?['error_message'] as String?),
+        "onVideoShow": () => _videoAdViewListener?.onShow?.call(),
+        "onVideoDismiss": () => _videoAdViewListener?.onDismiss?.call(),
+        "onVideoClickAd": () => _videoAdViewListener?.onClickAd?.call(),
       };
 
       final handler = methodHandlers[method];
@@ -65,6 +70,28 @@ class ExelbidPlugin {
 
   void setInterstitialListener(EBPInterstitialAdViewListener? listener) {
     _interstitialListener = listener;
+  }
+
+  Future<void> loadInterstitialVideo(
+      {required String adUnitId, bool? coppa, bool? isTest, int? timer}) async {
+    try {
+      await _channel.invokeMethod('loadInterstitialVideo', {
+        'ad_unit_id': adUnitId,
+        'coppa': coppa,
+        'is_test': isTest,
+        'timer': timer
+      });
+    } on PlatformException catch (e) {
+      print("Failed to call method: '${e.message}'.");
+    }
+  }
+
+  void showInterstitialVideo() async {
+    await _channel.invokeMethod('showInterstitialVideo');
+  }
+
+  void setVideoListener(EBPVideoAdViewListener? listener) {
+    _videoAdViewListener = listener;
   }
 
   Future<void> callInvokeMethod(

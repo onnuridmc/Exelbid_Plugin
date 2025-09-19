@@ -81,6 +81,22 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             }
 
             result.success(null)
+        } else if (call.method == "loadInterstitialVideo") {
+            Log.d(javaClass.name, ">>> MethodChannel : loadInterstitialVideo")
+            val arguments = call.arguments as? Map<String?, Any?>
+            if (arguments != null) {
+                var adUnitId = arguments.get("ad_unit_id") as? String ?: ""
+                var timer = arguments.get("timer") as? Int ?: 0
+                var coppa = arguments.get("coppa") as? Boolean ?: true
+                var isTest = arguments.get("is_test") as? Boolean ?: false
+
+                loadInterstitialVideo(adUnitId, timer, coppa, isTest)
+            }
+
+            result.success(null)
+        } else if (call.method == "showInterstitialVideo") {
+            showInterstitialVideo()
+            result.success(null)
         } else if (call.method == "initMediation") {
             val arguments = call.arguments as? Map<*, *>
             if (arguments != null) {
@@ -152,6 +168,48 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             interstitial.show()
         }
     }
+
+    private fun loadInterstitialVideo(adUnitId: String, timer: Int = 0, coppa: Boolean = false, isTest: Boolean = false) {
+        interstitial = ExelBidInterstitial(context, adUnitId)
+
+        interstitial.setCoppa(false)
+        interstitial.setTestMode(true)
+        interstitial.setTimer(timer)
+
+        interstitial.setInterstitialAdListener(object : OnInterstitialAdListener {
+            override fun onInterstitialLoaded() {
+                Log.d(javaClass.name, ">>> onInterstitialLoaded")
+                channel.invokeMethod("onVideoLoadAd", null)
+            }
+
+            override fun onInterstitialFailed(errorCode: ExelBidError?, statusCode: Int) {
+                Log.d(javaClass.name, ">>> onInterstitialFailed (${errorCode?.errorCode}:$statusCode) : ${errorCode?.errorMessage}")
+                channel.invokeMethod("onVideoFailAd", mapOf("error_message" to errorCode?.errorMessage))
+            }
+
+            override fun onInterstitialShow() {
+                Log.d(javaClass.name, ">>> onInterstitialShow")
+                channel.invokeMethod("onVideoShow", null)
+            }
+
+            override fun onInterstitialDismiss() {
+                Log.d(javaClass.name, ">>> onInterstitialDismiss")
+                channel.invokeMethod("onVideoDismiss", null)
+            }
+
+            override fun onInterstitialClicked() {
+                Log.d(javaClass.name, ">>> onInterstitialClicked")
+                channel.invokeMethod("onVideoClickAd", null)
+            }
+        })
+
+        interstitial.loadAd()
+    }
+
+    private fun showInterstitialVideo() {
+        if(interstitial.isReady)
+            interstitial.show()
+    }
 }
 
 class EBPMediation(
@@ -182,7 +240,7 @@ class EBPMediation(
     private fun loadMediation(result: Result) {
         ExelBid.getMediationData(context, unitId, convertToEnumList(types), object: OnMediationOrderResultListener {
             override fun onMediationOrderResult(orderResult: MediationOrderResult) {
-                if(orderResult != null && orderResult.getSize() > 0) {
+                if(orderResult.getSize() > 0) {
                     mediationOrderResult = orderResult;
                     result.success(true)
                 } else {

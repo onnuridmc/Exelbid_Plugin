@@ -58,6 +58,7 @@ class _NativeAdState extends State<NativeAdWidget> {
                   child: _isShow
                       ? EBNativeAdView(
                           adUnitId: _adUnitId,
+                          isTest: true,
                           nativeAssets: const [
                             EBNativeAssets.title,
                             EBNativeAssets.main,
@@ -70,7 +71,7 @@ class _NativeAdState extends State<NativeAdWidget> {
                           listener: EBPNativeAdViewListener(onLoadAd: () {
                             print("Native onLoadAd");
                           }, onFailAd: (String? errorMessage) {
-                            print("Native onFailAd");
+                            print("Native onFailAd : $errorMessage");
                           }, onClickAd: () {
                             print("Native onClickAd");
                           }),

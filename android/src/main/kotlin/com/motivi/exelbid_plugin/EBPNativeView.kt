@@ -6,15 +6,14 @@ import android.graphics.Rect
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import com.onnuridmc.exelbid.lib.vast.NativeVideoView
 import io.flutter.plugin.common.MethodCall
@@ -28,6 +27,11 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
     var iconImageView: ImageView? = null
     var callToActionView: Button? = null
     var privacyInformationIconImageView: ImageView? = null
+
+    init {
+        clipChildren = true
+        clipToPadding = true
+    }
 
     fun setTitleView(call: MethodCall) {
         if (titleView == null) {
@@ -76,6 +80,8 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
             mainVideoView = NativeVideoView(context).apply {
                 id = View.generateViewId()
                 gravity = Gravity.CENTER_HORIZONTAL
+                clipChildren = true
+                clipToPadding = true
             }
             addView(mainVideoView)
         }

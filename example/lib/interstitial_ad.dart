@@ -12,7 +12,7 @@ class InterstitialAdWidget extends StatefulWidget {
 
 class _InterstitialAdState extends State<InterstitialAdWidget> {
   final String _adUnitId = defaultTargetPlatform == TargetPlatform.android
-      ? "615217b82a648b795040baee8bc81986a71d0eb7"
+      ? "e449086b1c7f93dfcfeab21f85a49379a2299b0a"
       : "615217b82a648b795040baee8bc81986a71d0eb7";
   bool _isLoadButton = true;
   bool _isShowButton = false;
@@ -29,9 +29,9 @@ class _InterstitialAdState extends State<InterstitialAdWidget> {
       print('Interstitial onFailAd : $errorMessage');
     }, onClickAd: () {
       print('Interstitial onClickAd');
-    }, onInterstitialShow: () {
+    }, onShow: () {
       print('onInterstitialShow');
-    }, onInterstitialDismiss: () {
+    }, onDismiss: () {
       print('onInterstitialDismiss');
       setState(() {
         _isLoadButton = true;
@@ -57,8 +57,10 @@ class _InterstitialAdState extends State<InterstitialAdWidget> {
                   child: ElevatedButton(
                     onPressed: _isLoadButton
                         ? () {
-                            ExelbidPlugin.shared
-                                .loadInterstitial(adUnitId: _adUnitId);
+                            ExelbidPlugin.shared.loadInterstitial(
+                              adUnitId: _adUnitId,
+                              isTest: true,
+                            );
                             setState(() {
                               _isLoadButton = false;
                             });

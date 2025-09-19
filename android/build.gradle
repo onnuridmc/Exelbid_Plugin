@@ -9,8 +9,8 @@ android {
     compileSdkVersion 34
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 34
+        minSdkVersion 24
+        targetSdkVersion 35
     }
 
     lintOptions {
@@ -18,12 +18,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
     buildTypes {
@@ -37,15 +37,19 @@ android {
     }
 }
 
-def exoplayer_version = '2.13.3'
+def exoplayer_version = '1.2.0'
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
-    implementation 'com.onnuridmc.exelbid:exelbid:2.0.2'
-    implementation 'com.google.android.gms:play-services-base:17.6.0'
-    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
-    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
-    implementation 'com.google.android.gms:play-services-ads-identifier:18.2.0'
+    implementation 'com.onnuridmc.exelbid:exelbid:2.0.3'
+
+    implementation 'com.google.android.gms:play-services-ads-identifier:16.0.0'
+    implementation 'com.google.android.gms:play-services-auth-base:18.0.4'
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
+
+    implementation "androidx.media3:media3-exoplayer:$exoplayer_version"
+    implementation "androidx.media3:media3-ui:$exoplayer_version"
+    implementation "androidx.media3:media3-common:$exoplayer_version"
 }
 
 repositories {
