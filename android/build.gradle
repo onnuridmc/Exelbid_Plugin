@@ -44,8 +44,6 @@ dependencies {
     implementation 'com.onnuridmc.exelbid:exelbid:2.0.3'
 
     implementation 'com.google.android.gms:play-services-ads-identifier:16.0.0'
-    implementation 'com.google.android.gms:play-services-auth-base:18.0.4'
-    implementation 'com.google.android.gms:play-services-location:20.0.0'
 
     implementation "androidx.media3:media3-exoplayer:$exoplayer_version"
     implementation "androidx.media3:media3-ui:$exoplayer_version"

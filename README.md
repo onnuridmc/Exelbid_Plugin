@@ -384,6 +384,38 @@ ExelbidPlugin.shared.setInterstitialListener(
 
 <br/>
 
+### build.gradle 설정 (Android)
+1. build.gradle에 비디오 컴포넌트 라이브러리 종속성 추가 (Android 비디오 광고 공통)  
+    - Exelbid에서는 비디오 플레이어를 Exoplayer3 기반으로 동작됩니다.
+    - 미적용 시 Exception 또는 광고가 노출되지 않습니다.
+2. Flutter 빌드 환경에 따라 다르지만 minSdkVersion은 24이상으로 설정하는 것이 좋습니다.
+    - ExelbidPlugin 내 기본으로 설정되어 있습니다.
+    - exoplayer 의존성 에러 발생 시 추가해주세요.
+
+    ```groovy
+    def exoplayer_version = '1.2.0'
+
+    dependencies {
+        implementation "androidx.media3:media3-exoplayer:$exoplayer_version"
+        implementation "androidx.media3:media3-ui:$exoplayer_version"
+        implementation "androidx.media3:media3-common:$exoplayer_version"
+
+        ...
+    }
+    ```
+3. AndroidManifest 추가
+    - 비디오 노출을 처리하는 VideoPlayerActivity 추가
+    - ExelbidPlugin 내 기본으로 설정되어 있습니다.  
+    VideoPlayerActivity 에러 발생 시 추가해주세요.
+    
+    ```xml
+    <activity android:name="com.onnuridmc.exelbid.lib.vast.VideoPlayerActivity"
+          android:configChanges="keyboardHidden|orientation|screenSize">
+    </activity>
+    ```
+
+<br/>
+
 ### 전면 비디오 광고 요청
 ```dart
 Future<void> loadInterstitialVideo(

@@ -42,8 +42,6 @@ android {
 
 dependencies {
     implementation 'com.kakao.adfit:ads-base:3.19.5'
-    implementation 'com.onnuridmc.exelbid:exelbid:2.0.3'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
 }
 
 flutter {
