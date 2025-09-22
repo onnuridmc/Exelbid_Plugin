@@ -303,6 +303,32 @@ EBPBannerAdViewListener {
 
 ## 전면 광고
 
+### 전면 광고 요청
+```dart
+Future<void> loadInterstitial(
+    {
+        required String adUnitId,
+        bool? coppa,
+        bool? isTest
+    }
+)
+```
+
+#### 예시)
+```dart
+ExelbidPlugin.shared.loadInterstitial(adUnitId: "<<Ad Unit Id>>");
+```
+
+<br/>
+
+### 전면 광고 보기
+전면 광고 초기화가 이루어진 후 광고 보기를 요청해야 합니다.  
+```dart
+ExelbidPlugin.shared.showInterstitial();
+```
+
+<br/>
+
 ### 전면 광고 이벤트 리스너
 ```dart
 EBPInterstitialAdViewListener {
@@ -346,35 +372,49 @@ ExelbidPlugin.shared.setInterstitialListener(
 );
 ```
 
+<br/><br/>
+
+## 전면 비디오 광고
+
+|Key|Type|Default|Desc|
+|---|---|---|---|
+|timer|int?|0|광고의 전환 성과 향상을 위해 일정 시간 노출을 보장하는 타이머가 동작할 시간(초)를 설정한다.|
+
+\* timer 지정은 AOS만 가능
+
 <br/>
 
-### 전면 광고 요청
+### 전면 비디오 광고 요청
 ```dart
-Future<void> loadInterstitial(
+Future<void> loadInterstitialVideo(
     {
         required String adUnitId,
         bool? coppa,
-        bool? isTest
+        bool? isTest,
+        int? timer
     }
 )
 ```
 
 #### 예시)
 ```dart
-ExelbidPlugin.shared.loadInterstitial(adUnitId: "<<Ad Unit Id>>");
+ExelbidPlugin.shared.loadInterstitialVideo(
+                              adUnitId: "<< Ad Unit Id >>",
+                              isTest: "<< Is Test : true, false >>",
+                              coppa: "<< Is COPPA : true, false >>",
+                              timer: "<< Skip Timer : int >>",
+                            );
 ```
 
 <br/>
 
 ### 전면 광고 보기
-전면 광고 초기화가 이루어진 후 광고 보기를 요청해야 합니다.  
+전면 비디오 광고 요청 후 광고 보기를 요청해야 합니다.  
 ```dart
-ExelbidPlugin.shared.showInterstitial();
+ExelbidPlugin.shared.showInterstitialVideo();
 ```
 
-<br/><br/>
-
-## 전면 비디오 광고
+<br/>
 
 ### 전면 비디오 광고 이벤트 리스너
 ```dart
@@ -427,38 +467,6 @@ ExelbidPlugin.shared.setVideoListener(
         }
     )
 );
-```
-
-<br/>
-
-### 전면 비디오 광고 요청
-```dart
-Future<void> loadInterstitialVideo(
-    {
-        required String adUnitId,
-        bool? coppa,
-        bool? isTest,
-        int? timer
-    }
-)
-```
-
-#### 예시)
-```dart
-ExelbidPlugin.shared.loadInterstitialVideo(
-                              adUnitId: "<< Ad Unit Id >>",
-                              isTest: "<< Is Test : true, false >>",
-                              coppa: "<< Is COPPA : true, false >>",
-                              timer: "<< Skip Timer : int >>",
-                            );
-```
-
-<br/>
-
-### 전면 광고 보기
-전면 비디오 광고 요청 후 광고 보기를 요청해야 합니다.  
-```dart
-ExelbidPlugin.shared.showInterstitialVideo();
 ```
 
 <br/><br/>
