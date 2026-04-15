@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:exelbid_plugin/ad_listener.dart';
 import 'package:exelbid_plugin/ad_classes.dart';
 import 'package:exelbid_plugin/native_ad_view.dart';
@@ -22,11 +24,20 @@ class _NativeAdState extends State<NativeAdWidget> {
     super.dispose();
   }
 
+  String get adFontFamily {
+    if (Platform.isAndroid) return 'nanum_gothic';
+    if (Platform.isIOS) return 'NanumGothic';
+    return '';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Native Ad"),
+        title: const Text(
+          "Native Ad",
+          style: TextStyle(),
+        ),
       ),
       body: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
         SizedBox(
@@ -97,8 +108,11 @@ class _NativeAdState extends State<NativeAdWidget> {
                                   Expanded(
                                     child: SizedBox(
                                       child: EBNativeAdTitle(
-                                        styles: const EBTextStyle(
-                                          fontWeight: FontWeight.bold,
+                                        styles: EBTextStyle(
+                                          maxLines: 1,
+                                          textOverflow: TextOverflow.ellipsis,
+                                          fontWeight: FontWeight.w900,
+                                          fontFamily: adFontFamily,
                                         ),
                                       ),
                                     ),
@@ -140,12 +154,15 @@ class _NativeAdState extends State<NativeAdWidget> {
                                   padding: const EdgeInsets.only(
                                       top: 10, bottom: 10, right: 10),
                                   child: EBNativeAdCallToAction(
-                                    styles: const EBButtonStyle(
+                                    styles: EBButtonStyle(
                                       color: Colors.white,
                                       backgroundColor: Colors.lightBlue,
                                       borderRadius: 10,
+                                      maxLines: 1,
+                                      textOverflow: TextOverflow.ellipsis,
                                       fontSize: 20,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w700,
+                                      fontFamily: adFontFamily,
                                     ),
                                   ),
                                 ),

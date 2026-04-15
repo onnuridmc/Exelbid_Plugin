@@ -294,6 +294,7 @@ class EBNativeAdTitleState extends EBNativeAdBaseState<EBNativeAdTitle> {
           color: Colors.transparent,
           fontSize: widget.baseStyle?.fontSize,
           fontWeight: widget.baseStyle?.fontWeight,
+          fontFamily: widget.baseStyle?.fontFamily,
         ),
       )),
     );
@@ -337,6 +338,7 @@ class EBNativeAdDescriptionState
             color: Colors.transparent,
             fontSize: widget.baseStyle?.fontSize,
             fontWeight: widget.baseStyle?.fontWeight,
+            fontFamily: widget.baseStyle?.fontFamily,
           ),
         ),
       ),
@@ -518,6 +520,7 @@ class EBNativeAdCallToActionState
               color: Colors.transparent,
               fontSize: widget.baseStyle?.fontSize,
               fontWeight: widget.baseStyle?.fontWeight,
+              fontFamily: widget.baseStyle?.fontFamily,
             ),
           ),
         ),

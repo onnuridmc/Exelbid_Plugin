@@ -7,7 +7,6 @@ import 'package:exelbid_plugin_example/native_ad.dart';
 import 'package:exelbid_plugin_example/mediation_banner_ad.dart';
 import 'package:exelbid_plugin_example/mediation_interstitial_ad.dart';
 import 'package:exelbid_plugin_example/mediation_native_ad.dart';
-import 'package:exelbid_plugin_example/native_video_ad.dart';
 import 'package:flutter/material.dart';
 import 'package:exelbid_plugin/exelbid_plugin.dart';
 

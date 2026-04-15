@@ -100,7 +100,7 @@ class EBBaseStyle {
   final double? wordSpacing;
   final double? height;
   final String? fontFamily;
-  final TextOverflow? overflow;
+  final TextOverflow? textOverflow;
   final TextAlign? textAlign;
   final bool? softWrap;
   final int? maxLines;
@@ -122,7 +122,7 @@ class EBBaseStyle {
     this.wordSpacing,
     this.height,
     this.fontFamily,
-    this.overflow,
+    this.textOverflow,
     this.textAlign,
     this.softWrap,
     this.maxLines,
@@ -146,7 +146,7 @@ class EBBaseStyle {
       "word_spacing": wordSpacing,
       "height": height,
       "font_family": fontFamily,
-      "overflow": overflow,
+      "text_overflow": textOverflow?.name,
       "text_align": textAlign,
       "soft_wrap": softWrap,
       "max_lines": maxLines,
@@ -220,6 +220,9 @@ class EBTextStyle extends EBBaseStyle {
     super.color,
     super.fontSize,
     super.fontWeight,
+    super.fontFamily,
+    super.maxLines,
+    super.textOverflow,
   });
 }
 
@@ -231,6 +234,9 @@ class EBButtonStyle extends EBBaseStyle {
     super.color,
     super.fontSize,
     super.fontWeight,
+    super.fontFamily,
+    super.maxLines,
+    super.textOverflow,
   });
 }
 

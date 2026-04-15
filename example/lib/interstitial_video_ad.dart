@@ -24,33 +24,35 @@ class _InterstitialVideoAdState extends State<InterstitialVideoAdWidget> {
     _channel.setMethodCallHandler(_handleMethodCall);
 
     // Set Interstitial Video Listener
-    ExelbidPlugin.shared.setVideoListener(EBPVideoAdViewListener(
-      onLoadAd: () {
-        print('Interstitial Video onLoadAd');
-        setState(() {
-          _isShowButton = true;
-        });
-      },
-      onFailAd: (String? errorMessage) {
-        print('Interstitial Video onFailAd : $errorMessage');
-      },
-      onFailToPlay: (errorMessage) {
-        print('Interstitial Video onFailToPlay : $errorMessage');
-      },
-      onClickAd: () {
-        print('Interstitial Video onClickAd');
-      },
-      onShow: () {
-        print('onInterstitial Video Show');
-      },
-      onDismiss: () {
-        print('onInterstitial Video Dismiss');
-        setState(() {
-          _isLoadButton = true;
-          _isShowButton = false;
-        });
-      },
-    ));
+    ExelbidPlugin.shared.setVideoListener(
+      EBPVideoAdViewListener(
+        onLoadAd: () {
+          print('Interstitial Video onLoadAd');
+          setState(() {
+            _isShowButton = true;
+          });
+        },
+        onFailAd: (String? errorMessage) {
+          print('Interstitial Video onFailAd : $errorMessage');
+        },
+        onFailToPlay: (errorMessage) {
+          print('Interstitial Video onFailToPlay : $errorMessage');
+        },
+        onClickAd: () {
+          print('Interstitial Video onClickAd');
+        },
+        onShow: () {
+          print('onInterstitial Video Show');
+        },
+        onDismiss: () {
+          print('onInterstitial Video Dismiss');
+          setState(() {
+            _isLoadButton = true;
+            _isShowButton = false;
+          });
+        },
+      ),
+    );
   }
 
   @override
@@ -98,9 +100,7 @@ class _InterstitialVideoAdState extends State<InterstitialVideoAdWidget> {
               ],
             ),
           ),
-          const Expanded(
-            child: SizedBox(),
-          ),
+          const Expanded(child: SizedBox()),
         ],
       ),
     );

@@ -1,6 +1,6 @@
 PODS:
   - ExelBid_iOS_Swift (2.2.8)
-  - exelbid_plugin (1.1.12):
+  - exelbid_plugin (1.2.0):
     - ExelBid_iOS_Swift
     - Flutter
   - Flutter (1.0.0)
@@ -21,7 +21,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   ExelBid_iOS_Swift: 5d3c0f2547212e6030d0b8b53ad72563a03a3ac2
-  exelbid_plugin: 4b199049fccbd1c421c3107c5e527fbd92ff989b
+  exelbid_plugin: 532387a388c2697f1bbd1ce49bd8cfbb2655ca22
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
 
 PODFILE CHECKSUM: 251cb053df7158f337c0712f2ab29f4e0fa474ce

@@ -7,7 +7,9 @@ import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.util.Log
+import android.text.TextUtils
 import android.util.TypedValue
+import androidx.core.content.res.ResourcesCompat
 import android.view.Gravity
 import android.view.View
 import android.view.ViewOutlineProvider
@@ -37,6 +39,8 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
         if (titleView == null) {
             titleView = TextView(context).apply {
                 id = View.generateViewId()
+                maxLines = 1
+                ellipsize = TextUtils.TruncateAt.END
             }
             addView(titleView)
         }
@@ -51,6 +55,8 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
         if (descriptionView == null) {
             descriptionView = TextView(context).apply {
                 id = View.generateViewId()
+                maxLines = 10
+                ellipsize = TextUtils.TruncateAt.END
             }
             addView(descriptionView)
         }
@@ -110,6 +116,8 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
         if (callToActionView == null) {
             callToActionView = Button(context).apply {
                 id = View.generateViewId()
+                maxLines = 1
+                ellipsize = TextUtils.TruncateAt.END
             }
             addView(callToActionView)
         }
@@ -220,15 +228,68 @@ class EBPNativeView(context: Context, attrs: AttributeSet? = null, defStyleAttr:
             }
 
             val fontSize = styles["font_size"] as? Double
-            fontSize?.let {
-                view.setTextSize(TypedValue.COMPLEX_UNIT_SP, it.toFloat())
+            val fontFamily = styles["font_family"] as? String
+            val fontWeight = styles["font_weight"] as? String
+
+            var typeface: Typeface? = null
+
+            if (fontFamily != null) {
+                val fontResId = context.resources.getIdentifier(
+                    fontFamily,
+                    "font",
+                    context.packageName
+                )
+
+                if (fontResId != 0) {
+                    typeface = ResourcesCompat.getFont(context, fontResId)
+                }
             }
 
-            val fontWeight = styles["font_weight"] as? String
-            fontWeight?.let {
-                val typeface = if (fontWeight.equals("bold", true)) Typeface.BOLD else Typeface.NORMAL
-                view.setTypeface(null, typeface)
+            val weight = fontWeightToInt(fontWeight)
+
+            if (typeface != null || fontWeight != null) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                    view.typeface = Typeface.create(typeface, weight, false)
+                } else {
+                    val style = if (weight >= 700) Typeface.BOLD else Typeface.NORMAL
+                    view.setTypeface(typeface ?: Typeface.defaultFromStyle(style), style)
+                }
             }
+
+            if (fontSize != null) {
+                view.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize.toFloat())
+            }
+
+            val maxLines = styles["max_lines"] as? Int
+            if (maxLines != null) {
+                view.maxLines = maxLines
+            }
+
+            val textOverflow = styles["text_overflow"] as? String
+            if (textOverflow != null) {
+                view.ellipsize = when (textOverflow) {
+                    "ellipsis" -> TextUtils.TruncateAt.END
+                    "fade" -> TextUtils.TruncateAt.MARQUEE
+                    "clip" -> null
+                    "visible" -> null
+                    else -> TextUtils.TruncateAt.END
+                }
+            }
+        }
+    }
+
+    private fun fontWeightToInt(fontWeight: String?): Int {
+        return when (fontWeight) {
+            "ultraLight" -> 100
+            "thin" -> 200
+            "light" -> 300
+            "regular" -> 400
+            "medium" -> 500
+            "semibold" -> 600
+            "bold" -> 700
+            "heavy" -> 800
+            "black" -> 900
+            else -> 400
         }
     }
 

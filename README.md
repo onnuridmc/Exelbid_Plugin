@@ -18,10 +18,11 @@ Flutter Plugin 가이드입니다.
     - [전면 비디오 광고](#전면-비디오-광고)
     - [네이티브 광고](#네이티브-광고)
 - [미디에이션](#미디에이션)
+- [커스텀 폰트](#커스텀-폰트))
 
 # Version History
-## 1.2.0
-- 전면 비디오 샘플 추가
+## 1.3.0
+- 폰트 글꼴 추가
 
 <br/>
 
@@ -227,11 +228,12 @@ EBTextStyle extends EBBaseStyle {
     super.color,            // 폰트 색상
     super.fontSize,         // 폰트 크기
     super.fontWeight,       // 폰트 두께
+    super.fontFamily,       // 폰트명
   });
 }
 ```
 
-#### EBTextStyle
+#### EBButtonStyle
 ```dart
 EBButtonStyle extends EBBaseStyle {
   const EBButtonStyle({
@@ -240,6 +242,7 @@ EBButtonStyle extends EBBaseStyle {
     super.color,                // 폰트 색상
     super.fontSize,             // 폰트 크기
     super.fontWeight,           // 폰트 두께
+    super.fontFamily,           // 폰트명
   });
 }
 ```
@@ -855,3 +858,8 @@ _mediationManager.nextMediation();
 - 미디에이션 목록이 비어있다면 광고없음 처리를 해주세요.
 - 광고가 노출될 때까지 전체 과정을 반복해서는 안됩니다.
 
+<br/><br/>
+
+
+# 커스텀 폰트
+[커스텀 폰트 설정 가이드](./docs/CUSTOM_FONT_SETUP.md)
