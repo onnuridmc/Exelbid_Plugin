@@ -18,7 +18,7 @@ Flutter Plugin 가이드입니다.
     - [전면 비디오 광고](#전면-비디오-광고)
     - [네이티브 광고](#네이티브-광고)
 - [미디에이션](#미디에이션)
-- [커스텀 폰트](#커스텀-폰트))
+- [커스텀 폰트](#커스텀-폰트)
 
 # Version History
 ## 1.3.0
@@ -229,6 +229,8 @@ EBTextStyle extends EBBaseStyle {
     super.fontSize,         // 폰트 크기
     super.fontWeight,       // 폰트 두께
     super.fontFamily,       // 폰트명
+    super.maxLines,         // 최대 라인수
+    super.textOverflow,     // 문자 넘침 처리 방법
   });
 }
 ```
@@ -243,6 +245,8 @@ EBButtonStyle extends EBBaseStyle {
     super.fontSize,             // 폰트 크기
     super.fontWeight,           // 폰트 두께
     super.fontFamily,           // 폰트명
+    super.maxLines,             // 최대 라인수
+    super.textOverflow,         // 문자 넘침 처리 방법
   });
 }
 ```
