@@ -105,62 +105,71 @@ public class ExelbidPlugin: NSObject, FlutterPlugin {
     }
     
     func loadInterstitialVideo(adUnitId: String, coppa: Bool = false, isTest: Bool = false) {
+        // 이전 인스턴스 정리
+        self.videoManager = nil
+
         self.videoManager = EBVideoManager(identifier: adUnitId)
-        
+
         if let videoManager = self.videoManager {
             // 광고의 효율을 높이기 위해 옵션 설정
             videoManager.coppa("\(coppa ? 1 : 0)")
-            
+
             // 테스트 광고 설정 (true - 테스트 광고가 응답)
             videoManager.testing(isTest)
 
-            videoManager.startWithCompletionHandler { (request, error) in
-                if let error = error  {
-                    print(">>> \(error.localizedDescription)")
-                    ExelbidPlugin.channel?.invokeMethod("onVideoFailAd", arguments: ["error_message": error.localizedDescription])
-                }else{
-                   ExelbidPlugin.channel?.invokeMethod("onVideoLoadAd", arguments: nil)
+            videoManager.startWithCompletionHandler { [weak self] (request, error) in
+                DispatchQueue.main.async {
+                    guard self?.videoManager === videoManager else { return }
+                    if let error = error {
+                        print(">>> \(error.localizedDescription)")
+                        ExelbidPlugin.channel?.invokeMethod("onVideoFailAd", arguments: ["error_message": error.localizedDescription])
+                    } else {
+                        ExelbidPlugin.channel?.invokeMethod("onVideoLoadAd", arguments: nil)
+                    }
                 }
             }
         }
     }
 
     func showInterstitialVideo() {
-        if let videoManager = videoManager, let uiViewController = topViewController {
-            videoManager.presentAd(controller: uiViewController, delegate: self)
-        } else {
-            ExelbidPlugin.channel?.invokeMethod("onVideoFailAd", arguments: ["error_message": "Not Found ViewController"])
+        guard let videoManager = videoManager else {
+            ExelbidPlugin.channel?.invokeMethod("onVideoFailAd", arguments: ["error_message": "VideoManager is nil"])
+            return
         }
+        guard let uiViewController = topViewController else {
+            ExelbidPlugin.channel?.invokeMethod("onVideoFailAd", arguments: ["error_message": "Not Found ViewController"])
+            return
+        }
+        videoManager.presentAd(controller: uiViewController, delegate: self)
     }
     
     var topViewController: UIViewController? {
         var mainWindow: UIWindow? = nil
         if #available(iOS 15, *) {
-            // iOS 15 이상
             if let windowScene = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
                 .first(where: { $0.activationState == .foregroundActive }) {
                 mainWindow = windowScene.windows.first(where: { $0.isKeyWindow })
             }
         } else if #available(iOS 13, *) {
-            // iOS 13 ~ iOS 14
             mainWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow })
         } else {
-            // iOS 12 이하
             mainWindow = UIApplication.shared.keyWindow
         }
-        
-        var topViewController = mainWindow?.rootViewController
-        
-        if let presented = topViewController?.presentedViewController {
-            topViewController = presented
-        } else if let navController = topViewController as? UINavigationController {
-            topViewController = navController.topViewController
-        } else if let tabBarController = topViewController as? UITabBarController {
-            topViewController = tabBarController.selectedViewController
+
+        var vc = mainWindow?.rootViewController
+        while true {
+            if let presented = vc?.presentedViewController {
+                vc = presented
+            } else if let navController = vc as? UINavigationController {
+                vc = navController.topViewController
+            } else if let tabBarController = vc as? UITabBarController {
+                vc = tabBarController.selectedViewController
+            } else {
+                break
+            }
         }
-        
-        return topViewController
+        return vc
     }
 }
 
@@ -168,23 +177,33 @@ public class ExelbidPlugin: NSObject, FlutterPlugin {
 
 extension ExelbidPlugin : EBInterstitialAdControllerDelegate{
     public func interstitialDidLoadAd(_ interstitial: EBInterstitialAdController?) {
-        ExelbidPlugin.channel?.invokeMethod("onInterstitialLoadAd", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onInterstitialLoadAd", arguments: nil)
+        }
     }
 
     public func interstitialDidFailToLoadAd(_ interstitial: EBInterstitialAdController?) {
-        ExelbidPlugin.channel?.invokeMethod("onInterstitialFailAd", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onInterstitialFailAd", arguments: nil)
+        }
     }
 
     public func interstitialDidAppear(_ interstitial: EBInterstitialAdController?) {
-        ExelbidPlugin.channel?.invokeMethod("onInterstitialShow", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onInterstitialShow", arguments: nil)
+        }
     }
 
     public func interstitialDidDisappear(_ interstitial: EBInterstitialAdController?) {
-        ExelbidPlugin.channel?.invokeMethod("onInterstitialDismiss", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onInterstitialDismiss", arguments: nil)
+        }
     }
 
     public func interstitialDidReceiveTapEvent(_ interstitial: EBInterstitialAdController?) {
-        ExelbidPlugin.channel?.invokeMethod("onInterstitialClickAd", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onInterstitialClickAd", arguments: nil)
+        }
     }
 }
 
@@ -194,23 +213,33 @@ extension ExelbidPlugin : EBInterstitialAdControllerDelegate{
 extension ExelbidPlugin : EBVideoDelegate {
 
     public func videoAdDidLoad(adUnitID: String) {
-        ExelbidPlugin.channel?.invokeMethod("onVideoLoadAd", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onVideoLoadAd", arguments: nil)
+        }
     }
 
     public func videoAdDidFailToLoad(adUnitID: String, error: any Error) {
-        ExelbidPlugin.channel?.invokeMethod("onVideoFailAd", arguments: ["error_message": error.localizedDescription])
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onVideoFailAd", arguments: ["error_message": error.localizedDescription])
+        }
     }
 
     public func videoAdDidAppear(adUnitID: String) {
-        ExelbidPlugin.channel?.invokeMethod("onVideoShow", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onVideoShow", arguments: nil)
+        }
     }
 
     public func videoAdDidDisappear(adUnitID: String) {
-        ExelbidPlugin.channel?.invokeMethod("onVideoDismiss", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onVideoDismiss", arguments: nil)
+        }
     }
 
     public func videoAdDidReceiveTapEvent(adUnitID: String) {
-        ExelbidPlugin.channel?.invokeMethod("onVideoClickAd", arguments: nil)
+        DispatchQueue.main.async {
+            ExelbidPlugin.channel?.invokeMethod("onVideoClickAd", arguments: nil)
+        }
     }
 }
 

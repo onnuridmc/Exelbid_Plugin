@@ -112,18 +112,22 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
                   },
                 ),
                 if (defaultTargetPlatform == TargetPlatform.android)
-                  AndroidView(
-                    viewType: EB_NATIVE_VIEW_TYPE,
-                    creationParams: createParams(),
-                    creationParamsCodec: const StandardMessageCodec(),
-                    onPlatformViewCreated: onPlatformViewCreated,
+                  Positioned.fill(
+                    child: AndroidView(
+                      viewType: EB_NATIVE_VIEW_TYPE,
+                      creationParams: createParams(),
+                      creationParamsCodec: const StandardMessageCodec(),
+                      onPlatformViewCreated: onPlatformViewCreated,
+                    ),
                   ),
                 if (defaultTargetPlatform == TargetPlatform.iOS)
-                  UiKitView(
-                    viewType: EB_NATIVE_VIEW_TYPE,
-                    creationParams: createParams(),
-                    creationParamsCodec: const StandardMessageCodec(),
-                    onPlatformViewCreated: onPlatformViewCreated,
+                  Positioned.fill(
+                    child: UiKitView(
+                      viewType: EB_NATIVE_VIEW_TYPE,
+                      creationParams: createParams(),
+                      creationParamsCodec: const StandardMessageCodec(),
+                      onPlatformViewCreated: onPlatformViewCreated,
+                    ),
                   )
               ],
             )));

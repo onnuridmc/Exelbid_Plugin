@@ -46,23 +46,43 @@ class EBBannerAdViewState extends State<EBBannerAdView> {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return AndroidView(
-        viewType: EB_BANNER_VIEW_TYPE,
-        creationParams: createParams(),
-        creationParamsCodec: const StandardMessageCodec(),
-        onPlatformViewCreated: onPlatformViewCreated,
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return UiKitView(
-        viewType: EB_BANNER_VIEW_TYPE,
-        creationParams: createParams(),
-        creationParamsCodec: const StandardMessageCodec(),
-        onPlatformViewCreated: onPlatformViewCreated,
-      );
-    }
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final Size screenSize = MediaQuery.of(context).size;
+        final double width = constraints.hasBoundedWidth
+            ? constraints.maxWidth
+            : screenSize.width;
+        final double height = constraints.hasBoundedHeight
+            ? constraints.maxHeight
+            : 50;
 
-    return Container();
+        if (defaultTargetPlatform == TargetPlatform.android) {
+          return SizedBox(
+            width: width,
+            height: height,
+            child: AndroidView(
+              viewType: EB_BANNER_VIEW_TYPE,
+              creationParams: createParams(),
+              creationParamsCodec: const StandardMessageCodec(),
+              onPlatformViewCreated: onPlatformViewCreated,
+            ),
+          );
+        } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+          return SizedBox(
+            width: width,
+            height: height,
+            child: UiKitView(
+              viewType: EB_BANNER_VIEW_TYPE,
+              creationParams: createParams(),
+              creationParamsCodec: const StandardMessageCodec(),
+              onPlatformViewCreated: onPlatformViewCreated,
+            ),
+          );
+        }
+
+        return Container();
+      },
+    );
   }
 
   Map<String, dynamic> createParams() {
