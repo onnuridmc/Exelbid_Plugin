@@ -172,8 +172,8 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private fun loadInterstitialVideo(adUnitId: String, timer: Int = 0, coppa: Boolean = false, isTest: Boolean = false) {
         interstitial = ExelBidInterstitial(context, adUnitId)
 
-        interstitial.setCoppa(false)
-        interstitial.setTestMode(true)
+        interstitial.setCoppa(coppa)
+        interstitial.setTestMode(isTest)
         interstitial.setTimer(timer)
 
         interstitial.setInterstitialAdListener(object : OnInterstitialAdListener {

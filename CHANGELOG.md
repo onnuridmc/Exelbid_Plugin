@@ -1,3 +1,7 @@
+## 1.3.2
+- Android 전면 비디오 처리 수정
+- UiKitView/AndroidView intrinsic size 이슈 수정
+
 ## 1.3.1
 - 비디오 광고 기타 수정
 

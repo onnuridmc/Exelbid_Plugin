@@ -63,7 +63,8 @@ class EBNativeAdView extends StatefulWidget {
   State<EBNativeAdView> createState() => EBNativeAdViewState();
 }
 
-class EBNativeAdViewState extends State<EBNativeAdView> {
+class EBNativeAdViewState extends State<EBNativeAdView>
+    with WidgetsBindingObserver {
   MethodChannel? _methodChannel;
 
   final GlobalKey _nativeAdKey = GlobalKey();
@@ -80,10 +81,12 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _methodChannel?.setMethodCallHandler(null);
     _methodChannel = null;
 
@@ -96,6 +99,15 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
     _privacyInformationIconImageKey = null;
 
     super.dispose();
+  }
+
+  @override
+  void didChangeMetrics() {
+    super.didChangeMetrics();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      updateViews();
+    });
   }
 
   @override
@@ -164,7 +176,10 @@ class EBNativeAdViewState extends State<EBNativeAdView> {
           });
         }
 
-        updateViews();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          updateViews();
+        });
         widget.listener?.onLoadAd();
       } else if ("onFailAd" == method) {
         final errorMessage = arguments?['error_message'] as String?;
@@ -244,6 +259,56 @@ abstract class EBNativeAdBaseWidget extends StatefulWidget {
   final EBBaseStyle? baseStyle;
 
   const EBNativeAdBaseWidget({super.key, this.baseStyle});
+}
+
+class _EBNativeSizedBox extends StatelessWidget {
+  final Key? rectKey;
+  final double? width;
+  final double? height;
+
+  const _EBNativeSizedBox({
+    this.rectKey,
+    this.width,
+    this.height,
+  });
+
+  static double _resolve(
+    double? explicit,
+    bool hasBounded,
+    double bounded,
+    double fallback,
+  ) {
+    if (explicit != null && explicit != double.infinity) return explicit;
+    return hasBounded ? bounded : fallback;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final Size screenSize = MediaQuery.of(context).size;
+
+        final double resolvedWidth = _resolve(
+          width,
+          constraints.hasBoundedWidth,
+          constraints.maxWidth,
+          screenSize.width,
+        );
+        final double resolvedHeight = _resolve(
+          height,
+          constraints.hasBoundedHeight,
+          constraints.maxHeight,
+          screenSize.height,
+        );
+
+        return SizedBox(
+          key: rectKey,
+          width: resolvedWidth,
+          height: resolvedHeight,
+        );
+      },
+    );
+  }
 }
 
 abstract class EBNativeAdBaseState<T extends EBNativeAdBaseWidget>
@@ -385,8 +450,8 @@ class EBNativeAdMainImageState
         return false;
       },
       child: SizeChangedLayoutNotifier(
-        child: SizedBox(
-          key: rectKey,
+        child: _EBNativeSizedBox(
+          rectKey: rectKey,
           width: widget.width,
           height: widget.height,
         ),
@@ -430,8 +495,8 @@ class EBNativeAdMainVideoState
         return false;
       },
       child: SizeChangedLayoutNotifier(
-        child: SizedBox(
-          key: rectKey,
+        child: _EBNativeSizedBox(
+          rectKey: rectKey,
           width: widget.width,
           height: widget.height,
         ),
@@ -475,8 +540,8 @@ class EBNativeAdIconImageState
         return false;
       },
       child: SizeChangedLayoutNotifier(
-        child: SizedBox(
-          key: rectKey,
+        child: _EBNativeSizedBox(
+          rectKey: rectKey,
           width: widget.width,
           height: widget.height,
         ),
@@ -569,8 +634,8 @@ class EBNativeAdPrivacyInformationIconImageState
         return false;
       },
       child: SizeChangedLayoutNotifier(
-        child: SizedBox(
-          key: rectKey,
+        child: _EBNativeSizedBox(
+          rectKey: rectKey,
           width: widget.width,
           height: widget.height,
         ),
