@@ -21,9 +21,8 @@ Flutter Plugin 가이드입니다.
 - [커스텀 폰트](#커스텀-폰트)
 
 # Version History
-## 1.3.2
-- Android 전면 비디오 처리 수정
-- UiKitView/AndroidView intrinsic size 이슈 수정
+## 1.3.3
+- Android MethodChannel 수정
 
 <br/>
 
