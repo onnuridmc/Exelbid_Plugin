@@ -1,6 +1,8 @@
 package com.motivi.exelbid_plugin
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.core.util.Pair
 import com.google.android.gms.ads.identifier.AdvertisingIdClient
@@ -33,7 +35,9 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     private lateinit var context: Context
     private lateinit var messenger: BinaryMessenger
-    private lateinit var interstitial: ExelBidInterstitial
+    private var interstitial: ExelBidInterstitial? = null
+    private var interstitialVideo: ExelBidInterstitial? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
     private var mediations: MutableMap<String, EBPMediation> = mutableMapOf()
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -76,13 +80,10 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
             result.success(null)
         } else if (call.method == "showInterstitial") {
-            if (this::interstitial.isInitialized && interstitial.isReady()) {
-                showInterstitial()
-            }
-
+            showInterstitial()
             result.success(null)
         } else if (call.method == "loadInterstitialVideo") {
-            Log.d(javaClass.name, ">>> MethodChannel : loadInterstitialVideo")
+            Log.d(javaClass.name, "[ExelbidPlugin] MethodChannel : loadInterstitialVideo")
             val arguments = call.arguments as? Map<String?, Any?>
             if (arguments != null) {
                 var adUnitId = arguments.get("ad_unit_id") as? String ?: ""
@@ -115,9 +116,10 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         channel.setMethodCallHandler(null)
         mediations.clear()
 
-        if (this::interstitial.isInitialized) {
-            interstitial.destroy()
-        }
+        interstitial?.destroy()
+        interstitial = null
+        interstitialVideo?.destroy()
+        interstitialVideo = null
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
@@ -133,82 +135,120 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     }
 
     private fun loadInterstitial(adUnitId: String, coppa: Boolean = false, isTest: Boolean = false) {
-        interstitial = ExelBidInterstitial(context, adUnitId)
+        interstitial?.destroy()
 
-        interstitial.setCoppa(coppa)
-        interstitial.setTestMode(isTest)
+        val newInterstitial = ExelBidInterstitial(context, adUnitId)
+        interstitial = newInterstitial
 
-        interstitial.setInterstitialAdListener(object : OnInterstitialAdListener {
+        newInterstitial.setCoppa(coppa)
+        newInterstitial.setTestMode(isTest)
+
+        newInterstitial.setInterstitialAdListener(object : OnInterstitialAdListener {
             override fun onInterstitialLoaded() {
-                channel.invokeMethod("onInterstitialLoadAd", null)
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoaded")
+                mainHandler.post {
+                    if (interstitial !== newInterstitial) return@post
+                    channel.invokeMethod("onInterstitialLoadAd", null)
+                }
             }
 
             override fun onInterstitialFailed(errorCode: ExelBidError?, statusCode: Int) {
-                channel.invokeMethod("onInterstitialFailAd", null)
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailed (${errorCode?.errorCode}:$statusCode) : ${errorCode?.errorMessage}")
+                mainHandler.post {
+                    if (interstitial !== newInterstitial) return@post
+                    channel.invokeMethod("onInterstitialFailAd", mapOf("error_message" to errorCode?.errorMessage))
+                }
             }
 
             override fun onInterstitialShow() {
-                channel.invokeMethod("onInterstitialShow", null)
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShow")
+                mainHandler.post {
+                    if (interstitial !== newInterstitial) return@post
+                    channel.invokeMethod("onInterstitialShow", null)
+                }
             }
 
             override fun onInterstitialDismiss() {
-                channel.invokeMethod("onInterstitialDismiss", null)
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismiss")
+                mainHandler.post {
+                    if (interstitial !== newInterstitial) return@post
+                    channel.invokeMethod("onInterstitialDismiss", null)
+                }
             }
 
             override fun onInterstitialClicked() {
-                channel.invokeMethod("onInterstitialClickAd", null)
-            }                    
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClicked")
+                mainHandler.post {
+                    if (interstitial !== newInterstitial) return@post
+                    channel.invokeMethod("onInterstitialClickAd", null)
+                }
+            }
         })
 
-        interstitial.load()
+        newInterstitial.load()
     }
 
     private fun showInterstitial() {
-        if (this::interstitial.isInitialized) {
-            interstitial.show()
-        }
+        interstitial?.takeIf { it.isReady() }?.show()
     }
 
     private fun loadInterstitialVideo(adUnitId: String, timer: Int = 0, coppa: Boolean = false, isTest: Boolean = false) {
-        interstitial = ExelBidInterstitial(context, adUnitId)
+        interstitialVideo?.destroy()
 
-        interstitial.setCoppa(coppa)
-        interstitial.setTestMode(isTest)
-        interstitial.setTimer(timer)
+        val newInterstitial = ExelBidInterstitial(context, adUnitId)
+        interstitialVideo = newInterstitial
 
-        interstitial.setInterstitialAdListener(object : OnInterstitialAdListener {
+        newInterstitial.setCoppa(coppa)
+        newInterstitial.setTestMode(isTest)
+        newInterstitial.setTimer(timer)
+
+        newInterstitial.setInterstitialAdListener(object : OnInterstitialAdListener {
             override fun onInterstitialLoaded() {
-                Log.d(javaClass.name, ">>> onInterstitialLoaded")
-                channel.invokeMethod("onVideoLoadAd", null)
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoaded Video")
+                mainHandler.post {
+                    if (interstitialVideo !== newInterstitial) return@post
+                    channel.invokeMethod("onVideoLoadAd", null)
+                }
             }
 
             override fun onInterstitialFailed(errorCode: ExelBidError?, statusCode: Int) {
-                Log.d(javaClass.name, ">>> onInterstitialFailed (${errorCode?.errorCode}:$statusCode) : ${errorCode?.errorMessage}")
-                channel.invokeMethod("onVideoFailAd", mapOf("error_message" to errorCode?.errorMessage))
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailed Video (${errorCode?.errorCode}:$statusCode) : ${errorCode?.errorMessage}")
+                mainHandler.post {
+                    if (interstitialVideo !== newInterstitial) return@post
+                    channel.invokeMethod("onVideoFailAd", mapOf("error_message" to errorCode?.errorMessage))
+                }
             }
 
             override fun onInterstitialShow() {
-                Log.d(javaClass.name, ">>> onInterstitialShow")
-                channel.invokeMethod("onVideoShow", null)
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShow Video")
+                mainHandler.post {
+                    if (interstitialVideo !== newInterstitial) return@post
+                    channel.invokeMethod("onVideoShow", null)
+                }
             }
 
             override fun onInterstitialDismiss() {
-                Log.d(javaClass.name, ">>> onInterstitialDismiss")
-                channel.invokeMethod("onVideoDismiss", null)
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismiss Video")
+                mainHandler.post {
+                    if (interstitialVideo !== newInterstitial) return@post
+                    channel.invokeMethod("onVideoDismiss", null)
+                }
             }
 
             override fun onInterstitialClicked() {
-                Log.d(javaClass.name, ">>> onInterstitialClicked")
-                channel.invokeMethod("onVideoClickAd", null)
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClicked Video")
+                mainHandler.post {
+                    if (interstitialVideo !== newInterstitial) return@post
+                    channel.invokeMethod("onVideoClickAd", null)
+                }
             }
         })
 
-        interstitial.loadAd()
+        newInterstitial.loadAd()
     }
 
     private fun showInterstitialVideo() {
-        if(interstitial.isReady)
-            interstitial.show()
+        interstitialVideo?.takeIf { it.isReady }?.show()
     }
 }
 

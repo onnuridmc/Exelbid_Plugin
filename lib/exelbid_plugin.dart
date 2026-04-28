@@ -22,29 +22,60 @@ class ExelbidPlugin {
       final Map<dynamic, dynamic>? arguments = call.arguments;
 
       final methodHandlers = {
-        "onInterstitialLoadAd": () => _interstitialListener?.onLoadAd(),
-        "onInterstitialFailAd": () => _interstitialListener
-            ?.onFailAd(arguments?['error_message'] as String?),
-        "onInterstitialShow": () => _interstitialListener?.onShow?.call(),
-        "onInterstitialDismiss": () => _interstitialListener?.onDismiss?.call(),
-        "onInterstitialClickAd": () => _interstitialListener?.onClickAd?.call(),
-        "onVideoLoadAd": () => _videoAdViewListener?.onLoadAd(),
-        "onVideoFailAd": () => _videoAdViewListener
-            ?.onFailAd(arguments?['error_message'] as String?),
-        "onVideoShow": () => _videoAdViewListener?.onShow?.call(),
-        "onVideoDismiss": () => _videoAdViewListener?.onDismiss?.call(),
-        "onVideoClickAd": () => _videoAdViewListener?.onClickAd?.call(),
+        "onInterstitialLoadAd": () {
+          print("[ExelbidPlugin] onInterstitialLoadAd");
+          _interstitialListener?.onLoadAd();
+        },
+        "onInterstitialFailAd": () {
+          print(
+              "[ExelbidPlugin] onInterstitialFailAd : ${arguments?['error_message']}");
+          _interstitialListener
+              ?.onFailAd(arguments?['error_message'] as String?);
+        },
+        "onInterstitialShow": () {
+          print("[ExelbidPlugin] onInterstitialShow");
+          _interstitialListener?.onShow?.call();
+        },
+        "onInterstitialDismiss": () {
+          print("[ExelbidPlugin] onInterstitialDismiss");
+          _interstitialListener?.onDismiss?.call();
+        },
+        "onInterstitialClickAd": () {
+          print("[ExelbidPlugin] onInterstitialClickAd");
+          _interstitialListener?.onClickAd?.call();
+        },
+        "onVideoLoadAd": () {
+          print("[ExelbidPlugin] onVideoLoadAd");
+          _videoAdViewListener?.onLoadAd();
+        },
+        "onVideoFailAd": () {
+          print(
+              "[ExelbidPlugin] onVideoFailAd : ${arguments?['error_message']}");
+          _videoAdViewListener?.onFailAd(arguments?['error_message'] as String?);
+        },
+        "onVideoShow": () {
+          print("[ExelbidPlugin] onVideoShow");
+          _videoAdViewListener?.onShow?.call();
+        },
+        "onVideoDismiss": () {
+          print("[ExelbidPlugin] onVideoDismiss");
+          _videoAdViewListener?.onDismiss?.call();
+        },
+        "onVideoClickAd": () {
+          print("[ExelbidPlugin] onVideoClickAd");
+          _videoAdViewListener?.onClickAd?.call();
+        },
       };
 
       final handler = methodHandlers[method];
       if (handler != null) {
         handler();
       } else {
-        debugPrint('Unhandled method: $method');
+        debugPrint('[ExelbidPlugin] Unhandled method: $method');
       }
     } catch (e) {
       print(
-          'Error handling native method call ${call.method} with arguments ${call.arguments}: $e');
+          '[ExelbidPlugin] Error handling native method call ${call.method} with arguments ${call.arguments}: $e');
     }
   }
 
@@ -60,7 +91,7 @@ class ExelbidPlugin {
         'is_test': isTest,
       });
     } on PlatformException catch (e) {
-      print("Failed to call method: '${e.message}'.");
+      print("[ExelbidPlugin] Failed to call method: '${e.message}'.");
     }
   }
 
@@ -82,7 +113,7 @@ class ExelbidPlugin {
         'timer': timer
       });
     } on PlatformException catch (e) {
-      print("Failed to call method: '${e.message}'.");
+      print("[ExelbidPlugin] Failed to call method: '${e.message}'.");
     }
   }
 
