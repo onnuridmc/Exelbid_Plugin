@@ -1,5 +1,6 @@
 package com.motivi.exelbid_plugin
 
+import android.app.Activity;
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -22,7 +23,7 @@ import com.onnuridmc.exelbid.common.OnMediationOrderResultListener
 import com.onnuridmc.exelbid.lib.ads.mediation.MediationOrderResult
 import com.onnuridmc.exelbid.lib.ads.mediation.MediationType
 
-const val METHOD_CHANNEL_ID = "exelbid_plugin"
+const val METHOD_CHANNEL_ID = "exelbid_plugin/channel"
 const val METHOD_CHANNEL_VIEW_ID = "exelbid_plugin/banner_ad"
 const val METHOD_CHANNEL_NATIVE_VIEW_ID = "exelbid_plugin/native_ad"
 const val METHOD_CHANNEL_MEDIATION_ID = "exelbid_plugin/mediation"
@@ -35,6 +36,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
     private lateinit var context: Context
     private lateinit var messenger: BinaryMessenger
+    private var activity: Activity? = null
     private var interstitial: ExelBidInterstitial? = null
     private var interstitialVideo: ExelBidInterstitial? = null
     private val mainHandler = Handler(Looper.getMainLooper())
@@ -43,14 +45,14 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         messenger = flutterPluginBinding.binaryMessenger
 
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, METHOD_CHANNEL_ID)
+        channel = MethodChannel(messenger, METHOD_CHANNEL_ID)
         channel.setMethodCallHandler(this)
 
         context = flutterPluginBinding.applicationContext
 
         // Exelbid View Factory
-        flutterPluginBinding.platformViewRegistry.registerViewFactory(METHOD_CHANNEL_VIEW_ID, EBPBannerAdViewFactory(flutterPluginBinding.binaryMessenger))
-        flutterPluginBinding.platformViewRegistry.registerViewFactory(METHOD_CHANNEL_NATIVE_VIEW_ID, EBPNativeAdViewFactory(flutterPluginBinding.binaryMessenger))
+        flutterPluginBinding.platformViewRegistry.registerViewFactory(METHOD_CHANNEL_VIEW_ID, EBPBannerAdViewFactory(messenger))
+        flutterPluginBinding.platformViewRegistry.registerViewFactory(METHOD_CHANNEL_NATIVE_VIEW_ID, EBPNativeAdViewFactory(messenger))
     }
 
     override fun onMethodCall(call: MethodCall, result: Result) {
@@ -58,7 +60,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             Thread {
                 // 광고식별자 상태 처리  (3: Authorized, 2: Denied)
                 try {
-                    val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
+                    val adInfo = AdvertisingIdClient.getAdvertisingIdInfo(activity ?: context)
                     if (!adInfo.isLimitAdTrackingEnabled) {
                         result.success(3)
                     } else {
@@ -103,7 +105,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             if (arguments != null) {
                 (arguments["mediation_unit_id"] as? String)?.let { unitId ->
                     (arguments["mediation_types"] as? List<String>)?.let { types ->
-                        mediations[unitId] = EBPMediation(context, unitId, types, messenger)
+                        mediations[unitId] = EBPMediation(activity ?: context, unitId, types, messenger)
                     }
                 }
             }
@@ -123,21 +125,25 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity
     }
 
     override fun onDetachedFromActivity() {
+        activity = null
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
+        activity = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        activity = binding.activity
     }
 
     private fun loadInterstitial(adUnitId: String, coppa: Boolean = false, isTest: Boolean = false) {
         interstitial?.destroy()
 
-        val newInterstitial = ExelBidInterstitial(context, adUnitId)
+        val newInterstitial = ExelBidInterstitial(activity ?: context, adUnitId)
         interstitial = newInterstitial
 
         newInterstitial.setCoppa(coppa)
@@ -147,40 +153,89 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             override fun onInterstitialLoaded() {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoaded")
                 mainHandler.post {
-                    if (interstitial !== newInterstitial) return@post
-                    channel.invokeMethod("onInterstitialLoadAd", null)
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoaded post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoaded identity OK, channel=${channel}")
+                    try {
+                        channel.invokeMethod("onInterstitialLoadAd", null)
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoaded invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoaded invokeMethod Exception: $e")
+                    } 
                 }
             }
 
             override fun onInterstitialFailed(errorCode: ExelBidError?, statusCode: Int) {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailed (${errorCode?.errorCode}:$statusCode) : ${errorCode?.errorMessage}")
                 mainHandler.post {
-                    if (interstitial !== newInterstitial) return@post
-                    channel.invokeMethod("onInterstitialFailAd", mapOf("error_message" to errorCode?.errorMessage))
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailed post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailed identity OK, channel=${channel}")
+                    
+                    try {
+                        channel.invokeMethod("onInterstitialFailAd", mapOf("error_message" to errorCode?.errorMessage))
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailed invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailed invokeMethod Exception: $e")
+                    }
                 }
             }
 
             override fun onInterstitialShow() {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShow")
                 mainHandler.post {
-                    if (interstitial !== newInterstitial) return@post
-                    channel.invokeMethod("onInterstitialShow", null)
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShow post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShow identity OK, channel=${channel}")
+
+                    try {
+                        channel.invokeMethod("onInterstitialShow", null)
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShow invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShow invokeMethod Exception: $e")
+                    }
                 }
             }
 
             override fun onInterstitialDismiss() {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismiss")
                 mainHandler.post {
-                    if (interstitial !== newInterstitial) return@post
-                    channel.invokeMethod("onInterstitialDismiss", null)
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismiss post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismiss identity OK, channel=${channel}")
+                    
+                    try {
+                        channel.invokeMethod("onInterstitialDismiss", null)
+                        Log.d(javaClass.name, "[ExelbidPlugin]onInterstitialDismiss invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismiss invokeMethod Exception: $e")
+                    }
                 }
             }
 
             override fun onInterstitialClicked() {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClicked")
                 mainHandler.post {
-                    if (interstitial !== newInterstitial) return@post
-                    channel.invokeMethod("onInterstitialClickAd", null)
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClicked post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClicked identity OK, channel=${channel}")
+
+                    try {
+                        channel.invokeMethod("onInterstitialClickAd", null)
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClicked invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClicked invokeMethod Exception: $e")
+                    }
                 }
             }
         })
@@ -195,7 +250,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private fun loadInterstitialVideo(adUnitId: String, timer: Int = 0, coppa: Boolean = false, isTest: Boolean = false) {
         interstitialVideo?.destroy()
 
-        val newInterstitial = ExelBidInterstitial(context, adUnitId)
+        val newInterstitial = ExelBidInterstitial(activity ?: context, adUnitId)
         interstitialVideo = newInterstitial
 
         newInterstitial.setCoppa(coppa)
@@ -204,42 +259,92 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
         newInterstitial.setInterstitialAdListener(object : OnInterstitialAdListener {
             override fun onInterstitialLoaded() {
-                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoaded Video")
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoadedVideo")
                 mainHandler.post {
-                    if (interstitialVideo !== newInterstitial) return@post
-                    channel.invokeMethod("onVideoLoadAd", null)
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoadedVideo post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoadedVideo identity OK, channel=${channel}")
+                    
+                    try {
+                        channel.invokeMethod("onVideoLoadAd", null)
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoadedVideo invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoadedVideo invokeMethod Exception: $e")
+                    }
                 }
             }
 
             override fun onInterstitialFailed(errorCode: ExelBidError?, statusCode: Int) {
-                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailed Video (${errorCode?.errorCode}:$statusCode) : ${errorCode?.errorMessage}")
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailedVideo (${errorCode?.errorCode}:$statusCode) : ${errorCode?.errorMessage}")
                 mainHandler.post {
-                    if (interstitialVideo !== newInterstitial) return@post
-                    channel.invokeMethod("onVideoFailAd", mapOf("error_message" to errorCode?.errorMessage))
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailedVideo post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailedVideo identity OK, channel=${channel}")
+
+                    try {
+                        channel.invokeMethod("onVideoFailAd", mapOf("error_message" to errorCode?.errorMessage))
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailedVideo invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailedVideo invokeMethod Exception: $e")
+                    }
                 }
             }
 
             override fun onInterstitialShow() {
-                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShow Video")
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShowVideo")
                 mainHandler.post {
-                    if (interstitialVideo !== newInterstitial) return@post
-                    channel.invokeMethod("onVideoShow", null)
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShowVideo post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShowVideo identity OK, channel=${channel}")
+
+                    try {
+                        channel.invokeMethod("onVideoShow", null)
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShowVideo invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShowVideo invokeMethod Exception: $e")
+                    }
                 }
             }
 
             override fun onInterstitialDismiss() {
-                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismiss Video")
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismissVideo")
                 mainHandler.post {
-                    if (interstitialVideo !== newInterstitial) return@post
-                    channel.invokeMethod("onVideoDismiss", null)
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismissVideo post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismissVideo identity OK, channel=${channel}")
+
+                    try {
+                        channel.invokeMethod("onVideoDismiss", null)
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismissVideo invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismissVideo invokeMethod Exception: $e")
+                    }
                 }
             }
 
             override fun onInterstitialClicked() {
-                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClicked Video")
+                Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClickedVideo")
                 mainHandler.post {
-                    if (interstitialVideo !== newInterstitial) return@post
-                    channel.invokeMethod("onVideoClickAd", null)
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClickedVideo post executing : ${interstitial !== newInterstitial}")
+                    if (interstitial !== newInterstitial) {
+                        return@post
+                    }
+                    Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClickedVideo identity OK, channel=${channel}")
+
+                    try {
+                        channel.invokeMethod("onVideoClickAd", null)
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClickedVideo invokeMethod Success")
+                    } catch(e: Exception) {
+                        Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClickedVideo invokeMethod Exception: $e")
+                    }
                 }
             }
         })
@@ -260,6 +365,7 @@ class EBPMediation(
 ) {
     private val channel: MethodChannel
     private var mediationOrderResult: MediationOrderResult? = null
+    private val mainHandler = Handler(Looper.getMainLooper())
 
     init {
         channel = MethodChannel(binaryMessenger, "${METHOD_CHANNEL_MEDIATION_ID}_$unitId")
@@ -274,7 +380,9 @@ class EBPMediation(
             }
         }
 
-        channel.invokeMethod("onInitMediation", null);
+        mainHandler.post {
+            channel.invokeMethod("onInitMediation", null);
+        }
     }
 
     private fun loadMediation(result: Result) {

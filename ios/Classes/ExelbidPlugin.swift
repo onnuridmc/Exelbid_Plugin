@@ -4,7 +4,7 @@ import ExelBidSDK
 import AdSupport
 import AppTrackingTransparency
 
-let METHOD_CHANNEL_ID = "exelbid_plugin"
+let METHOD_CHANNEL_ID = "exelbid_plugin/channel"
 let METHOD_CHANNEL_VIEW_ID = "exelbid_plugin/banner_ad"
 let METHOD_CHANNEL_NATIVE_VIEW_ID = "exelbid_plugin/native_ad"
 let METHOD_CHANNEL_MEDIATION_ID = "exelbid_plugin/mediation"

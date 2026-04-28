@@ -9,7 +9,9 @@ class ExelbidPlugin {
   late MethodChannel _channel;
 
   ExelbidPlugin._internal() {
-    _channel = const MethodChannel('exelbid_plugin');
+    print(
+        "[ExelbidPlugin] _internal() called — handler registered (ts: ${DateTime.now()})");
+    _channel = const MethodChannel('exelbid_plugin/channel');
     _channel.setMethodCallHandler(_handleMethodCall);
   }
 
@@ -51,7 +53,8 @@ class ExelbidPlugin {
         "onVideoFailAd": () {
           print(
               "[ExelbidPlugin] onVideoFailAd : ${arguments?['error_message']}");
-          _videoAdViewListener?.onFailAd(arguments?['error_message'] as String?);
+          _videoAdViewListener
+              ?.onFailAd(arguments?['error_message'] as String?);
         },
         "onVideoShow": () {
           print("[ExelbidPlugin] onVideoShow");
