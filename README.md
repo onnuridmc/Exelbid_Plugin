@@ -21,8 +21,8 @@ Flutter Plugin 가이드입니다.
 - [커스텀 폰트](#커스텀-폰트)
 
 # Version History
-## 1.3.3
-- Android MethodChannel 수정
+## 1.3.4
+- 누락 및 기타 버그 수정
 
 <br/>
 
