@@ -30,10 +30,7 @@ const val METHOD_CHANNEL_MEDIATION_ID = "exelbid_plugin/mediation"
 
 class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
 
-    companion object {
-        lateinit var channel : MethodChannel
-    }
-
+    private lateinit var channel: MethodChannel
     private lateinit var context: Context
     private lateinit var messenger: BinaryMessenger
     private var activity: Activity? = null
@@ -74,7 +71,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             val arguments = call.arguments as? Map<String?, Any?>
             if (arguments != null) {
                 var adUnitId = arguments.get("ad_unit_id") as? String ?: ""
-                var coppa = arguments.get("coppa") as? Boolean ?: true
+                var coppa = arguments.get("coppa") as? Boolean ?: false
                 var isTest = arguments.get("is_test") as? Boolean ?: false
 
                 loadInterstitial(adUnitId, coppa, isTest)                
@@ -90,7 +87,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
             if (arguments != null) {
                 var adUnitId = arguments.get("ad_unit_id") as? String ?: ""
                 var timer = arguments.get("timer") as? Int ?: 0
-                var coppa = arguments.get("coppa") as? Boolean ?: true
+                var coppa = arguments.get("coppa") as? Boolean ?: false
                 var isTest = arguments.get("is_test") as? Boolean ?: false
 
                 loadInterstitialVideo(adUnitId, timer, coppa, isTest)
