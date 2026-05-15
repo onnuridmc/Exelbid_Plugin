@@ -143,7 +143,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         val newInterstitial = ExelBidInterstitial(activity ?: context, adUnitId)
         interstitial = newInterstitial
 
-        newInterstitial.setCoppa(coppa)
+        // newInterstitial.setCoppa(coppa)
         newInterstitial.setTestMode(isTest)
 
         newInterstitial.setInterstitialAdListener(object : OnInterstitialAdListener {
@@ -250,7 +250,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         val newInterstitial = ExelBidInterstitial(activity ?: context, adUnitId)
         interstitialVideo = newInterstitial
 
-        newInterstitial.setCoppa(coppa)
+        // newInterstitial.setCoppa(coppa)
         newInterstitial.setTestMode(isTest)
         newInterstitial.setTimer(timer)
 

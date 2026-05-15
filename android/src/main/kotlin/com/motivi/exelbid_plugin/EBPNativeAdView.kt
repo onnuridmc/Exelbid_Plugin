@@ -100,7 +100,7 @@ class EBPNativeAdView(private val context: Context, id: Int, creationParams: Map
             }
         })
 
-        nativeAd.setCoppa(coppa)
+        // nativeAd.setCoppa(coppa)
         nativeAd.setTimer(timer)
         nativeAd.setTestMode(isTest)
 

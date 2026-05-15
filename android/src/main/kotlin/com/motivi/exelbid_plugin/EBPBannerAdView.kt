@@ -52,7 +52,7 @@ class EBPBannerAdView(context: Context, id: Int, creationParams: Map<String?, An
         adView = ExelBidAdView(context)
         adView.setAdUnitId(adUnitId)
         adView.setFullWebView(isFullWebView)
-        adView.setCoppa(coppa)
+        // adView.setCoppa(coppa)
         adView.setTestMode(isTest)
 
         adView.setAdListener(object : OnBannerAdListener {
