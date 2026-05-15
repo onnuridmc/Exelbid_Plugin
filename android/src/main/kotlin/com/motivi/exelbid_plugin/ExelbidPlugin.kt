@@ -259,7 +259,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoadedVideo")
                 mainHandler.post {
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoadedVideo post executing : ${interstitial !== newInterstitial}")
-                    if (interstitial !== newInterstitial) {
+                    if (interstitialVideo !== newInterstitial) {
                         return@post
                     }
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialLoadedVideo identity OK, channel=${channel}")
@@ -277,7 +277,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailedVideo (${errorCode?.errorCode}:$statusCode) : ${errorCode?.errorMessage}")
                 mainHandler.post {
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailedVideo post executing : ${interstitial !== newInterstitial}")
-                    if (interstitial !== newInterstitial) {
+                    if (interstitialVideo !== newInterstitial) {
                         return@post
                     }
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialFailedVideo identity OK, channel=${channel}")
@@ -295,7 +295,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShowVideo")
                 mainHandler.post {
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShowVideo post executing : ${interstitial !== newInterstitial}")
-                    if (interstitial !== newInterstitial) {
+                    if (interstitialVideo !== newInterstitial) {
                         return@post
                     }
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialShowVideo identity OK, channel=${channel}")
@@ -313,7 +313,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismissVideo")
                 mainHandler.post {
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismissVideo post executing : ${interstitial !== newInterstitial}")
-                    if (interstitial !== newInterstitial) {
+                    if (interstitialVideo !== newInterstitial) {
                         return@post
                     }
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialDismissVideo identity OK, channel=${channel}")
@@ -331,7 +331,7 @@ class ExelbidPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
                 Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClickedVideo")
                 mainHandler.post {
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClickedVideo post executing : ${interstitial !== newInterstitial}")
-                    if (interstitial !== newInterstitial) {
+                    if (interstitialVideo !== newInterstitial) {
                         return@post
                     }
                     Log.d(javaClass.name, "[ExelbidPlugin] onInterstitialClickedVideo identity OK, channel=${channel}")
