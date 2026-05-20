@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
     s.name = 'exelbid_plugin'
-    s.version = '1.3.5'
+    s.version = '1.3.6'
     s.summary = 'A Flutter plugin for using SDK.'
     s.homepage = 'https://exelbid.com'
     s.license = { :type => 'MIT', :file => 'LICENSE' }
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
     s.source = { :path => '.' }
     s.source_files     = 'Classes/**/*'
     s.dependency 'Flutter'
-    s.dependency 'ExelBid_iOS_Swift'
+    s.dependency 'ExelBid_iOS_Swift', '~> 2.2'
 
     s.platforms = {
         'ios' => '13.0'

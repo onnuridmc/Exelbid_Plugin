@@ -356,16 +356,17 @@ class EBNativeAdTitleState extends EBNativeAdBaseState<EBNativeAdTitle> {
         return false;
       },
       child: SizeChangedLayoutNotifier(
-          child: Text(
-        EBNativeState.of(context).nativeData?.title ?? '',
-        key: rectKey,
-        style: TextStyle(
-          color: Colors.transparent,
-          fontSize: widget.baseStyle?.fontSize,
-          fontWeight: widget.baseStyle?.fontWeight,
-          fontFamily: widget.baseStyle?.fontFamily,
+        child: Text(
+          EBNativeState.of(context).nativeData?.title ?? '',
+          key: rectKey,
+          style: TextStyle(
+            color: Colors.transparent,
+            fontSize: widget.baseStyle?.fontSize,
+            fontWeight: widget.baseStyle?.fontWeight,
+            fontFamily: widget.baseStyle?.fontFamily,
+          ),
         ),
-      )),
+      ),
     );
   }
 }
