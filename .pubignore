@@ -1,0 +1,33 @@
+# .pubignore — `pub publish` 전용 제외 목록.
+#
+# 주의: 같은 디렉터리에 .gitignore와 .pubignore가 함께 있으면 pub은 그 디렉터리에서
+# .pubignore를 우선 적용하고 .gitignore는 읽지 않는다. 그래서 루트 .gitignore의
+# 제외 규칙(빌드 산출물·락파일 등)을 여기서 다시 명시해, 그것들이 패키지에 끌려
+# 들어가지 않도록 한 뒤 "배포 불필요" 파일을 추가한다.
+
+# --- 루트 .gitignore 미러 (빌드 산출물/락파일 제외 유지) ---
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+*.iml
+*.ipr
+*.iws
+.idea/
+
+/pubspec.lock
+**/doc/api/
+.dart_tool/
+.flutter-plugins-dependencies
+/build/
+/coverage/
+**/Package.resolved
