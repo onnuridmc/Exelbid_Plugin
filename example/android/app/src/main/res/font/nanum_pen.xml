@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NanumPen 폰트 패밀리. 이 파일명(nanum_pen)이 Dart의 fontFamily 값이 된다.
+     단일 weight(Regular)만 제공하므로 normal/bold 모두 이 파일로 매핑된다. -->
+<font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+    <font
+        app:fontStyle="normal"
+        app:fontWeight="400"
+        app:font="@font/nanum_pen_regular" />
+</font-family>

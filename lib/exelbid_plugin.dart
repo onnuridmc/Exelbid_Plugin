@@ -1,145 +1,21 @@
-import 'package:exelbid_plugin/ad_classes.dart';
-import 'package:exelbid_plugin/ad_listener.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+export 'src/exelbid.dart';
 
-class ExelbidPlugin {
-  static final ExelbidPlugin shared = ExelbidPlugin._internal();
+// 광고 서피스
+export 'src/ads/banner_ad.dart';
+export 'src/ads/interstitial_ad.dart';
+export 'src/ads/mediated_banner_ad.dart';
+export 'src/ads/mediated_interstitial_ad.dart';
+export 'src/ads/mediated_video_ad.dart';
+export 'src/ads/native_ad.dart';
+export 'src/ads/video_ad.dart';
 
-  late MethodChannel _channel;
-
-  ExelbidPlugin._internal() {
-    print(
-        "[ExelbidPlugin] _internal() called — handler registered (ts: ${DateTime.now()})");
-    _channel = const MethodChannel('exelbid_plugin/channel');
-    _channel.setMethodCallHandler(_handleMethodCall);
-  }
-
-  EBPInterstitialAdViewListener? _interstitialListener;
-  EBPVideoAdViewListener? _videoAdViewListener;
-
-  Future<dynamic> _handleMethodCall(MethodCall call) async {
-    try {
-      final String method = call.method;
-      final Map<dynamic, dynamic>? arguments = call.arguments;
-
-      final methodHandlers = {
-        "onInterstitialLoadAd": () {
-          print("[ExelbidPlugin] onInterstitialLoadAd");
-          _interstitialListener?.onLoadAd();
-        },
-        "onInterstitialFailAd": () {
-          print(
-              "[ExelbidPlugin] onInterstitialFailAd : ${arguments?['error_message']}");
-          _interstitialListener
-              ?.onFailAd(arguments?['error_message'] as String?);
-        },
-        "onInterstitialShow": () {
-          print("[ExelbidPlugin] onInterstitialShow");
-          _interstitialListener?.onShow?.call();
-        },
-        "onInterstitialDismiss": () {
-          print("[ExelbidPlugin] onInterstitialDismiss");
-          _interstitialListener?.onDismiss?.call();
-        },
-        "onInterstitialClickAd": () {
-          print("[ExelbidPlugin] onInterstitialClickAd");
-          _interstitialListener?.onClickAd?.call();
-        },
-        "onVideoLoadAd": () {
-          print("[ExelbidPlugin] onVideoLoadAd");
-          _videoAdViewListener?.onLoadAd();
-        },
-        "onVideoFailAd": () {
-          print(
-              "[ExelbidPlugin] onVideoFailAd : ${arguments?['error_message']}");
-          _videoAdViewListener
-              ?.onFailAd(arguments?['error_message'] as String?);
-        },
-        "onVideoShow": () {
-          print("[ExelbidPlugin] onVideoShow");
-          _videoAdViewListener?.onShow?.call();
-        },
-        "onVideoDismiss": () {
-          print("[ExelbidPlugin] onVideoDismiss");
-          _videoAdViewListener?.onDismiss?.call();
-        },
-        "onVideoClickAd": () {
-          print("[ExelbidPlugin] onVideoClickAd");
-          _videoAdViewListener?.onClickAd?.call();
-        },
-      };
-
-      final handler = methodHandlers[method];
-      if (handler != null) {
-        handler();
-      } else {
-        debugPrint('[ExelbidPlugin] Unhandled method: $method');
-      }
-    } catch (e) {
-      print(
-          '[ExelbidPlugin] Error handling native method call ${call.method} with arguments ${call.arguments}: $e');
-    }
-  }
-
-  Future<void> loadInterstitial({
-    required String adUnitId,
-    bool? coppa,
-    bool? isTest,
-  }) async {
-    try {
-      await _channel.invokeMethod('loadInterstitial', {
-        'ad_unit_id': adUnitId,
-        'coppa': coppa,
-        'is_test': isTest,
-      });
-    } on PlatformException catch (e) {
-      print("[ExelbidPlugin] Failed to call method: '${e.message}'.");
-    }
-  }
-
-  void showInterstitial() async {
-    await _channel.invokeMethod('showInterstitial');
-  }
-
-  void setInterstitialListener(EBPInterstitialAdViewListener? listener) {
-    _interstitialListener = listener;
-  }
-
-  Future<void> loadInterstitialVideo(
-      {required String adUnitId, bool? coppa, bool? isTest, int? timer}) async {
-    try {
-      await _channel.invokeMethod('loadInterstitialVideo', {
-        'ad_unit_id': adUnitId,
-        'coppa': coppa,
-        'is_test': isTest,
-        'timer': timer
-      });
-    } on PlatformException catch (e) {
-      print("[ExelbidPlugin] Failed to call method: '${e.message}'.");
-    }
-  }
-
-  void showInterstitialVideo() async {
-    await _channel.invokeMethod('showInterstitialVideo');
-  }
-
-  void setVideoListener(EBPVideoAdViewListener? listener) {
-    _videoAdViewListener = listener;
-  }
-
-  Future<void> callInvokeMethod(
-      String method, Map<dynamic, dynamic> arguments) async {
-    return await _channel.invokeMethod(method, arguments);
-  }
-
-  Future<ATTStatus> requestTrackingAuthorization() async {
-    if (defaultTargetPlatform == TargetPlatform.iOS ||
-        defaultTargetPlatform == TargetPlatform.android) {
-      int status = await _channel.invokeMethod("requestTrackingAuthorization");
-      return status.toATTStatus();
-    }
-
-    return ATTStatus.Authorized;
-  }
-}
+// 공유 모델
+export 'src/models/ad_error.dart';
+export 'src/models/ad_options.dart';
+export 'src/models/gender.dart';
+export 'src/models/log_level.dart';
+export 'src/models/native_ad_data.dart';
+export 'src/models/native_asset.dart';
+export 'src/models/native_slot_style.dart';
+export 'src/models/tracking_authorization_status.dart';
+export 'src/models/waterfall_event.dart';

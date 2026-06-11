@@ -1,56 +1,63 @@
-plugins {
-    id 'com.android.library'
-    id 'kotlin-android'
+group = "com.exelbid.flutter"
+version = "1.0"
+
+buildscript {
+    ext.kotlin_version = "1.9.22"
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.2.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+        // Kakao AdFit (com.kakao.adfit:ads-base)는 mavenCentral에 없고 Kakao 저장소 사용.
+        maven { url = uri("https://devrepo.kakao.com/nexus/content/groups/public/") }
+        // 추후(Phase 증분): Pangle / TNK 전용 maven 추가 시 여기에
+    }
+}
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
 
 android {
-    namespace 'com.motivi.exelbid_plugin'
-
-    compileSdkVersion 35
-
-    defaultConfig {
-        minSdkVersion 24
-        targetSdkVersion 35
-    }
-
-    lintOptions {
-        disable 'InvalidPackage'
-    }
+    namespace = "com.exelbid.flutter"
+    compileSdk = 34
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
-
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = "1.8"
     }
 
-    buildTypes {
-        debug {
-            minifyEnabled false
-        }
-
-        release {
-            minifyEnabled false
-        }
+    defaultConfig {
+        minSdk = 21 // 배너/전면 미디에이션 기준. 비디오(Phase E)는 24 필요.
     }
 }
-
-def exoplayer_version = '1.2.0'
 
 dependencies {
-    implementation fileTree(dir: "libs", include: ["*.jar", "*.aar"])
-    implementation 'com.onnuridmc.exelbid:exelbid:2.0.3'
+    // ExelBid Android SDK (최신: 2.0.2). 미디에이션 순서표 getMediationData 제공.
+    implementation "com.onnuridmc.exelbid:exelbid:2.0.2"
 
-    implementation 'com.google.android.gms:play-services-ads-identifier:16.0.0'
+    // 비디오 광고 필수 — ExelBid SDK는 비디오 플레이어를 Media3(ExoPlayer)로 동작.
+    // SDK POM에 전이 의존성으로 포함되지 않으므로 명시(미적용 시 비디오 광고 Exception/미노출).
+    implementation "androidx.media3:media3-exoplayer:1.2.0"
+    implementation "androidx.media3:media3-ui:1.2.0"
+    implementation "androidx.media3:media3-common:1.2.0"
 
-    implementation "androidx.media3:media3-exoplayer:$exoplayer_version"
-    implementation "androidx.media3:media3-ui:$exoplayer_version"
-    implementation "androidx.media3:media3-common:$exoplayer_version"
-}
-
-repositories {
-    google()
-    mavenCentral()
+    // 네트워크 어댑터 SDK — compileOnly: 플러그인은 어댑터 "코드"만 제공하고,
+    // 실제 네트워크 SDK는 호스트 앱이 사용하는 네트워크에 맞춰 직접 추가한다
+    // (iOS의 어댑터 패키지 추가와 동일한 옵트인 방식). 따라서 미디에이션을
+    // 쓰지 않거나 특정 네트워크만 쓰는 앱은 불필요한 SDK가 포함되지 않는다.
+    compileOnly "com.google.android.gms:play-services-ads:23.4.0"  // AdMob
+    compileOnly "com.facebook.android:audience-network-sdk:6.20.0" // FAN
+    compileOnly "com.kakao.adfit:ads-base:3.12.9"                  // AdFit
 }

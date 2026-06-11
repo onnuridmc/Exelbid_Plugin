@@ -1,169 +1,33 @@
-import 'package:exelbid_plugin_example/adfit_banner_ad.dart';
-import 'package:exelbid_plugin_example/adfit_native_ad.dart';
-import 'package:exelbid_plugin_example/banner_ad.dart';
-import 'package:exelbid_plugin_example/interstitial_ad.dart';
-import 'package:exelbid_plugin_example/interstitial_video_ad.dart';
-import 'package:exelbid_plugin_example/native_ad.dart';
-import 'package:exelbid_plugin_example/mediation_banner_ad.dart';
-import 'package:exelbid_plugin_example/mediation_interstitial_ad.dart';
-import 'package:exelbid_plugin_example/mediation_native_ad.dart';
-import 'package:flutter/material.dart';
 import 'package:exelbid_plugin/exelbid_plugin.dart';
+import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'app_shell.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Exelbid.setLogLevel(LogLevel.debug);
+  runApp(const ExelbidDemoApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-
-    ExelbidPlugin.shared
-        .requestTrackingAuthorization()
-        .then((value) => {print(">>> requestTrackingAuthorization : $value")});
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
+class ExelbidDemoApp extends StatelessWidget {
+  const ExelbidDemoApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Ad Screen Example',
+      title: 'ExelBid Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorSchemeSeed: const Color(0xFF0A84FF),
+        brightness: Brightness.light,
+        useMaterial3: true,
       ),
-      home: const MainScreen(),
-    );
-  }
-}
-
-class MainScreen extends StatelessWidget {
-  const MainScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Main Screen'),
+      darkTheme: ThemeData(
+        colorSchemeSeed: const Color(0xFF0A84FF),
+        brightness: Brightness.dark,
+        useMaterial3: true,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const BannerAdWidget()),
-                );
-              },
-              child: const Text('Go to Banner Ad'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const InterstitialAdWidget()),
-                );
-              },
-              child: const Text('Go to Interstitial Ad'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const NativeAdWidget()),
-                );
-              },
-              child: const Text('Go to Native Ad'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const InterstitialVideoAdWidget()),
-                );
-              },
-              child: const Text('Go to Video Ad'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MediationBannerAdWidget()),
-                );
-              },
-              child: const Text('Go to Mediation Banner Ad'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          const MediationInterstitialAdWidget()),
-                );
-              },
-              child: const Text('Go to Mediation Interstitial Ad'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MediationNativeAdWidget()),
-                );
-              },
-              child: const Text('Go to Mediation Native Ad'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AdfitBannerAdWidget()),
-                );
-              },
-              child: const Text('Go to Adfit Banner Ad'),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AdfitNativeAdWidget()),
-                );
-              },
-              child: const Text('Go to Adfit Native Ad'),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
+      home: const AppShell(),
     );
   }
 }

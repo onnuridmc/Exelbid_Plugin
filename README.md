@@ -1,869 +1,686 @@
-# Exelbid SDK for Flutter
-Flutter Plugin 가이드입니다.  
+# exelbid_plugin
 
-목차
-==========
+ExelBid 광고 SDK를 Flutter에서 사용하기 위한 플러그인입니다. 배너 · 네이티브 · 비디오 · 전면(Interstitial) 광고와 미디에이션(워터폴)을 지원합니다.
 
-- [Version History](#version-history)
-- [Plugin 정보](#plugin-정보)
-- [SDK 정보](#sdk-정보)
-- [시작하기](#시작하기)
-    - [Flutter Plugin 추가하기](#flutter-plugin-추가하기)
-    - [Android 설정](#android-설정)
-    - [iOS 설정](#ios-설정)
-- [광고 적용하기](#광고-적용하기)
-    - [인스턴스 공통 메소드](#인스턴스-공통-메소드)
-    - [배너 광고](#배너-광고)
-    - [전면 광고](#전면-광고)
-    - [전면 비디오 광고](#전면-비디오-광고)
-    - [네이티브 광고](#네이티브-광고)
-- [미디에이션](#미디에이션)
-- [커스텀 폰트](#커스텀-폰트)
+> **플랫폼 지원**
+> | 광고 유형 | iOS | Android |
+> |---|:---:|:---:|
+> | Banner / Native / Video / Interstitial | ✅ | ✅ |
+> | Mediation (Banner / Native / Video / Interstitial) | ✅ | ✅ |
+>
+> iOS·Android 모두 지원합니다. 최소 버전은 **iOS 13.0+ / Android 5.0+ (API 21)** 입니다.
+> 같은 Dart 코드로 두 플랫폼이 동작하며, 광고 단위 ID만 플랫폼별로 다르게 관리하면 됩니다.
 
-# Version History
-## 1.3.6
-- Cocoapod dependency 버전 명시
+> **ExelBid 광고**는 추가 설정 없이 바로 사용할 수 있습니다.
+> **미디에이션**으로 AdMob · FAN · AdFit 등 외부 네트워크를 함께 운영할 수 있습니다.
 
-<br/>
+---
 
-[**Old Version History**](./CHANGELOG.md)
+## 목차
 
-<br/><br/>
+1. [설치](#설치)
+2. [iOS 프로젝트 설정](#ios-프로젝트-설정)
+3. [Android 프로젝트 설정](#android-프로젝트-설정)
+4. [배너 광고](#배너-광고)
+5. [네이티브 광고](#네이티브-광고)
+6. [비디오 광고](#비디오-광고)
+7. [전면 광고 (Interstitial)](#전면-광고-interstitial)
+8. [광고 옵션 (AdOptions)](#광고-옵션-adoptions)
+9. [미디에이션](#미디에이션)
+10. [에러 처리](#에러-처리)
+11. [공통 API · API 요약](#공통-api--api-요약)
+12. [부록: Android AdMob 전면/비디오 노치 채우기 (선택)](#부록-android-admob-전면비디오-노치-채우기-선택)
 
-# 시작하기 전에
+---
 
-- Exelbid에서는 광고 요청에 대한 응답 후 노출까지의 시간(노출 캐시 시간)을 30분 이내로 권장합니다.(IAB 권장)
-- 광고 응답 이후 노출 시간 차이가 해당 시간보다 길어지면 광고 캠페인에 따라서 노출이 무효 처리될 수 있습니다.
+## 설치
 
-<br/><br/>
+`pubspec.yaml`에 추가합니다.
 
-# Plugin 정보
-
-Flutter 3.32.5
-
-<br/><br/>
-
-# SDK 정보
-SDK 정보는 아래 링크를 참고해주세요.  
-
-- [Android SDK 정보](https://github.com/onnuridmc/ExelBid-Android-SDK?tab=readme-ov-file#%EB%B9%8C%EB%93%9C-api-%EC%88%98%EC%A4%80)  
-- [iOS SDK 정보](https://github.com/onnuridmc/ExelBid_iOS_Swift?tab=readme-ov-file#sdk-%EC%A0%95%EB%B3%B4)
-
-<br/><br/>
-
-# 시작하기
-
-## Flutter Plugin 추가하기
-
-### 명령어를 이용한 설치
-다음 명령어로 종속성 추가 및 설치하세요.
-```
-flutter pub add exelbid_plugin
-```
-
-### 수동으로 설치
-`pubspec.yaml` 파일에 종속성 설정을 해주세요.  
-```
+```yaml
 dependencies:
-  exelbid_plugin: any
+  exelbid_plugin:
+    git:
+      url: https://github.com/onnuridmc/Exelbid_Plugin.git
 ```
 
-종속성 설정 후 다음 명령어로 설치하세요.  
-```
+```bash
 flutter pub get
 ```
 
-<br/>
+요구사항: **Flutter ≥ 3.16.0, Dart ≥ 3.2.0**. import는 단일 배럴 파일 하나면 됩니다.
 
-## Android 설정
-
-### AndroidManifest 설정
-
-#### 필수 권한 설정
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
-// 구글 정책(2022.03.15 발표)에 따라 대상 API 수준을 32(Android 13)로 업데이트하는 앱은 다음과 같이 매니페스트 파일에서 Google Play 서비스 일반 권한을 선언해야 합니다.(정책 적용 2022년 말 예정)
-<uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
+```dart
+import 'package:exelbid_plugin/exelbid_plugin.dart';
 ```
 
-#### 권장 권한 설정
+---
 
-```xml
-<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-<uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+## iOS 프로젝트 설정
+
+플러그인이 `ExelBidSDK`를 자동으로 가져옵니다. pod 설치만 하면 됩니다.
+
+```bash
+cd ios && pod install
 ```
 
-### Google Library 추가
-ExelBid Android SDK가 제대로 작동하려면 Google Play Service 4.0 이상의 라이브러리가 필요합니다.  
-광고 식별자 수집에 대한 Google Play 콘텐츠 가이드라인을 준수하기 위한 것입니다.  
+### App Tracking Transparency (필수)
 
-#### 1. AndroidManifest.xml파일에 태그 안에 아래 코드를 추가합니다.
-```xml
-<meta-data
-    android:name="com.google.android.gms.version"
-    android:value="@integer/google_play_services_version"
-/>
-```
+iOS에서 광고 식별자(IDFA)를 사용하려면 **ATT 권한 요청이 필요**합니다. 두 가지를 호스트 앱이 직접 처리해야 합니다.
 
-#### 2. Google Play Service jar를 dependencies에 추가합니다.
-**poject structure** -> **dependencies** -> **add** -> **library dependency** 에서  
-`com.google.android.gms:play-services` or `com.google.android.gms:play-services-ads`를 추가합니다.  
+**1. `Info.plist`에 권한 안내 문구 추가 (필수)**
 
-> \* eclipse를 사용하는 경우에는 Google Play Service 라이브러리 프로젝트를 추가합니다.
-
-<br>
-
-**build.gradle**
-```groovy
-dependencies {
-    implementation("com.google.android.gms:play-services-ads-identifier:16.0.0")
-}
-```
-
-<br>
-
-## iOS 설정
-
-### Info.plist 설정
-광고 식별자 및 HTTP 트래픽 허용을 위한 권한을 설정합니다.  
-
-Exelbid에서는 광고 요청등의 Api에 https를 사용하지만 Exelbid에 연결된 많은 광고주 플랫폼사들의 광고 소재 리소스(image, js등)의 원할한 활용을 위해 http사용 허가 설정이 필요합니다.  
-
-1. Flutter 프로젝트에서 ios/Runner/Info.plist 파일을 엽니다.  
-2. 아래 내용을 추가하세요.  
 ```xml
 <key>NSUserTrackingUsageDescription</key>
-<string>이 앱은 사용자 맞춤 광고를 제공하기 위해 광고 식별자를 사용합니다.</string>
-
-<key>NSAppTransportSecurity</key>
-<dict>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-</dict>
-```
-<br/>
-
-### 광고식별자 권한 요청
-사용자로부터 개인정보 보호에 관한 권한을 요청해야 합니다.  
-앱 설치 후 한번만 요청되며, 사용자가 권한에 대해 응답 후 더 이상 사용자에게 권한 요청을 하지 않습니다.  
-광고식별자를 수집하지 못하는 경우 광고 요청에 대해 응답이 실패할 수 있습니다.  
-
-**※ 광고를 호출하기 전에 완료되어야 합니다.**  
-**※ 앱이 실행될때 광고식별자 권한 요청을 권장합니다.**
-
-1. Flutter 프로젝트에서 ios/Runner/AppDelegate.swift 파일을 엽니다.
-2. 아래 내용을 추가하세요.  
-```swift
-import AppTrackingTransparency
-
-...
-
-@main
-@objc class AppDelegate: FlutterAppDelegate {
-
-    ...
-
-    override func applicationDidBecomeActive(_ application: UIApplication) {
-        super.applicationDidBecomeActive(application)
-
-        if #available(iOS 14.0, *) {
-            ATTrackingManager.requestTrackingAuthorization { _ in }
-        }
-    }
-}
+<string>맞춤형 광고를 제공하기 위해 사용자 활동을 추적합니다.</string>
 ```
 
-<br/><br/>
+**2. 적절한 시점(앱 활성화 직후 등)에 ATT 요청 (필수)**
 
-# 광고 적용하기
+플러그인은 ATT를 **자동으로 띄우지 않습니다.** 호출 시점은 앱이 결정합니다.
 
-1. Exelbid 계정을 생성합니다.
-2. Inventory -> App -> Create New App
-   ![new app](./img/inventory_app.png)
-
-3. Inventory -> Unit -> Create New Unit
-   ![new app](./img/inventory_unit.png)
-
-<br/>
-
-## 인스턴스 공통 메소드
-광고의 효율을 높이기 위해 나이, 성별을 설정하는 것이 좋습니다.
-
-|Key|Type|Default|Desc|
-|---|---|---|---|
-|adUnitId|String||광고 아이디를 셋팅 합니다.|
-|coppa|bool?|false|선택사항으로 미국 아동 온라인 사생활 보호법에 따라 13세 미만의 사용자를 설정하면 개인 정보를 제한하여 광고 입찰 처리됩니다. (IP, Device ID, Geo 정보등)|
-|listener|EBPAdListener?|null|콜백 이벤트 리스너.|
-
-
-#### 인스턴스 공통 스타일 클래스
-
-#### EBViewStyle
 ```dart
-EBViewStyle extends EBBaseStyle {
-    final Color? backgroundColor;   // 배경색
-    final double? borderRadius;     // 라운드
+final status = await Exelbid.requestTrackingAuthorization();
+if (status == TrackingAuthorizationStatus.authorized) {
+  // IDFA 사용 가능
 }
 ```
 
-#### EBImageStyle
-```dart
-EBImageStyle extends EBBaseStyle {
-  const EBImageStyle({
-    super.backgroundColor,      // 배경색
-    super.borderRadius,         // 라운드
-    super.objectFit,            // 스케일 설정 (fit, crop)
-  });
-}
+> iOS 14 미만에는 ATT 개념이 없어 항상 `authorized`를 반환합니다. Android에서도 항상 `authorized`를 반환하므로, 위 코드를 두 플랫폼 공통으로 호출해도 안전합니다.
+
+### SKAdNetwork (권장, 준비중)
+
+광고 성과 측정(어트리뷰션)을 위해 매체사에서 제공받은 SKAdNetwork ID 목록을 `Info.plist`에 등록하세요. (선택 사항이며, 정확한 성과 측정에 권장됩니다.)
+
+```xml
+<key>SKAdNetworkItems</key>
+<array>
+  <dict>
+    <key>SKAdNetworkIdentifier</key>
+    <string>xxxxxxxxxx.skadnetwork</string>
+  </dict>
+</array>
 ```
 
-#### EBTextStyle
-```dart
-EBTextStyle extends EBBaseStyle {
-  const EBTextStyle({
-    super.color,            // 폰트 색상
-    super.fontSize,         // 폰트 크기
-    super.fontWeight,       // 폰트 두께
-    super.fontFamily,       // 폰트명
-    super.maxLines,         // 최대 라인수
-    super.textOverflow,     // 문자 넘침 처리 방법
-  });
-}
-```
+---
 
-#### EBButtonStyle
-```dart
-EBButtonStyle extends EBBaseStyle {
-  const EBButtonStyle({
-    super.backgroundColor,      // 배경색
-    super.borderRadius,         // 라운드
-    super.color,                // 폰트 색상
-    super.fontSize,             // 폰트 크기
-    super.fontWeight,           // 폰트 두께
-    super.fontFamily,           // 폰트명
-    super.maxLines,             // 최대 라인수
-    super.textOverflow,         // 문자 넘침 처리 방법
-  });
-}
-```
+## Android 프로젝트 설정
 
-<br/>
+ExelBid Android SDK와 필수 라이브러리·권한·광고 표시용 액티비티를 플러그인이 모두 번들하므로, 호스트 앱에서 별도 의존성 추가는 필요 없습니다.
+
+### 최소 SDK (필수)
+
+`minSdkVersion`은 **21 이상**이어야 합니다(`android/app/build.gradle`). AndroidX가 활성화되어 있어야 합니다(최신 Flutter 프로젝트는 기본 활성화).
+
+> AdMob · FAN · AdFit 등 외부 네트워크를 함께 쓰려면 [미디에이션](#미디에이션) 섹션의 설정을 따르세요. **AdMob을 사용할 때만** AdMob 앱 ID 설정이 필요합니다.
+
+---
 
 ## 배너 광고
 
-### 배너 광고 인스턴스
-
-|Key|Type|Default|Desc|
-|---|---|---|---|
-|isFullWebView|bool?|true|광고 안에 너비 100%로 웹뷰가 바인딩되게 설정.|
-|styles|EBViewStyle?|null|배너 광고의 스타일 설정.|
-
-<br/>
+`ExelbidBannerAd`는 위젯 트리에 직접 배치하는 임베디드 광고입니다.
 
 ```dart
-EBBannerAdView {
-    final String adUnitId;
-    final bool? isFullWebView;
-    final bool? coppa;
-    final bool? isTest;
-    final EBViewStyle? styles;
-}
-```
-
-#### 예시)
-```dart
-EBBannerAdView(
-    adUnitId: "<<Ad Unit Id>>",
-    listener: EBPBannerAdViewListener(
-        onLoadAd: () {
-            print("Banner onLoadAd");
-        }, onFailAd: (String? errorMessage) {
-            print("Banner onFailAd");
-        }, onClickAd: () {
-            print("Banner onClickAd");
-        }
-    )
+ExelbidBannerAd(
+  adUnitId: 'YOUR_BANNER_AD_UNIT_ID',
+  size: const Size(320, 50),
+  autoLoad: true,      // 생성 즉시 로드 (기본 true)
+  fullWebView: false,  // true면 크리에이티브가 배너 영역을 꽉 채움 (기본 false)
+  options: AdOptions(testing: true),
+  onLoad: () => print('loaded'),
+  onFail: (e) => print('failed: ${e.message}'),
+  onClick: () => print('clicked'),
+  onLeaveApp: () => print('left app'),
+  onClickFinish: () => print('click finished'),
 )
 ```
 
-<br/>
+`size`로 지정한 영역만큼 차지하므로 `SizedBox`/레이아웃 제약 안에 두면 됩니다.
 
-### 배너 광고 이벤트 리스너
+**배너 동작 파라미터**
+
+| 파라미터 | 기본 | 설명 |
+|---|:---:|---|
+| `autoLoad` | `true` | 위젯 생성 즉시 첫 광고를 요청합니다. `false`면 [컨트롤러](#수동-제어-load--stop)의 `load()`로 직접 첫 로드를 트리거합니다(예: ATT 동의 이후로 미루기). |
+| `fullWebView` | `false` | `true`면 크리에이티브가 배너 영역을 꽉 채웁니다. |
+
+### 수동 제어 (load / stop)
+
+`ExelbidBannerController`를 넘기면 배너를 직접 제어할 수 있습니다. ATT 동의 이후로 첫 로드를 미루거나, 화면 전환 시 갱신을 멈추는 용도로 유용합니다.
+
 ```dart
-EBPBannerAdViewListener {
-    /// 광고 요청 성공
-    final Function() onLoadAd;
+final controller = ExelbidBannerController();
 
-    /// 광고 요청 실패 (광고 없음)
-    final Function(String? errorMessage) onFailAd;
-
-    /// 광고 클릭
-    final Function()? onClickAd;
-}
-```
-
-<br/><br/>
-
-## 전면 광고
-
-### 전면 광고 요청
-```dart
-Future<void> loadInterstitial(
-    {
-        required String adUnitId,
-        bool? coppa,
-        bool? isTest
-    }
+ExelbidBannerAd(
+  adUnitId: 'YOUR_BANNER_AD_UNIT_ID',
+  size: const Size(320, 50),
+  autoLoad: false,        // 첫 로드를 컨트롤러로 직접 트리거
+  controller: controller,
 )
+
+// 준비가 끝난 뒤:
+controller.load();   // 요청(또는 강제 재요청)
+controller.stop();   // 진행 중 요청 취소 + 자동 갱신 중지
 ```
 
-#### 예시)
-```dart
-ExelbidPlugin.shared.loadInterstitial(adUnitId: "<<Ad Unit Id>>");
-```
+> 컨트롤러는 PlatformView가 생성되기 전(`isReady == false`)에는 호출이 무시됩니다.
 
-<br/>
-
-### 전면 광고 보기
-전면 광고 초기화가 이루어진 후 광고 보기를 요청해야 합니다.  
-```dart
-ExelbidPlugin.shared.showInterstitial();
-```
-
-<br/>
-
-### 전면 광고 이벤트 리스너
-```dart
-EBPInterstitialAdViewListener {
-    /// 광고 요청 성공
-    final Function() onLoadAd;
-
-    /// 광고 요청 실패 (광고 없음)
-    final Function(String? errorMessage) onFailAd;
-
-    /// 광고 클릭
-    final Function()? onClickAd;
-
-    /// 전면 광고가 화면에 표시된 후에 전송됩니다.
-    final Function()? onInterstitialShow;
-
-    /// 전면 광고가 화면에서 해제 된 후 전송됩니다.
-    final Function()? onInterstitialDismiss;
-}
-```
-
-<br/>
-
-### 전면 광고 콜백 리스너 설정
-
-#### 예시)
-```dart
-ExelbidPlugin.shared.setInterstitialListener(
-    EBPInterstitialAdViewListener(
-        onLoadAd: () {
-            print("Interstitial onLoadAd");
-        }, onFailAd: (String? errorMessage) {
-            print("Interstitial onFailAd");
-        }, onClickAd: () {
-            print("Interstitial onClickAd");
-        }, onInterstitialShow: () {
-            print("onInterstitialShow");
-        }, onInterstitialDismiss: () {
-            print("onInterstitialDismiss"); 
-        }
-    )
-);
-```
-
-<br/><br/>
-
-## 전면 비디오 광고
-
-|Key|Type|Default|Desc|
-|---|---|---|---|
-|timer|int?|0|광고의 전환 성과 향상을 위해 일정 시간 노출을 보장하는 타이머가 동작할 시간(초)를 설정한다.|
-
-\* timer 지정은 AOS만 가능
-
-<br/>
-
-### build.gradle 설정 (Android)
-1. build.gradle에 비디오 컴포넌트 라이브러리 종속성 추가 (Android 비디오 광고 공통)  
-    - Exelbid에서는 비디오 플레이어를 Exoplayer3 기반으로 동작됩니다.
-    - 미적용 시 Exception 또는 광고가 노출되지 않습니다.
-2. Flutter 빌드 환경에 따라 다르지만 minSdkVersion은 24이상으로 설정하는 것이 좋습니다.
-    - ExelbidPlugin 내 기본으로 설정되어 있습니다.
-    - exoplayer 의존성 에러 발생 시 추가해주세요.
-
-    ```groovy
-    def exoplayer_version = '1.2.0'
-
-    dependencies {
-        implementation "androidx.media3:media3-exoplayer:$exoplayer_version"
-        implementation "androidx.media3:media3-ui:$exoplayer_version"
-        implementation "androidx.media3:media3-common:$exoplayer_version"
-
-        ...
-    }
-    ```
-3. AndroidManifest 추가
-    - 비디오 노출을 처리하는 VideoPlayerActivity 추가
-    - ExelbidPlugin 내 기본으로 설정되어 있습니다.  
-    VideoPlayerActivity 에러 발생 시 추가해주세요.
-    
-    ```xml
-    <activity android:name="com.onnuridmc.exelbid.lib.vast.VideoPlayerActivity"
-          android:configChanges="keyboardHidden|orientation|screenSize">
-    </activity>
-    ```
-
-<br/>
-
-### 전면 비디오 광고 요청
-```dart
-Future<void> loadInterstitialVideo(
-    {
-        required String adUnitId,
-        bool? coppa,
-        bool? isTest,
-        int? timer
-    }
-)
-```
-
-#### 예시)
-```dart
-ExelbidPlugin.shared.loadInterstitialVideo(
-                              adUnitId: "<< Ad Unit Id >>",
-                              isTest: "<< Is Test : true, false >>",
-                              coppa: "<< Is COPPA : true, false >>",
-                              timer: "<< Skip Timer : int >>",
-                            );
-```
-
-<br/>
-
-### 전면 광고 보기
-전면 비디오 광고 요청 후 광고 보기를 요청해야 합니다.  
-```dart
-ExelbidPlugin.shared.showInterstitialVideo();
-```
-
-<br/>
-
-### 전면 비디오 광고 이벤트 리스너
-```dart
-EBPVideoAdViewListener {
-    /// 광고 요청 성공
-    final Function() onLoadAd;
-
-    /// 광고 요청 실패 (광고 없음)
-    final Function(String? errorMessage) onFailAd;
-
-    /// 광고 클릭
-    final Function()? onClickAd;
-
-    // 광고가 화면에 표시된 후 전송됩니다.
-    final Function()? onShow;
-
-    // 광고가 화면에서 해제된 후 전송됩니다.
-    final Function()? onDismiss;
-
-    // 광고가 재생 실패시 전송됩니다.
-    final Function(String? errorMessage)? onFailToPlay;
-}
-```
-
-<br/>
-
-### 전면 비디오 광고 콜백 리스너 설정
-
-#### 예시)
-```dart
-ExelbidPlugin.shared.setVideoListener(
-    EBPVideoAdViewListener(
-        onLoadAd: () {
-            print('Interstitial Video onLoadAd');
-        },
-        onFailAd: (String? errorMessage) {
-            print('Interstitial Video onFailAd : $errorMessage');
-        },
-        onFailToPlay: (errorMessage) {
-            print('Interstitial Video onFailToPlay : $errorMessage');
-        },
-        onClickAd: () {
-            print('Interstitial Video onClickAd');
-        },
-        onShow: () {
-            print('onInterstitial Video Show');
-        },
-        onDismiss: () {
-            print('onInterstitial Video Dismiss');
-        }
-    )
-);
-```
-
-<br/><br/>
+---
 
 ## 네이티브 광고
 
-### 네이티브 광고 인스턴스
-
-|Key|Type|Default|Desc|
-|---|---|---|---|
-|nativeAssets|EBNativeAssets?|null|네이티브 광고 요청 시 필요한 항목들을 요청합니다.|
-|styles|EBViewStyle?|null|네이티브 광고의 스타일 설정.|
+네이티브 광고는 **호스트 앱이 레이아웃을 그리고, SDK가 각 자산(텍스트/이미지)을 네이티브 뷰에 채우는** 방식입니다. `child`에 원하는 레이아웃을 구성하고, 자산이 들어갈 위치마다 **슬롯 위젯**을 둡니다. 플러그인이 각 슬롯의 위치/크기를 측정해 네이티브로 전달하면 SDK가 그 자리에 자산을 렌더링합니다. (노출·클릭 추적이 실제 네이티브 뷰에 묶이도록 하는 구조)
 
 ```dart
-EBNativeAdView {
-    final Widget child;
-    final String adUnitId;
-    final List<String>? nativeAssets;
-    final bool? coppa;
-    final bool? isTest;
-    final EBPNativeAdViewListener? listener;
-};
-```
-
-#### 네이티브 광고 속성
-```dart
-class EBNativeAssets {
-    // 제목
-    static const String title = "title";
-
-    // 아이콘 이미지
-    static const String icon = "icon";
-    
-    // 메인 이미지
-    static const String main = "main";
-
-    // 설명
-    static const String desc = "desc";
-    
-    // 클릭 버튼명 (유도문)
-    static const String ctatext = "ctatext";
-}
-```
-
-#### 예시)
-```dart
-EBNativeAdView(
-    adUnitId: "<<Ad Unit Id>>",
-    nativeAssets: const [
-        EBNativeAssets.title,
-        EBNativeAssets.main,
-        EBNativeAssets.icon,
-        EBNativeAssets.ctatext,
-    ],
-    listener: EBPNativeAdViewListener(
-        onLoadAd: () {
-            print("Native onLoadAd");
-        }, onFailAd: (String? errorMessage) {
-            print("Native onFailAd");
-        }, onClickAd: () {
-            print("Native onClickAd");
-        }
-    )
-    child: "<<Native Ad View UI>>"
-)
-```
-
-<br/>
-
-### 네이티브 광고 UI
-네이티브 광고 뷰 설정 시 아래 내용을 참고하여  
-asset이 설정될 객체를 포함하여 구형하여야 합니다.
-
-#### 네이티브 제목
-```dart
-EBNativeAdTtitle {
-    EBTextStyle? styles;
-}
-```
-
-#### 네이티브 설명
-```dart
-EBNativeAdDescription {
-    EBTextStyle? styles;
-}
-```
-
-#### 네이티브 메인 이미지
-```dart
-EBNativeAdMainImage {
-    double? width;
-    double? height;
-    EBImageStyle? styles;
-}
-```
-
-#### 네이티브 아이콘 이미지
-```dart
-EBNativeAdIconImage{
-    double? width;
-    double? height;
-    EBImageStyle? styles;
-}
-```
-
-#### 네이티브 액션 버튼
-```dart
-EBNativeAdCallToAction {
-    EBButtonStyle? styles;
-}
-```
-
-#### 온라인 맞춤형 광고 개인정보보호 가이드라인 아이콘
-```dart
-EBNativeAdPrivacyInformationIconImage {
-    double? width;
-    double? height;
-    EBImageStyle? styles;
-}
-```
-
-> 2017/07 방송통신위원회에서 시행되는 '온라인 맞춤형 광고 개인정보보호 가이드라인' 에 따라서 필수 적용 되어야 합니다.  
-> 광고주측에서 제공하는 해당 광고의 타입(맞춤형 광고 여부)에 따라 정보 표시 아이콘(Opt-out)의 노출이 결정됩니다.  
-> ※ 광고 정보 표시 아이콘이 노출될 ImageView의 사이즈는 NxN(권장 20x20)으로 설정 되어야 합니다.  
-
-
-#### 예시)
-```dart
-EBNativeAdView(
-  adUnitId: "<<adUnitId>>",
-  nativeAssets: const [
-    EBNativeAssets.title,
-    EBNativeAssets.main,
-    EBNativeAssets.icon,
-    EBNativeAssets.ctatext,
-  ],
-  styles: const EBViewStyle(
-    borderRadius: 20,
-  ),
-  listener: EBPNativeAdViewListener(onLoadAd: () {
-    print("Native onLoadAd");
-  }, onFailAd: (String? errorMessage) {
-    print("Native onFailAd");
-  }, onClickAd: () {
-    print("Native onClickAd");
-  }),
+ExelbidNativeAdView(
+  adUnitId: 'YOUR_NATIVE_AD_UNIT_ID',
+  desiredAssets: const {
+    NativeAsset.title,
+    NativeAsset.desc,
+    NativeAsset.ctatext,
+    NativeAsset.icon,
+    NativeAsset.main,
+  },
+  options: AdOptions(testing: true),
+  onLoad: () => print('attached'),
+  onFail: (e) => print('failed: ${e.message}'),
+  onImpression: () => print('impression'),
+  onClick: () => print('clicked'),
   child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Container(
-        padding: const EdgeInsets.all(10),
-        child: // 상단 이미지 및 텍스트 영역
-            Row(children: [
-          SizedBox(
-            width: 48,
-            height: 48,
-            child: Center(
-              child: EBNativeAdIconImage(
-                styles: EBImageStyle(
-                  backgroundColor: Colors.grey[300],
-                  borderRadius: 20,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: SizedBox(
-              child: EBNativeAdTitle(
-                styles: const EBTextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        ]),
+      Row(
+        children: [
+          ExelbidNativeAdIconImage(width: 40, height: 40),
+          const SizedBox(width: 8),
+          const Expanded(child: ExelbidNativeAdTitle()),
+          const SizedBox(width: 8),
+          SizedBox(width: 80, child: ExelbidNativeAdCallToAction()),
+        ],
       ),
-      const SizedBox(height: 10),
-      // 메인 이미지 뷰
-      Expanded(
-        child: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: Stack(children: [
-            Center(
-              child: EBNativeAdMainImage(
-                styles: EBImageStyle(
-                  backgroundColor: Colors.grey[300],
-                  borderRadius: 10,
-                ),
-              ),
-            ),
-            Positioned(
-              right: 10,
-              top: 10,
-              child:
-                  EBNativeAdPrivacyInformationIconImage(
-                width: 20,
-                height: 20,
-              ),
-            ),
-          ]),
-        ),
+      const SizedBox(height: 8),
+      const SizedBox(
+        height: 180,
+        child: ExelbidNativeAdMedia(),
       ),
-      const SizedBox(height: 10),
-      // 버튼 영역
-      Align(
-        alignment: Alignment.bottomRight,
-        child: Container(
-          padding: const EdgeInsets.only(
-              top: 10, bottom: 10, right: 10),
-          child: EBNativeAdCallToAction(
-            styles: const EBButtonStyle(
-              color: Colors.white,
-              backgroundColor: Colors.lightBlue,
-              borderRadius: 10,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
+      const SizedBox(height: 8),
+      const SizedBox(height: 60, child: ExelbidNativeAdDescription()),
     ],
   ),
 )
 ```
 
-<br/>
+### 슬롯 위젯
 
-### 네이티브 광고 이벤트 리스너
+| 위젯 | 자산 | 종류 |
+|---|---|---|
+| `ExelbidNativeAdTitle` | 제목 | 텍스트 |
+| `ExelbidNativeAdDescription` | 본문 | 텍스트 |
+| `ExelbidNativeAdCallToAction` | CTA 버튼 텍스트 | 텍스트 |
+| `ExelbidNativeAdSponsored` | 광고주 표기 (Sponsored) | 텍스트 |
+| `ExelbidNativeAdDisplayUrl` | 표시 URL | 텍스트 |
+| `ExelbidNativeAdMedia` | 메인 크리에이티브 (이미지 또는 동영상) | 미디어 |
+| `ExelbidNativeAdIconImage` | 아이콘 | 이미지 |
+| `ExelbidNativeAdLogo` | 로고 이미지 | 이미지 |
+| `ExelbidNativeAdPrivacyIcon` | 프라이버시 아이콘 | 이미지 |
+
+- 이미지·미디어 슬롯은 `width`/`height`로 크기를 지정할 수 있습니다. `desiredAssets`에 요청한 자산만 SDK가 채웁니다.
+- **메인 크리에이티브는 `ExelbidNativeAdMedia` 하나로 통합**되어 있습니다. 정적 이미지든 동영상이든 이 슬롯에 채워집니다(별도 메인 이미지 슬롯은 없습니다).
+
+### 스타일 적용
+
+네이티브 광고의 텍스트/이미지는 **네이티브 뷰가 그리므로**, 폰트·색·배경·둥글림은 `ExelbidNativeSlotStyle`로 네이티브에 전달해야 반영됩니다. (슬롯 위젯 자체는 빈 영역이라 Flutter `TextStyle`은 적용되지 않습니다.)
+
 ```dart
-EBPNativeAdViewListener {
-    /// 광고 요청 성공
-    final Function() onLoadAd;
-
-    /// 광고 요청 실패 (광고 없음)
-    final Function(String? errorMessage) onFailAd;
-
-    /// 광고 클릭
-    final Function()? onClickAd;
-}
+ExelbidNativeAdTitle(
+  style: ExelbidNativeSlotStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    textColor: Colors.black87,
+    maxLines: 2,
+  ),
+),
+ExelbidNativeAdCallToAction(
+  style: const ExelbidNativeSlotStyle(
+    fontWeight: FontWeight.w600,
+    textColor: Colors.white,
+    textAlign: TextAlign.center,
+    backgroundColor: Color(0xFF1565C0),
+    cornerRadius: 8,
+    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+  ),
+),
+ExelbidNativeAdMedia(
+  style: const ExelbidNativeSlotStyle(
+    contentMode: BoxFit.cover,
+    cornerRadius: 8,
+  ),
+),
 ```
 
-<br/><br/>
+`ExelbidNativeSlotStyle` 필드(모두 선택, 설정한 것만 적용):
 
+| 분류 | 필드 | 적용 대상 |
+|---|---|---|
+| 텍스트 | `textColor`, `fontFamily`, `fontSize`, `fontWeight`, `textAlign`, `maxLines`, `overflow`, `padding` | 제목 · 본문 · CTA 등 텍스트 슬롯 |
+| 박스 | `backgroundColor`, `cornerRadius`, `borderWidth`, `borderColor` | 모든 슬롯 |
+| 이미지 | `contentMode` (`BoxFit`) | 아이콘 · 메인 미디어 · 로고 · 프라이버시 |
 
-# 미디에이션
+- `overflow` (`TextOverflow`) — 텍스트가 넘칠 때 처리(`ellipsis`=말줄임표, `clip`=잘라냄 등).
+- `padding` (`EdgeInsets`) — 텍스트 슬롯의 안쪽 여백. 배경/테두리는 슬롯 전체를 채우고 텍스트만 들여써집니다(CTA 버튼류에 유용).
 
-Exelbid Plugin을 이용한 Mediation 연동의 경우,  
-각 앱에서 연동하고 있는 광고 SDK들의 최적화 된 호출 순서를 응답한다.  
+### ⚠️ 커스텀 폰트는 iOS·Android 앱에도 등록해야 적용됩니다
 
+광고의 글자는 Flutter가 아니라 **휴대폰 운영체제(iOS·Android)가 직접 그립니다.** 그래서 `fontFamily`로 폰트를 지정하려면, 그 폰트 파일이 **iOS 앱과 Android 앱 양쪽에 등록**되어 있어야 합니다. Flutter의 `pubspec.yaml`에 `fonts:`로만 선언하면 광고 글자에는 **반영되지 않고**, 등록되지 않은 폰트는 휴대폰 **기본 폰트로 대체**됩니다.
 
-## 미디에이션 네트워크
+| 폰트 종류 | 동작 |
+|---|---|
+| 휴대폰에 기본 내장된 폰트 (`'Georgia'` 등) | 추가 등록 없이 바로 적용 ✅ |
+| 직접 추가한 커스텀 폰트 | 아래처럼 iOS·Android 앱에 각각 등록해야 적용<br>· **iOS** — 폰트 파일을 앱(Runner)에 넣고 `Info.plist`의 `UIAppFonts`에 등록<br>· **Android** — 폰트 파일을 `res/font/` 폴더에 넣고 등록 |
 
-| 네트워크         | 미디에이션 타입                     |
-|----------------|---------------------------------|
-| Exelbid        | EBMediationTypes.exelbid        |
-| AdMob          | EBMediationTypes.admob          |
-| FaceBook       | EBMediationTypes.facebook       |
-| AdFit          | EBMediationTypes.adfit          |
-| DigitalTurbine | EBMediationTypes.digitalturbine |
-| Pangel         | EBMediationTypes.pangle         |
-| TNK            | EBMediationTypes.tnk            |
-| AppLovin       | EBMediationTypes.applovin       |
-| MPartners      | EBMediationTypes.mpartners      |
+> 📌 **단계별 설정 방법은 → [커스텀 폰트 설정 가이드 (doc/CUSTOM_FONT_SETUP.md)](doc/CUSTOM_FONT_SETUP.md) 를 꼭 확인하세요.**
 
-## 미디에이션 설정 및 요청
+### 데이터 전용 자산 (onData)
 
-### 미디에이션 인스턴스
+`rating`·`likes`·`downloads`·`price`·`salePrice`·`secondaryBody(desc2)`·`phone`·`address`처럼 **렌더 슬롯이 없는 자산**은 `onData` 콜백으로 값을 받아 직접 그립니다. `onLoad` 시점에 `ExelbidNativeAdData`가 전달됩니다.
+
 ```dart
-EBMediationManager {
-    final String mediationUnitId;
-    final List<String> mediationTypes;
-    final EBPMediationListener listener;
-}
+ExelbidNativeAdView(
+  adUnitId: '...',
+  desiredAssets: const { NativeAsset.title, NativeAsset.rating, NativeAsset.price },
+  onData: (data) {
+    print('별점: ${data.rating}, 가격: ${data.price}');
+    // setState로 보관해 평범한 Flutter 위젯으로 표시
+  },
+  child: /* 슬롯 레이아웃 */,
+)
 ```
 
-### 미디에이션 인스턴스 초기화
+`ExelbidNativeAdData` 필드: `title`, `body`, `secondaryBody`, `callToAction`, `sponsored`, `displayUrl`, `phone`, `address`, `iconImageUrl`, `mainImageUrl`, `logoImageUrl`, `rating`, `likes`, `downloads`, `price`, `salePrice`, `hasVideo`.
+
+---
+
+## 비디오 광고
+
+전면 모달로 재생되는 동영상 광고입니다. `create()` → `load()` → `present()` 순서로 사용하며, 이벤트는 `events` 스트림으로 수신합니다.
+
 ```dart
-_mediationManager = EBMediationManager(
-    mediationUnitId: "<<Mediation Unit ID>>",
-    mediationTypes: [
-        EBMediationTypes.exelbid,
-        // 사용할 미디에이션 네트워크 추가
-    ],
-    listener: EBPMediationListener(
-        onLoad: () {
-            // loadMediation() 콜백 함수
-
-            // 미디에이션 목록 조회 성공 및 미디에이션 요청
-            _mediationManager.nextMediation();
-        },
-        onError: (EBError error) {
-            // 미디에이션 에러, 예외 처리 (광고 없음 처리)
-        },
-        onEmpty: () {
-            // 미디에이션 목록이 없거 순회를 완료했을 경우 (광고 없음 처리)
-        },
-        onNext: (EBMediation mediation) {
-            // nextMediation() 콜백 함수
-
-            // 사용할 미디에이션 네트워크 체크 후 광고 요청
-            if (mediation.networkId == EBMediationTypes.exelbid) {
-                // 전달받은 unitId로 networkId에 맞게 광고 요청
-            } else {
-                // 매칭되는 네트워크가 없으면 다음 미디에이션 요청
-                _mediationManager.nextMediation();
-            }
-        },
-    ),
+final ad = await ExelbidVideoAd.create(
+  adUnitId: 'YOUR_VIDEO_AD_UNIT_ID',
+  options: AdOptions(testing: true),
 );
+
+final sub = ad.events.listen((data) {
+  switch (data.event) {
+    case VideoAdEvent.onLoad:
+      ad.present();                       // 로드 완료 후 표시
+    case VideoAdEvent.onProgress:
+      print('진행률: ${data.percent}%');
+    case VideoAdEvent.onFail:
+      print('실패: ${data.error?.message}');
+    case VideoAdEvent.onDidDisappear:
+      ad.dispose();                       // 닫힌 후 해제
+    default:
+      break;
+  }
+});
+
+await ad.load();
+
+// 사용 종료 시
+await sub.cancel();
+await ad.dispose();
 ```
 
-### 미디에이션 콜백 리스너
+이벤트: `onLoad` · `onFail` · `onProgress` · `onWillAppear` · `onDidAppear` · `onWillDisappear` · `onDidDisappear` · `onClick` · `onLeaveApp`
+
+> `onProgress`(재생 진행률)는 **iOS에서만 발생**합니다. Android SDK에는 진행률 콜백이 없어 발생하지 않습니다.
+
+`isReady`로 표시 가능 여부를 확인할 수 있습니다. **인스턴스는 1회용** — 사용 후 반드시 `dispose()`로 해제하세요.
+
+---
+
+## 전면 광고 (Interstitial)
+
+전체화면 전면 광고입니다. 비디오와 동일한 `create/load/present` 패턴입니다.
+
 ```dart
-// 미디에이션 콜백 리스너
-class EBPMediationListener {
-  // 미디에이션 목록 조회 성공
-  final Function() onLoad;
+final ad = await ExelbidInterstitialAd.create(
+  adUnitId: 'YOUR_INTERSTITIAL_AD_UNIT_ID',
+  fullWebView: false, // true면 크리에이티브가 화면을 꽉 채움 (기본 false)
+);
 
-  // 다음 순서 미디에이션 조회
-  final Function(EBMediation mediation) onNext;
+final sub = ad.events.listen((data) {
+  switch (data.event) {
+    case InterstitialAdEvent.onLoad:
+      ad.present();
+    case InterstitialAdEvent.onFail:
+      print('실패: ${data.error?.message}');
+    case InterstitialAdEvent.onDidDisappear:
+      ad.dispose();
+    default:
+      break;
+  }
+});
 
-  // 미디에이션 목록이 없거 순회를 완료했을 경우 (광고 없음 처리)
-  final Function() onEmpty;
+await ad.load();
+```
 
-  // 미디에이션 에러, 예외 처리 (광고 없음 처리)
-  final Function(EBError error) onError;
+이벤트: `onLoad` · `onFail` · `onWillAppear` · `onDidAppear` · `onWillDisappear` · `onDidDisappear` · `onClick` · `onLeaveApp` · `onClickFinish`
+
+표시 중 강제 종료는 `stop()`, 해제는 `dispose()`를 사용합니다.
+
+---
+
+## 광고 옵션 (AdOptions)
+
+모든 광고의 `options` 파라미터로 타깃팅/테스트 설정을 전달합니다. 모두 선택이며, 설정한 항목만 적용됩니다.
+
+```dart
+AdOptions(
+  keywords: {'category': 'sports'},
+  yearOfBirth: 1990,
+  gender: Gender.male,           // unspecified / male / female
+  location: const AdLocation(latitude: 37.5, longitude: 127.0),
+  coppa: false,                  // 아동 대상 여부
+  testing: true,                 // 테스트 광고 (개발 중 권장)
+  videoSkipMin: 15,               // (비디오) 스킵 가능 최소 비디오 시간(초)
+  videoSkipAfter: 10,             // (비디오) 스킵 버튼 표시 시점(초)
+)
+```
+
+---
+
+## 미디에이션
+
+### 미디에이션이란?
+
+하나의 광고 자리에 여러 광고 네트워크를 연결해 두고, **순서대로 시도해 가장 먼저 광고를 채우는 네트워크를 노출**하는 방식입니다(워터폴). 한 네트워크가 실패하면 다음 네트워크로 자동 폴백하므로, 단일 네트워크보다 노출률(필레이트)이 올라갑니다.
+
+- **시도 순서(우선순위)는 ExelBid 콘솔(서버)에서 설정**합니다. 플러그인/앱은 그 순서를 그대로 따르며, 앱 코드로 순서를 정하지 않습니다.
+- **ExelBid 네트워크는 기본 포함**(추가 설정 불필요)입니다. **AdMob · FAN · AdFit은 사용하려면 호스트 앱이 직접 연결**해야 합니다.
+- 연결(등록)하지 않은 네트워크는 워터폴에서 자동으로 건너뜁니다(`adapterNotRegistered`).
+
+> **왜 직접 연결해야 하나요?** 플러그인은 각 네트워크의 **어댑터 코드만 제공**하고, 실제 네트워크 SDK는 포함하지 않습니다. 그래서 쓰지 않는 네트워크의 SDK가 앱에 들어가지 않습니다(앱 용량·정책 부담 최소화). iOS의 어댑터 패키지 추가 방식과 동일합니다.
+
+### 설정 순서
+
+사용할 외부 네트워크(AdMob/FAN/AdFit)마다 아래를 진행합니다. ExelBid만 쓸 경우 1·5만 하면 됩니다.
+
+1. **ExelBid 콘솔**에서 해당 광고 단위의 워터폴(네트워크·순서)을 구성
+2. **네트워크 SDK 추가** — 앱에 해당 네트워크 SDK 의존성 추가 ([Android](#1단계--어댑터-연결--android) / [iOS](#2단계--어댑터-연결--ios))
+3. **네트워크별 필수 설정** — 앱 ID 등 ([네트워크별 필수 설정](#3단계--네트워크별-필수-설정))
+4. **어댑터 등록** — 플러그인이 제공하는 모듈을 등록
+5. **코드 작성** — `ExelbidMediated*` 위젯/클래스로 광고 요청 ([코드에서 사용](#4단계--코드에서-사용))
+
+> 2·4단계(SDK 추가 + 어댑터 등록)는 한 곳에서 같이 처리하므로, 아래 플랫폼별 안내에 묶어서 정리했습니다.
+
+### 1단계 · 어댑터 연결 — Android
+
+**(1) `android/app/build.gradle`에 사용할 네트워크 SDK만 추가**
+
+```gradle
+dependencies {
+    implementation 'com.google.android.gms:play-services-ads:23.4.0'  // AdMob
+    implementation 'com.facebook.android:audience-network-sdk:6.20.0' // FAN
+    implementation 'com.kakao.adfit:ads-base:3.12.9'                  // AdFit
 }
 ```
 
-### 미디에이션 데이터
-```dart
-class EBMediation {
-  final String networkId;
-  final String unitId;
+> AdFit을 쓸 경우 Kakao maven 저장소가 필요합니다 — 프로젝트의 `android/build.gradle`(또는 `settings.gradle`)의 저장소 목록에 추가:
+> ```gradle
+> maven { url 'https://devrepo.kakao.com/nexus/content/groups/public/' }
+> ```
+
+**(2) `MainActivity`에서 사용할 네트워크 모듈만 등록**
+
+```kotlin
+import com.exelbid.flutter.mediation.builtin.AdMobMediationModule
+import com.exelbid.flutter.mediation.builtin.FanMediationModule
+import com.exelbid.flutter.mediation.builtin.AdfitMediationModule
+import io.flutter.embedding.android.FlutterActivity
+import io.flutter.embedding.engine.FlutterEngine
+
+class MainActivity : FlutterActivity() {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        super.configureFlutterEngine(flutterEngine)
+        AdMobMediationModule.register()   // 사용할 네트워크만 골라서 등록
+        FanMediationModule.register()
+        AdfitMediationModule.register()
+    }
 }
 ```
 
-### 미디에이션 요청 및 목록 순회
+> 각 모듈은 해당 네트워크가 지원하는 포맷(배너/전면/네이티브/비디오)을 한 번에 등록합니다.
+> ⚠️ SDK를 추가하지 않고 모듈만 등록하면, 그 네트워크 광고를 로드하는 시점에 `ClassNotFoundError`가 발생합니다. (1)·(2)는 항상 같이 하세요.
 
-```dart
-// 미디에이션 목록 조회 (EBPMediationListener -> onLoad)
-_mediationManager.loadMediation();
+### 2단계 · 어댑터 연결 — iOS
+
+iOS는 어댑터 패키지를 추가하고 모듈을 등록합니다. **SwiftPM 또는 CocoaPods** 중 하나로 통합합니다. (example 앱의 `example/ios`에 적용되어 있습니다.) 최소 배포타깃은 **iOS 14**입니다.
+
+**(1-A) SwiftPM** — Xcode에서 Runner 타깃에 `https://github.com/onnuridmc/ExelBid_iOS_Mediation_Adapter.git`를 추가하고, 사용할 네트워크의 product를 선택합니다.
+
+| 네트워크 | SwiftPM product |
+|---|---|
+| AdMob | `ExelBidMediationAdMob` |
+| FAN | `ExelBidMediationFAN` |
+| AdFit | `ExelBidMediationAdFit` |
+
+**(1-B) CocoaPods** — `ios/Podfile`의 Runner 타깃에 사용할 subspec을 추가하고 `pod install`. 팟 이름은 `ExelBid_Mediation_Adapter`, 버전 **1.1.5**.
+
+```ruby
+target 'Runner' do
+  pod 'ExelBid_Mediation_Adapter/AdMob', '1.1.5'  # AdMob (Google-Mobile-Ads-SDK 포함)
+  pod 'ExelBid_Mediation_Adapter/FAN', '1.1.5'    # FAN (FBAudienceNetwork 포함)
+  # AdFit은 CocoaPods 미제공 → SwiftPM(1-A)으로 추가
+end
 ```
 
-```dart
-// 미디에이션 정보 조회 (EBPMediationListener -> onNext or onEmpty)
-// onLoad 콜백 응답 후 요청해야 합니다.
-_mediationManager.nextMediation();
+> 어느 방식이든 플러그인과 동일한 `ExelBidSDK` 경로를 써서 중복 링크되지 않습니다. CocoaPods는 모든 subspec이 단일 모듈 `ExelBidMediationAdapter`로 노출되고, SwiftPM은 네트워크별 모듈로 노출됩니다(아래 import 차이 참고).
+
+**(2) `AppDelegate`에서 사용할 모듈 등록**
+
+```swift
+import ExelBidSDK
+import GoogleMobileAds          // AdMob 사용 시
+
+// 어댑터 모듈 import — 통합 방식에 따라 한 줄만:
+import ExelBidMediationAdMob    // SwiftPM (네트워크별 모듈)
+// import ExelBidMediationAdapter  // CocoaPods (단일 모듈)
+
+ExelBidMediationKit.shared.register(modules: [AdMobMediationModule.self])
+MobileAds.shared.start(completionHandler: nil)  // AdMob 사용 시
 ```
 
-### 유의 사항
-- 타사 광고 요청 후 광고가 없거나 오류가 발생하면 미디에이션 다음 순서를 호출해주세요.
-- 미디에이션 목록이 비어있다면 광고없음 처리를 해주세요.
-- 광고가 노출될 때까지 전체 과정을 반복해서는 안됩니다.
+> 모듈 타입명(`AdMobMediationModule` 등)과 등록 코드는 두 방식이 동일하며, `import` 줄만 다릅니다.
 
-<br/><br/>
+### 3단계 · 네트워크별 필수 설정
 
+네트워크마다 앱에 추가로 넣어야 하는 식별자/설정이 다릅니다.
 
-# 커스텀 폰트
-[커스텀 폰트 설정 가이드](./docs/CUSTOM_FONT_SETUP.md)
+| 네트워크 | Android 필수 | iOS 필수 | 비고 |
+|---|---|---|---|
+| **AdMob** | `AndroidManifest.xml`에 `com.google.android.gms.ads.APPLICATION_ID` 메타데이터 ([설정](#android-프로젝트-설정)) | `Info.plist`에 `GADApplicationIdentifier`, `MobileAds.shared.start(...)`, 배포타깃 **14+** | 앱 ID는 AdMob 콘솔 발급(광고 단위 ID와 다름). 없으면 동작 안 함/크래시 |
+| **FAN (Meta)** | 추가 식별자 없음 (AndroidX 필요) | 추가 식별자 없음 (`SKAdNetwork`·ATT 권장) | 앱 단위 ID 없이 **광고 단위(placement) ID**로 동작. 실기기 테스트는 Meta 테스트 디바이스 등록 필요 |
+| **AdFit (Kakao)** | Kakao maven 저장소 ([1단계](#1단계--어댑터-연결--android)) | AdFit iOS SDK | 앱 단위 ID 없이 **광고 단위(client) ID**로 동작. 전면/비디오 미지원(배너·네이티브만) |
+
+> 공통: 모든 네트워크의 실제 낙찰은 **ExelBid 콘솔 워터폴에 해당 네트워크 라인아이템이 등록**되어 있어야 발생합니다. 광고 단위 ID(placement/client ID 등)는 보통 콘솔 설정에 포함됩니다.
+
+### 4단계 · 코드에서 사용
+
+미디에이션 광고는 일반 광고와 **동일한 위젯/클래스에 `Mediated`가 붙은 버전**을 씁니다. Dart API는 iOS·Android 공통입니다.
+
+공통 옵션:
+- `perNetworkTimeout` — 네트워크당 타임아웃(초). 초과 시 다음 네트워크로 폴백.
+- `onWinningNetwork` / `winningNetwork` — 낙찰(노출 성공)된 네트워크 이름.
+- `onWaterfall` / `WaterfallEvent` — 워터폴 진행 추적(모든 미디에이션 광고 지원, [아래](#waterfallevent)).
+
+**Mediated Banner**
+
+```dart
+ExelbidMediatedBannerAd(
+  adUnitId: 'YOUR_AD_UNIT_ID',
+  size: const Size(320, 50),
+  perNetworkTimeout: 5,
+  onWinningNetwork: (network) => print('낙찰: $network'),
+  onWaterfall: (e) => print(e.format()),   // 예: "1/3 trying → exelbid"
+  onLoad: () => print('loaded'),
+  onFail: (e) => print('실패: ${e.message}'),
+)
+```
+
+**Mediated Native** — 일반 네이티브와 **동일한 슬롯 위젯·스타일·`onData` API**에 `onWinningNetwork`·`onWaterfall`만 추가됩니다.
+
+```dart
+ExelbidMediatedNativeAdView(
+  adUnitId: 'YOUR_AD_UNIT_ID',
+  desiredAssets: const {NativeAsset.title, NativeAsset.main, NativeAsset.ctatext},
+  perNetworkTimeout: 5,
+  onWinningNetwork: (network) => print('낙찰: $network'),
+  onWaterfall: (e) => print(e.format()),
+  child: Column(children: [ /* 슬롯 위젯 배치 */ ]),
+)
+```
+
+**Mediated Video / Interstitial** — `ExelbidVideoAd` · `ExelbidInterstitialAd`와 같은 `create/load/present/dispose` 패턴이며, 이벤트 데이터에 `winningNetwork`·`waterfall`이 추가됩니다.
+
+```dart
+final ad = await ExelbidMediatedVideoAd.create(
+  adUnitId: 'YOUR_AD_UNIT_ID',
+  perNetworkTimeout: 5,
+);
+
+ad.events.listen((data) {
+  switch (data.event) {
+    case MediatedVideoAdEvent.onWaterfall:
+      print(data.waterfall?.format());
+    case MediatedVideoAdEvent.onLoad:
+      print('낙찰: ${data.winningNetwork}');
+      ad.present();
+    case MediatedVideoAdEvent.onDidDisappear:
+      ad.dispose();
+    default:
+      break;
+  }
+});
+
+await ad.load();
+```
+
+### WaterfallEvent
+
+`onWaterfall` 콜백이 전달하는 sealed 클래스. `format()`으로 로그용 한 줄 문자열을 얻을 수 있어 워터폴 디버깅에 유용합니다.
+
+| 타입 | 의미 | `format()` 예시 |
+|---|---|---|
+| `WaterfallFetching` | 워터폴 조회 시작 | `fetching…` |
+| `WaterfallFetched` | 네트워크 목록 수신 | `fetched: [a, b]` |
+| `WaterfallTrying` | 특정 네트워크 시도 | `1/3 trying → exelbid` |
+| `WaterfallWon` | 낙찰 | `won: exelbid (120ms)` |
+| `WaterfallLost` | 해당 네트워크 실패 | `lost: admob (adapterNotRegistered)` |
+| `WaterfallNoFill` | 전체 실패 | `noFill — all networks failed` |
+
+> 등록하지 않은 네트워크가 `lost: ... (adapterNotRegistered)`로 보이면, 해당 네트워크의 SDK 추가 + 모듈 등록이 빠진 것입니다([1단계](#1단계--어댑터-연결--android)/[2단계](#2단계--어댑터-연결--ios)).
+
+---
+
+## 에러 처리
+
+`onFail` 콜백/`onFail` 이벤트로 전달되는 `AdError`는 sealed 클래스라 `switch`로 타입 분기할 수 있습니다.
+
+```dart
+onFail: (error) {
+  final msg = switch (error) {
+    InvalidAdUnitIdError() => '잘못된 광고 단위 ID',
+    NoFillError() => '노출할 광고 없음',
+    NetworkAdError() => '네트워크 오류',
+    HttpStatusAdError(:final statusCode) => 'HTTP $statusCode',
+    NotReadyAdError() => '아직 준비되지 않음',
+    CanceledAdError() => '취소됨',
+    _ => error.message,
+  };
+  print(msg);
+}
+```
+
+| 타입 | 상황 |
+|---|---|
+| `InvalidAdUnitIdError` | 광고 단위 ID 오류 |
+| `NoFillError` | 노출 가능한 광고 없음 |
+| `NetworkAdError` | 네트워크 통신 실패 |
+| `HttpStatusAdError` | HTTP 오류 (`statusCode` 포함) |
+| `DecodingAdError` | 응답 파싱 실패 |
+| `VastParsingAdError` | VAST 파싱 실패 (비디오) |
+| `MediaFileUnavailableError` | 미디어 파일 없음 (비디오) |
+| `PlaybackAdError` | 재생 오류 (비디오) |
+| `NotReadyAdError` | 준비 전 `present()` 호출 |
+| `CanceledAdError` | 취소됨 |
+| `UnknownAdError` | 기타 (`code` 포함) |
+
+---
+
+## 공통 API · API 요약
+
+`Exelbid` 정적 클래스로 전역 정보/ATT를 다룹니다.
+
+```dart
+final version = await Exelbid.sdkVersion;                    // 네이티브 SDK 버전
+final status = await Exelbid.trackingAuthorizationStatus;    // ATT 상태 조회 (프롬프트 없음)
+final result = await Exelbid.requestTrackingAuthorization(); // ATT 프롬프트 요청
+```
+
+`TrackingAuthorizationStatus`: `notDetermined` · `restricted` · `denied` · `authorized`
+
+| 클래스 / 위젯 | 용도 |
+|---|---|
+| `Exelbid` | 전역 (SDK 버전, ATT) |
+| `ExelbidBannerAd` / `ExelbidBannerController` | 임베디드 배너 (+ 수동 제어) |
+| `ExelbidNativeAdView` + `ExelbidNativeAd*` 슬롯 | 호스트 렌더링 네이티브 |
+| `ExelbidNativeSlotStyle` / `ExelbidNativeAdData` | 네이티브 슬롯 스타일 / 자산 값(`onData`) |
+| `ExelbidVideoAd` / `ExelbidInterstitialAd` | 전면 비디오 / 전면 광고 |
+| `ExelbidMediatedBannerAd` / `…NativeAdView` / `…VideoAd` / `…InterstitialAd` | 미디에이션 광고 |
+| `AdOptions` / `AdLocation` / `Gender` | 타깃팅 옵션 |
+| `AdError` (sealed) | 에러 타입 |
+| `WaterfallEvent` (sealed) | 미디에이션 워터폴 추적 |
+| `NativeAsset` / `TrackingAuthorizationStatus` | 네이티브 자산 종류 / ATT 상태 |
+
+전체 동작 예시는 [`example/`](example/) 앱을 참고하세요. Home / Ads / Mediation 탭에서 각 광고 유형을 실행해 볼 수 있습니다.
+
+---
+
+## 부록: Android AdMob 전면/비디오 노치 채우기 (선택)
+
+> 선택 사항입니다. AdMob 전면·비디오 광고는 Google Mobile Ads SDK가 자체 액티비티(`com.google.android.gms.ads.AdActivity`)에서 렌더링하며, 기본적으로 상단 **상태바/노치(디스플레이 컷아웃)** 영역을 비워 둡니다. 이 영역까지 광고로 채우고 싶다면 **호스트 앱**에서 해당 액티비티의 테마를 덮어쓸 수 있습니다(플러그인이 대신 설정할 수 없는 호스트 영역입니다).
+
+`AdActivity`는 GMA SDK가 선언하므로, 호스트 앱의 `AndroidManifest.xml`에서 `tools:replace`로 테마만 교체합니다.
+
+`android/app/src/main/res/values/styles.xml`:
+
+```xml
+<style name="AdCutoutTheme" parent="@android:style/Theme.Translucent.NoTitleBar.Fullscreen">
+    <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    <item name="android:windowFullscreen">true</item>
+</style>
+```
+
+`android/app/src/main/AndroidManifest.xml` (`<manifest>`에 `xmlns:tools="http://schemas.android.com/tools"` 추가):
+
+```xml
+<application ...>
+    <activity
+        android:name="com.google.android.gms.ads.AdActivity"
+        android:theme="@style/AdCutoutTheme"
+        tools:replace="android:theme" />
+</application>
+```
+
+- `windowFullscreen` → 상태바를 숨겨 광고가 상단까지 확장됩니다.
+- `windowLayoutInDisplayCutoutMode = shortEdges` → 컷아웃(노치/펀치홀) 영역까지 진입합니다(**API 28+**, 하위는 무시). `always`(API 30+)는 더 넓게 채웁니다.
+
+> GMA SDK 버전/기기에 따라 SDK가 런타임에 인셋을 직접 적용해 위 테마가 무시될 수 있습니다. 그 경우 **GMA SDK 업그레이드**가 근본 해법입니다. 적용 후 광고 표시/닫기 버튼 위치를 실기기에서 확인하세요.
+
+---
+
+## 라이선스
+
+[LICENSE](LICENSE) 참조.

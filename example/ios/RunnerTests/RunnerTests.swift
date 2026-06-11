@@ -2,6 +2,8 @@ import Flutter
 import UIKit
 import XCTest
 
+// If your plugin has been explicitly set to "type: .dynamic" in the Package.swift,
+// you will need to add your plugin as a dependency of RunnerTests within Xcode.
 
 @testable import exelbid_plugin
 
@@ -12,7 +14,7 @@ import XCTest
 class RunnerTests: XCTestCase {
 
   func testGetPlatformVersion() {
-    let plugin = ExelbidPlugin()
+    let plugin = ExelbidFlutterPlugin()
 
     let call = FlutterMethodCall(methodName: "getPlatformVersion", arguments: [])
 

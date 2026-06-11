@@ -1,27 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.motivi.exelbid_plugin"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- Ad requests. The ExelBid AAR only declares ACCESS_NETWORK_STATE, so the
+         host needs INTERNET; declared here so every consumer gets it via merge. -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>
 
     <application>
-
-        <activity android:name="com.onnuridmc.exelbid.common.ExelbidBrowser"
-            android:configChanges="keyboardHidden|orientation|screenSize">
-        </activity>
-
-        <activity android:name="com.onnuridmc.exelbid.common.ExelBidActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize">
-        </activity>
-
-        <activity android:name="com.onnuridmc.exelbid.lib.vast.VideoPlayerActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize">
-        </activity>
-
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+        <!-- ExelBid display activities are NOT declared in the SDK AAR manifest;
+             they must be registered by the host. Bundled here so interstitial /
+             video ads work out of the box. -->
+        <activity
+            android:name="com.onnuridmc.exelbid.common.ExelBidActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity
+            android:name="com.onnuridmc.exelbid.lib.vast.VideoPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize" />
     </application>
+
 </manifest>

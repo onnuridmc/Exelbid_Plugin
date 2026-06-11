@@ -1,32 +1,32 @@
 import Flutter
 import UIKit
 import AppTrackingTransparency
-import AdFitSDK
-
-let METHOD_CHANNEL_ID = "adfit"
-let METHOD_CHANNEL_VIEW_ID = "adfit/banner_ad"
-let METHOD_CHANNEL_NATIVE_VIEW_ID = "adfit/native_ad"
+#if canImport(ExelBidMediationAdMob)
+import ExelBidSDK
+import ExelBidMediationAdMob
+import GoogleMobileAds
+#endif
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-      GeneratedPluginRegistrant.register(with: self)
 
-      guard let registrar = registrar(forPlugin: "plugin_name") else { return false }
-      
-      // Adfit 광고 뷰 등록
-      let bannerFactory = AdfitBannerPlatformViewFactory(messenger: registrar.messenger())
-      registrar.register(bannerFactory, withId: METHOD_CHANNEL_VIEW_ID)
-      let nativeFactory = AdfitNativePaltformViewFactory(messenger: registrar.messenger())
-      registrar.register(nativeFactory, withId: METHOD_CHANNEL_NATIVE_VIEW_ID)
-      
+    // Register the Google AdMob mediation adapter so the ExelBid waterfall can
+    // fill through AdMob. Guarded so the example still builds before the
+    // `ExelBidMediationAdMob` Swift package is added to the Runner target
+    // (see README "AdMob 미디에이션 테스트").
+    #if canImport(ExelBidMediationAdMob)
+    ExelBidMediationKit.shared.register(modules: [AdMobMediationModule.self])
+    MobileAds.shared.start(completionHandler: nil)
+    #endif
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-  override func applicationDidBecomeActive(_ application: UIApplication) {
-    super.applicationDidBecomeActive(application)
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
   }
 }
