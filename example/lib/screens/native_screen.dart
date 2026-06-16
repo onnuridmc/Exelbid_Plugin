@@ -134,8 +134,6 @@ class _NativeScreenState extends State<NativeScreen> {
             onLoad: () => _set(AdStatus.ready, '표시됨'),
             onFail: (e) => _set(AdStatus.failed, 'failed: ${e.message}'),
             onImpression: () => _set(AdStatus.impression, 'impression'),
-            onImpression50: () => _set(AdStatus.impression, 'impression 50%'),
-            onImpression100: () => _set(AdStatus.impression, 'impression 100%'),
             onClick: () => _set(AdStatus.clicked, 'clicked'),
             onLeaveApp: () => _set(AdStatus.clicked, 'left app'),
             onClickFinish: () => _set(AdStatus.ready, 'click finished'),
@@ -175,8 +173,6 @@ class _NativeCreative extends StatelessWidget {
     required this.onLoad,
     required this.onFail,
     required this.onImpression,
-    required this.onImpression50,
-    required this.onImpression100,
     required this.onClick,
     required this.onLeaveApp,
     required this.onClickFinish,
@@ -188,8 +184,6 @@ class _NativeCreative extends StatelessWidget {
   final VoidCallback onLoad;
   final void Function(AdError error) onFail;
   final VoidCallback onImpression;
-  final VoidCallback onImpression50;
-  final VoidCallback onImpression100;
   final VoidCallback onClick;
   final VoidCallback onLeaveApp;
   final VoidCallback onClickFinish;
@@ -215,8 +209,6 @@ class _NativeCreative extends StatelessWidget {
           onLoad: onLoad,
           onFail: onFail,
           onImpression: onImpression,
-          onImpression50: onImpression50,
-          onImpression100: onImpression100,
           onClick: onClick,
           onLeaveApp: onLeaveApp,
           onClickFinish: onClickFinish,
@@ -277,7 +269,7 @@ class _NativeCreative extends StatelessWidget {
                   ),
                   const Positioned(
                     top: 6,
-                    right: 6,
+                    left: 6,
                     child: ExelbidNativeAdPrivacyIcon(width: 20, height: 20),
                   ),
                 ],

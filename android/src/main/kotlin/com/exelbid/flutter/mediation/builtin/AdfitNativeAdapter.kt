@@ -57,7 +57,9 @@ class AdfitNativeAdapter : NativeMediationAdapter {
     override fun bind(rendering: NativeAdRendering, activity: Activity?) {
         val b = binder ?: return
         val title = rendering.titleView() ?: return // required by AdFit
-        val context = rendering.container.context
+        // AdFit's view constructors hard-require an Activity context; the
+        // PlatformView's container.context is the application context.
+        val context = activity ?: return
 
         // AdFit reports taps through its own click listener (no impression
         // callback), so surface clicks to Dart — matching AdMob/FAN/iOS.

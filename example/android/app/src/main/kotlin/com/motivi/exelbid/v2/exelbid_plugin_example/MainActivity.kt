@@ -12,7 +12,6 @@ class MainActivity : FlutterActivity() {
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         AdMobMediationModule.register()
-        FanMediationModule.register()
         AdfitMediationModule.register()
     }
 }
