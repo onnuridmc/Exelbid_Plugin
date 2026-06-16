@@ -1,6 +1,6 @@
 name: exelbid_plugin
 description: "Flutter plugin wrapping the ExelBid iOS/Android SDKs."
-version: 2.0.0
+version: 2.0.1
 homepage: https://github.com/onnuridmc/Exelbid_Plugin
 repository: https://github.com/onnuridmc/Exelbid_Plugin
 

@@ -58,11 +58,67 @@ import 'package:exelbid_plugin/exelbid_plugin.dart';
 
 ## iOS 프로젝트 설정
 
-플러그인이 `ExelBidSDK`를 자동으로 가져옵니다. pod 설치만 하면 됩니다.
+플러그인의 iOS 네이티브 SDK(`ExelBidSDK`)는 **Swift Package Manager(SwiftPM) 통합을 권장**합니다. 미디에이션 어댑터도 동일하게 SwiftPM으로 통합합니다(아래 [iOS 어댑터 연결](#2단계--어댑터-연결--ios) 참고).
+
+> **SwiftPM과 CocoaPods는 어떻게 결정되나?** 플러그인은 `Package.swift`(SwiftPM)와 `exelbid_plugin.podspec`(CocoaPods) 둘 다 제공하지만, Flutter의 플러그인 통합 로직이 **호스트 모드에 맞춰 한쪽만 활성화**합니다. SwiftPM이 켜진 호스트는 `Package.swift` 경로로 SDK를 가져오고 podspec은 평가되지 않으며, 반대로 SwiftPM이 꺼진 호스트는 podspec 경로로 가져오고 `Package.swift`는 무시됩니다. 따라서 플러그인의 이중 선언만으로는 중복 임베드가 발생하지 않습니다.
+>
+> 다만 **호스트 측에서 두 경로를 수동으로 동시에 노출**하면(예: `Podfile`에 `pod 'ExelBid_iOS_Swift'` 또는 `pod 'ExelBid_Mediation_Adapter/...'`를 직접 추가, 미디에이션 어댑터를 한쪽은 SwiftPM·다른 한쪽은 CocoaPods로 추가, 모드 전환 후 옛 `Pods/`·`Podfile.lock` 잔재가 남은 채 빌드) `ExelBidSDK.framework`가 두 번 임베드되어 `Multiple commands produce .../Frameworks/ExelBidSDK.framework` 에러가 납니다(아래 [트러블슈팅](#트러블슈팅--multiple-commands-produce-exelbidsdkframework) 참고). 그래서 호스트 통합은 **SwiftPM 한쪽으로 통일**할 것을 권장합니다.
+
+**(1) Flutter SwiftPM 활성화** — 호스트 머신에서 한 번만 켜면 됩니다(Flutter 3.24+ 필요).
 
 ```bash
+flutter config --enable-swift-package-manager
+```
+
+**(2) iOS 의존성 가져오기** — 클론/체크아웃 직후 또는 `pubspec.yaml` 의존성 변경 후:
+
+```bash
+flutter clean
+flutter pub get
 cd ios && pod install
 ```
+
+> `pod install`은 Flutter 프레임워크 자체(`Flutter.podspec`)와 SwiftPM 미지원 플러그인을 위해 여전히 필요합니다. 플러그인의 네이티브 SDK는 Xcode가 SwiftPM으로 가져오므로 첫 빌드 시 패키지 해석에 시간이 걸릴 수 있습니다.
+
+### 트러블슈팅 — `Multiple commands produce ExelBidSDK.framework`
+
+호스트 프로젝트 빌드 시 다음과 같은 에러가 발생할 수 있습니다.
+
+```
+error: Multiple commands produce '.../Runner.app/Frameworks/ExelBidSDK.framework'
+```
+
+**원인** — `ExelBidSDK.framework`가 두 경로(SwiftPM + CocoaPods)에서 동시에 임베드되어 Xcode 빌드 시스템이 같은 산출물 경로에 두 개의 카피 명령을 발견했기 때문입니다. 플러그인의 podspec과 `Package.swift`가 양쪽에 같은 SDK 의존성을 선언하긴 하지만, Flutter의 플러그인 통합 로직이 호스트 모드에 맞춰 한쪽만 활성화하므로 **그 자체로는 중복 임베드가 발생하지 않습니다.** 중복은 다음과 같이 **호스트가 두 경로를 동시에 노출했을 때** 발생합니다.
+
+- 호스트 `Podfile`에 `pod 'ExelBid_iOS_Swift'` 또는 `pod 'ExelBid_Mediation_Adapter/...'`를 직접 추가해 둔 상태에서 SwiftPM 패키지(예: 플러그인 또는 `ExelBid_iOS_Mediation_Adapter`)도 활성화된 경우
+- 미디에이션 어댑터를 한쪽 모드에서 추가했다가 호스트의 SwiftPM 활성화 상태를 바꾼 뒤 정리 없이 다시 빌드한 경우
+- 이전 통합 결과가 빌드 캐시(`build/`, `Pods/`, `Podfile.lock`, `.symlinks/`, `Flutter/ephemeral/`)에 남아 있고 현재 활성 모드와 충돌하는 경우
+
+**해결** — SwiftPM 단일 경로로 정리합니다.
+
+```bash
+# 1. 빌드/통합 산출물 제거
+flutter clean
+rm -rf ios/Pods ios/Podfile.lock ios/.symlinks ios/Flutter/ephemeral ios/build
+
+# 2. SwiftPM 활성화 확인
+flutter config --enable-swift-package-manager
+
+# 3. 호스트 ios/Podfile에서 ExelBid 관련 항목 제거(있다면)
+#    - pod 'ExelBid_iOS_Swift', ...
+#    - pod 'ExelBid_Mediation_Adapter/...', ...
+
+# 4. 재설치
+flutter pub get
+cd ios && pod install
+```
+
+추가로 Xcode → Runner.xcodeproj 의 **Package Dependencies** 탭에서 다음을 확인합니다.
+
+- `ExelBid_iOS_Swift`(SDK)는 **호스트가 직접 추가하지 않습니다.** 플러그인의 `Package.swift`가 transitive로 가져옵니다.
+- `ExelBid_iOS_Mediation_Adapter`(미디에이션)는 호스트가 직접 추가합니다([아래 안내](#2단계--어댑터-연결--ios)).
+
+정리 후에도 같은 에러가 남으면 Xcode → **Product → Clean Build Folder**(`⇧⌘K`)로 DerivedData까지 비우고 다시 빌드하세요.
 
 ### App Tracking Transparency (필수)
 
@@ -456,9 +512,15 @@ class MainActivity : FlutterActivity() {
 
 ### 2단계 · 어댑터 연결 — iOS
 
-iOS는 어댑터 패키지를 추가하고 모듈을 등록합니다. **SwiftPM 또는 CocoaPods** 중 하나로 통합합니다. (example 앱의 `example/ios`에 적용되어 있습니다.) 최소 배포타깃은 **iOS 14**입니다.
+iOS는 어댑터 패키지를 **SwiftPM으로 추가**하고 모듈을 등록합니다. (example 앱의 `example/ios`에 적용되어 있습니다.) 최소 배포타깃은 **iOS 14**입니다.
 
-**(1-A) SwiftPM** — Xcode에서 Runner 타깃에 `https://github.com/onnuridmc/ExelBid_iOS_Mediation_Adapter.git`를 추가하고, 사용할 네트워크의 product를 선택합니다.
+> **CocoaPods 어댑터(`ExelBid_Mediation_Adapter` 팟)는 사용하지 않습니다.** 플러그인의 SDK 경로(SwiftPM)와 충돌해 `Multiple commands produce ExelBidSDK.framework` 빌드 에러를 일으키기 때문입니다(자세한 내용은 [트러블슈팅](#트러블슈팅--multiple-commands-produce-exelbidsdkframework) 참고). 호스트 `Podfile`에 `pod 'ExelBid_Mediation_Adapter/...'` 항목이 있다면 제거하세요.
+
+**(1) SwiftPM 패키지 추가** — Xcode에서 Runner.xcodeproj를 연 뒤 **File → Add Package Dependencies…**로 다음 URL을 추가하고, 사용할 네트워크의 product만 Runner 타깃에 체크합니다.
+
+```
+https://github.com/onnuridmc/ExelBid_iOS_Mediation_Adapter.git
+```
 
 | 네트워크 | SwiftPM product |
 |---|---|
@@ -466,33 +528,43 @@ iOS는 어댑터 패키지를 추가하고 모듈을 등록합니다. **SwiftPM 
 | FAN | `ExelBidMediationFAN` |
 | AdFit | `ExelBidMediationAdFit` |
 
-**(1-B) CocoaPods** — `ios/Podfile`의 Runner 타깃에 사용할 subspec을 추가하고 `pod install`. 팟 이름은 `ExelBid_Mediation_Adapter`, 버전 **1.1.5**.
-
-```ruby
-target 'Runner' do
-  pod 'ExelBid_Mediation_Adapter/AdMob', '1.1.5'  # AdMob (Google-Mobile-Ads-SDK 포함)
-  pod 'ExelBid_Mediation_Adapter/FAN', '1.1.5'    # FAN (FBAudienceNetwork 포함)
-  # AdFit은 CocoaPods 미제공 → SwiftPM(1-A)으로 추가
-end
-```
-
-> 어느 방식이든 플러그인과 동일한 `ExelBidSDK` 경로를 써서 중복 링크되지 않습니다. CocoaPods는 모든 subspec이 단일 모듈 `ExelBidMediationAdapter`로 노출되고, SwiftPM은 네트워크별 모듈로 노출됩니다(아래 import 차이 참고).
+> 어댑터 패키지는 내부적으로 플러그인과 동일한 `ExelBid_iOS_Swift` SwiftPM 패키지를 transitive로 사용합니다. SwiftPM이 단일 버전으로 해석하므로 `ExelBidSDK.framework`는 호스트 앱에 정확히 한 번만 임베드됩니다.
 
 **(2) `AppDelegate`에서 사용할 모듈 등록**
 
 ```swift
+import Flutter
+import UIKit
 import ExelBidSDK
 import GoogleMobileAds          // AdMob 사용 시
 
-// 어댑터 모듈 import — 통합 방식에 따라 한 줄만:
-import ExelBidMediationAdMob    // SwiftPM (네트워크별 모듈)
-// import ExelBidMediationAdapter  // CocoaPods (단일 모듈)
+// 어댑터 모듈 import — 사용할 네트워크만
+import ExelBidMediationAdMob
+import ExelBidMediationFAN
+import ExelBidMediationAdFit
 
-ExelBidMediationKit.shared.register(modules: [AdMobMediationModule.self])
-MobileAds.shared.start(completionHandler: nil)  // AdMob 사용 시
+@main
+@objc class AppDelegate: FlutterAppDelegate {
+  override func application(
+    _ application: UIApplication,
+    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  ) -> Bool {
+    ExelBidMediationKit.shared.register(modules: [
+      AdMobMediationModule.self,   // 사용할 네트워크만 골라서 등록
+      FANMediationModule.self,
+      AdFitMediationModule.self,
+    ])
+    MobileAds.shared.start(completionHandler: nil)  // AdMob 사용 시
+
+    GeneratedPluginRegistrant.register(with: self)
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+}
 ```
 
-> 모듈 타입명(`AdMobMediationModule` 등)과 등록 코드는 두 방식이 동일하며, `import` 줄만 다릅니다.
+> 각 모듈은 해당 네트워크가 지원하는 포맷(배너/전면/네이티브/비디오)을 한 번에 등록합니다.
+> ExelBid 본가 네트워크는 플러그인이 자동 등록하므로 따로 추가할 필요가 없습니다.
+> ⚠️ 등록한 모듈의 SwiftPM product를 (1)에서 빠뜨리면 **컴파일 에러**가 발생합니다. (1)·(2)는 항상 같이 하세요.
 
 ### 3단계 · 네트워크별 필수 설정
 

@@ -16,6 +16,9 @@ import com.exelbid.flutter.mediation.builtin.ExelBidBannerAdapter
 import com.exelbid.flutter.mediation.builtin.ExelBidInterstitialAdapter
 import com.exelbid.flutter.mediation.builtin.ExelBidNativeAdapter
 import com.exelbid.flutter.mediation.builtin.ExelBidVideoAdapter
+import com.exelbid.flutter.mediation.builtin.AdMobMediationModule
+import com.exelbid.flutter.mediation.builtin.FanMediationModule
+import com.exelbid.flutter.mediation.builtin.AdfitMediationModule
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -55,6 +58,10 @@ class ExelbidFlutterPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
         channel.setMethodCallHandler(this)
 
         registerBuiltInAdapters()
+
+        AdMobMediationModule.register()
+        FanMediationModule.register()
+        AdfitMediationModule.register()
 
         // Mediated banner PlatformView. The factory reads the current activity
         // lazily via the provider so it picks up ActivityAware changes.

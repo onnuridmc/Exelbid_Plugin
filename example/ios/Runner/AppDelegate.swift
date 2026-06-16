@@ -1,11 +1,10 @@
 import Flutter
 import UIKit
 import AppTrackingTransparency
-#if canImport(ExelBidMediationAdMob)
 import ExelBidSDK
-import ExelBidMediationAdMob
 import GoogleMobileAds
-#endif
+import ExelBidMediationAdMob
+import ExelBidMediationAdFit
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
@@ -18,10 +17,12 @@ import GoogleMobileAds
     // fill through AdMob. Guarded so the example still builds before the
     // `ExelBidMediationAdMob` Swift package is added to the Runner target
     // (see README "AdMob 미디에이션 테스트").
-    #if canImport(ExelBidMediationAdMob)
-    ExelBidMediationKit.shared.register(modules: [AdMobMediationModule.self])
+    
+    ExelBidMediationKit.shared.register(modules: [
+        AdMobMediationModule.self,
+        AdFitMediationModule.self
+    ])
     MobileAds.shared.start(completionHandler: nil)
-    #endif
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
