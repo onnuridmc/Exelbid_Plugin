@@ -269,7 +269,7 @@ class _NativeCreative extends StatelessWidget {
                   ),
                   const Positioned(
                     top: 6,
-                    left: 6,
+                    right: 6,
                     child: ExelbidNativeAdPrivacyIcon(width: 20, height: 20),
                   ),
                 ],

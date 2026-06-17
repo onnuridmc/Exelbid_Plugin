@@ -73,14 +73,16 @@ class FanNativeAdapter : NativeMediationAdapter {
         rendering.callToActionView()?.text = ad.adCallToAction
 
         // Main media → FAN MediaView full-bleed in the host's single media slot
-        // (mirrors iOS `nativeMediaView()`).
+        // (mirrors iOS `nativeMediaView()`). FAN's `registerViewForInteraction`
+        // requires a MediaView, so when the host omits the media slot we still
+        // attach one — but with zero size so it doesn't overlay other slots.
         val media = MediaView(context)
         val slot = rendering.mediaContainer()
         if (slot != null) {
             rendering.mainImageView()?.visibility = View.GONE
             slot.addView(media, fullBleed())
         } else {
-            layout.addView(media, fullBleed())
+            layout.addView(media, FrameLayout.LayoutParams(0, 0))
         }
 
         // AdChoices (policy) at the privacy slot frame, else top-end.

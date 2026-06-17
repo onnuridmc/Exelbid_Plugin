@@ -35,7 +35,14 @@ class AdfitNativeAdapter : NativeMediationAdapter {
 
     override fun load(config: MediationLoadConfig, callback: MediationAdCallback) {
         this.callback = callback
-        val loader = AdFitNativeAdLoader.create(config.context, config.unitId)
+        // AdFit hard-requires an Activity context (throws "Context must be
+        // Activity context!" otherwise) — for the loader as well as the views.
+        // Fail the step (advancing the waterfall) when none is attached.
+        val activity = config.activity ?: run {
+            callback.onFailed("AdFit native requires an Activity context")
+            return
+        }
+        val loader = AdFitNativeAdLoader.create(activity, config.unitId)
         loader.loadAd(
             AdFitNativeAdRequest.Builder().build(),
             object : AdFitNativeAdLoader.AdLoadListener {
@@ -73,14 +80,16 @@ class AdfitNativeAdapter : NativeMediationAdapter {
         NativeContainerReparenter.reparentChildrenInto(rendering.container, adfitView)
 
         // AdFit media view full-bleed in the host's single media slot
-        // (mirrors iOS `nativeMediaView()`).
+        // (mirrors iOS `nativeMediaView()`). AdFit's layout builder requires a
+        // MediaView, so when the host omits the media slot we still attach one —
+        // but with zero size so it doesn't overlay other slots.
         val media = AdFitMediaView(context)
         val slot = rendering.mediaContainer()
         if (slot != null) {
             rendering.mainImageView()?.visibility = View.GONE
             slot.addView(media, fullBleed())
         } else {
-            adfitView.addView(media, fullBleed())
+            adfitView.addView(media, FrameLayout.LayoutParams(0, 0))
         }
 
         val builder = AdFitNativeAdLayout.Builder(adfitView)

@@ -13,6 +13,7 @@ import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdLoader
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.nativead.AdChoicesView
 import com.google.android.gms.ads.nativead.MediaView
 import com.google.android.gms.ads.nativead.NativeAd
 import com.google.android.gms.ads.nativead.NativeAdView
@@ -91,6 +92,17 @@ class AdMobNativeAdapter : NativeMediationAdapter {
             ad.mediaContent?.let { mediaView.mediaContent = it }
         }
 
+        // AdChoices at the host privacy slot position (mirrors FAN's AdOptions
+        // handling). Without this AdMob would auto-place AdChoices in its
+        // default corner of the NativeAdView and the host's slot would stay
+        // empty.
+        rendering.privacyView()?.let { privacy ->
+            val choices = AdChoicesView(adView.context)
+            privacy.visibility = View.GONE
+            adView.addView(choices, copyParams(privacy))
+            adView.adChoicesView = choices
+        }
+
         adView.setNativeAd(ad)
         nativeAdView = adView
     }
@@ -113,6 +125,22 @@ class AdMobNativeAdapter : NativeMediationAdapter {
         FrameLayout.LayoutParams.MATCH_PARENT,
         FrameLayout.LayoutParams.MATCH_PARENT,
     )
+
+    private fun copyParams(view: View?): FrameLayout.LayoutParams {
+        val src = view?.layoutParams as? FrameLayout.LayoutParams
+        return if (src != null) {
+            FrameLayout.LayoutParams(src.width, src.height).also {
+                it.leftMargin = src.leftMargin
+                it.topMargin = src.topMargin
+                it.gravity = src.gravity
+            }
+        } else {
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+            )
+        }
+    }
 
     private fun toModel(ad: NativeAd): NativeAdModel = NativeAdModel(
         title = ad.headline,

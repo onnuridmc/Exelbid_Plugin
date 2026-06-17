@@ -232,10 +232,10 @@ class _MediatedNativeCreative extends StatelessWidget {
           perNetworkTimeout: 5,
           desiredAssets: const {
             NativeAsset.title,
-            NativeAsset.desc,
-            NativeAsset.ctatext,
             NativeAsset.icon,
             NativeAsset.main,
+            NativeAsset.desc,
+            NativeAsset.ctatext,
           },
           onWinningNetwork: onWinningNetwork,
           onWaterfall: onWaterfall,
@@ -260,10 +260,9 @@ class _MediatedNativeCreative extends StatelessWidget {
                       cornerRadius: 8,
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: SizedBox(
-                      height: 44,
                       child: ExelbidNativeAdTitle(
                         style: ExelbidNativeSlotStyle(
                           fontFamily: _adFontFamily,
@@ -276,7 +275,7 @@ class _MediatedNativeCreative extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   ExelbidNativeAdCallToAction(
                     width: 80,
                     style: ExelbidNativeSlotStyle(
