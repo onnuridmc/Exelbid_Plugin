@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'exelbid_plugin'
-  s.version          = '2.0.3'
+  s.version          = '2.0.4'
   s.summary          = 'Flutter plugin wrapping the ExelBid iOS/Android SDKs.'
   s.description      = <<-DESC
 Flutter plugin that exposes the ExelBid native SDK ad surfaces (banner, native, video, interstitial, mediation) to Dart code.

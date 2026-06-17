@@ -21,7 +21,16 @@ class AdfitBannerAdapter : BannerMediationAdapter {
     override fun load(config: MediationLoadConfig, callback: MediationAdCallback) {
         this.callback = callback
 
-        val view = BannerAdView(config.context)
+        // AdFit's BannerAdView hard-requires an Activity context (throws
+        // "Context must be Activity context!" otherwise). For banner the load
+        // config's context is the PlatformView context, so use the Activity and
+        // fail the step (advancing the waterfall) when none is attached.
+        val activity = config.activity ?: run {
+            callback.onFailed("AdFit banner requires an Activity context")
+            return
+        }
+
+        val view = BannerAdView(activity)
         view.setClientId(config.unitId)
         view.setAdListener(object : AdListener {
             override fun onAdLoaded() {

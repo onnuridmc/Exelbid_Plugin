@@ -13,7 +13,7 @@ class AdUnitIds {
   /// 배너 광고 (320x50).
   static String get banner => _pick(
     ios: '08377f76c8b3e46c4ed36c82e434da2b394a4dfa',
-    android: '27060aff4c8bcc8e7f897bc6385d870adbfe0738',
+    android: 'd9a9293958c6cd0189c01de18fcf1d02839befe9',
   );
 
   /// 네이티브 광고.

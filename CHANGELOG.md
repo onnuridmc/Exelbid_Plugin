@@ -1,3 +1,6 @@
+## 2.0.4
+- android mediation adapter 이슈 수정
+
 ## 2.0.3
 - android mediation adapter 이슈 수정
 
