@@ -2,6 +2,8 @@ package com.exelbid.flutter.interstitial
 
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.exelbid.flutter.ChannelNames
 import com.exelbid.flutter.InstanceRegistry
 import com.exelbid.flutter.mappers.AdErrorMapper
@@ -33,6 +35,7 @@ class InterstitialAdHandle(
     private val eventChannel = EventChannel(messenger, ChannelNames.Interstitial.events(id))
 
     private var sink: EventChannel.EventSink? = null
+    private val main = Handler(Looper.getMainLooper())
     private val pending = ArrayList<Map<String, Any?>>()
 
     private var ad: ExelBidInterstitial? = null
@@ -120,9 +123,15 @@ class InterstitialAdHandle(
         InstanceRegistry.remove(id)
     }
 
+    /**
+     * SDK ad-listener callbacks may arrive off the platform thread; marshal to
+     * main so EventSink delivery (and sink/pending access) stays on one thread.
+     */
     private fun emit(event: Map<String, Any?>) {
-        val s = sink
-        if (s != null) s.success(event) else pending.add(event)
+        main.post {
+            val s = sink
+            if (s != null) s.success(event) else pending.add(event)
+        }
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {

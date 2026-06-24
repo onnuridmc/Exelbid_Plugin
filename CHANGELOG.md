@@ -1,3 +1,6 @@
+## 2.0.5
+- android 이벤트 핸들러 수정
+
 ## 2.0.4
 - android mediation adapter 이슈 수정
 

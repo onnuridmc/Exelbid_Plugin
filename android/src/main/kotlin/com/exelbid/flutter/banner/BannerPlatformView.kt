@@ -1,6 +1,8 @@
 package com.exelbid.flutter.banner
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.FrameLayout
 import com.exelbid.flutter.ChannelNames
@@ -34,6 +36,7 @@ class BannerPlatformView(
     private val methodChannel = MethodChannel(messenger, ChannelNames.Banner.method(viewId))
     private val eventChannel = EventChannel(messenger, ChannelNames.Banner.events(viewId))
 
+    private val main = Handler(Looper.getMainLooper())
     private var sink: EventChannel.EventSink? = null
     private val pending = ArrayList<Map<String, Any?>>()
 
@@ -102,9 +105,15 @@ class BannerPlatformView(
         }
     }
 
+    /**
+     * SDK ad-listener callbacks may arrive off the platform thread; marshal to
+     * main so EventSink delivery (and sink/pending access) stays on one thread.
+     */
     private fun emit(event: Map<String, Any?>) {
-        val s = sink
-        if (s != null) s.success(event) else pending.add(event)
+        main.post {
+            val s = sink
+            if (s != null) s.success(event) else pending.add(event)
+        }
     }
 
     override fun getView(): View = container

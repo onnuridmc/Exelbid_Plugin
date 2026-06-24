@@ -654,6 +654,28 @@ await ad.load();
 
 > 등록하지 않은 네트워크가 `lost: ... (adapterNotRegistered)`로 보이면, 해당 네트워크의 SDK 추가 + 모듈 등록이 빠진 것입니다([1단계](#1단계--어댑터-연결--android)/[2단계](#2단계--어댑터-연결--ios)).
 
+### AdMob 네이티브 광고 검사기 끄기 (선택)
+
+AdMob 네이티브 광고를 테스트 기기에서 띄우면, Google Mobile Ads SDK가 광고 위에 **네이티브 광고 검사기(Native Ad Validator)** 오버레이를 자동으로 표시합니다(레이아웃 문제 진단용, 테스트 광고에서만 노출). 거슬리면 호스트 앱에서 아래처럼 끌 수 있습니다.
+
+**Android** — `AndroidManifest.xml`의 `<application>` 안에 추가:
+
+```xml
+<meta-data
+    android:name="com.google.android.gms.ads.flag.NATIVE_AD_DEBUGGER_ENABLED"
+    android:value="false" />
+```
+
+**iOS** — `Info.plist`에 추가:
+
+```xml
+<key>GADNativeAdValidatorEnabled</key>
+<false/>
+```
+
+> 끄면 테스트 광고에서 레이아웃 문제 안내가 더 이상 표시되지 않습니다. 실제 광고에는 영향이 없습니다.
+> 참고: [Android](https://developers.google.com/admob/android/native/validator) · [iOS](https://developers.google.com/admob/ios/native/validator)
+
 ---
 
 ## 에러 처리

@@ -2,6 +2,8 @@ package com.exelbid.flutter.video
 
 import android.app.Activity
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import com.exelbid.flutter.ChannelNames
 import com.exelbid.flutter.InstanceRegistry
 import com.exelbid.flutter.mappers.AdErrorMapper
@@ -35,6 +37,7 @@ class VideoAdHandle(
     private val methodChannel = MethodChannel(messenger, ChannelNames.Video.method(id))
     private val eventChannel = EventChannel(messenger, ChannelNames.Video.events(id))
 
+    private val main = Handler(Looper.getMainLooper())
     private var sink: EventChannel.EventSink? = null
     private val pending = ArrayList<Map<String, Any?>>()
 
@@ -126,9 +129,15 @@ class VideoAdHandle(
         InstanceRegistry.remove(id)
     }
 
+    /**
+     * SDK ad-listener callbacks may arrive off the platform thread; marshal to
+     * main so EventSink delivery (and sink/pending access) stays on one thread.
+     */
     private fun emit(event: Map<String, Any?>) {
-        val s = sink
-        if (s != null) s.success(event) else pending.add(event)
+        main.post {
+            val s = sink
+            if (s != null) s.success(event) else pending.add(event)
+        }
     }
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {

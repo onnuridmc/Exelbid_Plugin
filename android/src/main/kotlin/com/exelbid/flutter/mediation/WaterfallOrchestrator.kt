@@ -55,12 +55,23 @@ class WaterfallOrchestrator(
 ) {
     private val main = Handler(Looper.getMainLooper())
 
+    /**
+     * Per-network deadline actually applied. Falls back to
+     * [DEFAULT_PER_NETWORK_TIMEOUT_MS] when the host doesn't specify one so a
+     * never-resolving adapter (or order fetch) can't hang the request forever.
+     */
+    private val effectiveTimeoutMs: Long =
+        (perNetworkTimeoutMs?.takeIf { it > 0 }) ?: DEFAULT_PER_NETWORK_TIMEOUT_MS
+
     private var order: MediationOrderResult? = null
     private var total = 0
     private var position = 0
     private var current: MediationAdapter? = null
     private var startTs = 0L
     private var timeout: Runnable? = null
+
+    /** Guards the initial [ExelBid.getMediationData] callback (separate from the per-network deadline). */
+    private var orderTimeout: Runnable? = null
 
     /** Terminal: a winner was found or noFill was emitted. */
     private var finished = false
@@ -72,6 +83,7 @@ class WaterfallOrchestrator(
 
     fun start() {
         emitWaterfall(WaterfallEventMapper.fetching())
+        scheduleOrderTimeout()
 
         val useList = ArrayList(
             MediationAdapterRegistry.registeredNetworks(format).mapNotNull { mediationTypeOf(it) },
@@ -84,6 +96,7 @@ class WaterfallOrchestrator(
             object : OnMediationOrderResultListener {
                 override fun onMediationOrderResult(result: MediationOrderResult) {
                     if (disposed || finished) return
+                    cancelOrderTimeout()
                     if (result.size <= 0) {
                         noFill()
                         return
@@ -99,6 +112,7 @@ class WaterfallOrchestrator(
 
                 override fun onMediationFail(errorCode: Int, errorMsg: String?) {
                     if (disposed || finished) return
+                    cancelOrderTimeout()
                     noFill(errorMsg ?: "Mediation failed ($errorCode)")
                 }
             },
@@ -109,6 +123,7 @@ class WaterfallOrchestrator(
     fun dispose() {
         disposed = true
         finished = true
+        cancelOrderTimeout()
         cancelTimeout()
         current?.let {
             it.cancel()
@@ -213,7 +228,7 @@ class WaterfallOrchestrator(
     // MARK: - Timeout
 
     private fun scheduleTimeout(networkId: String) {
-        val ms = perNetworkTimeoutMs ?: return
+        val ms = effectiveTimeoutMs
         val r = Runnable {
             if (disposed || finished) return@Runnable
             current?.cancel()
@@ -226,6 +241,26 @@ class WaterfallOrchestrator(
     private fun cancelTimeout() {
         timeout?.let { main.removeCallbacks(it) }
         timeout = null
+    }
+
+    /**
+     * Bounds the initial order fetch: if [ExelBid.getMediationData] never calls
+     * back (network stall / SDK hang), the request would otherwise wait forever
+     * before the waterfall even starts. On expiry, treat it as a no-fill.
+     */
+    private fun scheduleOrderTimeout() {
+        val ms = effectiveTimeoutMs
+        val r = Runnable {
+            if (disposed || finished) return@Runnable
+            noFill("Mediation order fetch timed out (${ms}ms)")
+        }
+        orderTimeout = r
+        main.postDelayed(r, ms)
+    }
+
+    private fun cancelOrderTimeout() {
+        orderTimeout?.let { main.removeCallbacks(it) }
+        orderTimeout = null
     }
 
     // MARK: - Helpers
@@ -245,5 +280,15 @@ class WaterfallOrchestrator(
 
     private fun emitEvent(event: Map<String, Any?>) {
         main.post { if (!disposed) emit(event) }
+    }
+
+    companion object {
+        /**
+         * Fallback per-network / order-fetch deadline when the host doesn't pass
+         * `perNetworkTimeout`. Prevents a never-resolving adapter or order fetch
+         * from hanging the ad request indefinitely (iOS bounds this inside the
+         * SDK; the Android waterfall is orchestrated here, so it must too).
+         */
+        private const val DEFAULT_PER_NETWORK_TIMEOUT_MS = 5_000L
     }
 }

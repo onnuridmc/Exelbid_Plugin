@@ -9,14 +9,25 @@ internal object AdMobSupport {
     @Volatile
     private var initialized = false
 
+    /**
+     * Initializes Google Mobile Ads once, **off the main thread**.
+     *
+     * `MobileAds.initialize()` does disk I/O / mediation-adapter discovery and can
+     * block the caller for hundreds of ms on first run; Google explicitly
+     * recommends a background thread. Adapters call `loadAd()` immediately after
+     * this returns and GMA tolerates requests issued before init completes, so we
+     * don't wait for the callback — we just make sure the blocking call never runs
+     * on the main thread. The flag is flipped up front (under the lock) so a
+     * second concurrent load doesn't spawn a duplicate init thread.
+     */
     fun ensureInitialized(context: Context) {
         if (initialized) return
+        val appContext = context.applicationContext
         synchronized(this) {
-            if (!initialized) {
-                MobileAds.initialize(context.applicationContext)
-                initialized = true
-            }
+            if (initialized) return
+            initialized = true
         }
+        Thread({ MobileAds.initialize(appContext) }, "exelbid-admob-init").start()
     }
 
     /**
